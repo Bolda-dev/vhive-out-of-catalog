@@ -32,6 +32,9 @@
 
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+
 
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -71,8 +74,11 @@
   --accent: #4f565e;
   --accent-foreground: #ffffff;
 
-  --destructive: #ffaca7;
+  --destructive: #d97a72;
   --destructive-foreground: #1c2127;
+  --danger: #d97a72;
+  --danger-hover: #e89089;
+
 
   --border: #6c757d;
   --input: #6c757d;
