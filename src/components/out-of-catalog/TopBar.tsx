@@ -1,5 +1,6 @@
 import { Menu } from "lucide-react";
 import logoAsset from "@/assets/vhive-logo.png.asset.json";
+import faviconChevrons from "@/assets/favicon-chevrons.png";
 import { cn } from "@/lib/utils";
 
 type TabId = "equipment" | "out-of-catalog" | "civil-survey";
@@ -14,7 +15,10 @@ export function TopBar({ activeTab = "out-of-catalog" as TabId }: { activeTab?: 
   return (
     <header className="flex h-[68px] items-center justify-between border-b border-border bg-card px-8">
       <div className="flex h-full items-center gap-10">
-        <img src={logoAsset.url} alt="vHive" className="h-8 w-auto" />
+        <div className="flex items-center gap-3">
+          <img src={faviconChevrons} alt="" className="h-7 w-auto" />
+          <img src={logoAsset.url} alt="vHive" className="h-8 w-auto" />
+        </div>
 
         <nav className="flex h-full items-stretch gap-1 text-sm">
           {TABS.map((t) => {
