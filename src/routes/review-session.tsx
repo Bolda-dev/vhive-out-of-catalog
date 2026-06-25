@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Check,
   CheckCircle2 as CheckCircleIcon,
+  Crop,
   Plus,
   Search,
   SkipForward,
@@ -357,7 +358,7 @@ function ReviewSessionPage() {
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="flex min-w-0 max-w-full items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5">
                   <Sparkles className="h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
-                  <span className="shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                  <span className="shrink-0 text-xs text-muted-foreground">
                     AI suggestion
                   </span>
                   <span
@@ -389,12 +390,10 @@ function ReviewSessionPage() {
             className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
             style={{ gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr) 280px" }}
           >
-            <ImagePanel
-              label="Captured image"
+            <CaptureImagePanel
               src={currentCapture?.imageUrl}
-              empty="No capture"
               status={currentCapture ? statusFor(currentCapture.id) : "pending"}
-              metaTopLeft={
+              metaBottomLeft={
                 currentCapture
                   ? `${currentCapture.capturedAt} · ${currentCapture.location}`
                   : undefined
@@ -402,6 +401,7 @@ function ReviewSessionPage() {
               onApprove={() => setStatus("approved")}
               onReject={() => setStatus("rejected")}
               canAct={!!currentCapture && !!selected}
+              captureKey={currentCapture?.id ?? ""}
             />
             <ImagePanel
               label="Catalog reference"
@@ -411,7 +411,7 @@ function ReviewSessionPage() {
             {/* Vertical suggestion rail */}
             <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
               <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-                <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   AI suggested matches
                 </span>
                 <span className="text-xs text-muted-foreground tabular-nums">
@@ -453,7 +453,7 @@ function ReviewSessionPage() {
                           <div className="flex flex-col gap-1 px-2.5 py-2">
                             <div className="flex items-center justify-between gap-2">
                               <span
-                                className="truncate font-mono text-[10px] text-muted-foreground"
+                                className="font-mono text-[10px] text-muted-foreground"
                                 title={s.item.id}
                               >
                                 #{s.item.id}
@@ -488,7 +488,7 @@ function ReviewSessionPage() {
           {/* Capture strip */}
           <div className="shrink-0 border-t border-border px-6 pt-3">
             <div className="flex items-center justify-between pb-1.5">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 Captured images
               </div>
               <div className="text-xs text-muted-foreground tabular-nums">
@@ -599,10 +599,10 @@ function ImagePanel({
   return (
     <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
+        <span className="text-xs text-muted-foreground">{label}</span>
         {status && (
           <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
             style={
               status === "approved"
                 ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
@@ -676,7 +676,7 @@ function ShortcutGroup({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{label}</span>
+      <span className="text-xs text-muted-foreground/70">{label}</span>
       <div className="flex items-center gap-3">
         {items.map((it, i) => (
           <span key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -784,6 +784,196 @@ function ShortcutBar({
   );
 }
 
+type Pt = { x: number; y: number };
+const DEFAULT_POLY: Pt[] = [
+  { x: 28, y: 36 },
+  { x: 72, y: 36 },
+  { x: 74, y: 66 },
+  { x: 26, y: 66 },
+];
+
+function CaptureImagePanel({
+  src,
+  status,
+  metaBottomLeft,
+  onApprove,
+  onReject,
+  canAct,
+  captureKey,
+}: {
+  src?: string;
+  status?: ImgStatus;
+  metaBottomLeft?: string;
+  onApprove?: () => void;
+  onReject?: () => void;
+  canAct?: boolean;
+  captureKey: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [poly, setPoly] = useState<Pt[]>(DEFAULT_POLY);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  // Reset polygon when capture changes
+  useEffect(() => {
+    setPoly(DEFAULT_POLY);
+    setEditing(false);
+  }, [captureKey]);
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragIdx === null) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(2, Math.min(98, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(2, Math.min(98, ((e.clientY - rect.top) / rect.height) * 100));
+    setPoly((prev) => prev.map((p, i) => (i === dragIdx ? { x, y } : p)));
+  };
+
+  const points = poly.map((p) => `${p.x},${p.y}`).join(" ");
+
+  const confirmCrop = () => {
+    setEditing(false);
+    toast.message("Re-running AI search with new crop");
+  };
+
+  return (
+    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
+        <span className="text-xs text-muted-foreground">Captured image</span>
+        {status && (
+          <span
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
+            style={
+              status === "approved"
+                ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
+                : status === "rejected"
+                  ? { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
+                  : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)" }
+            }
+          >
+            {status}
+          </span>
+        )}
+      </div>
+      <div
+        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
+        onPointerMove={onPointerMove}
+        onPointerUp={() => setDragIdx(null)}
+        onPointerLeave={() => setDragIdx(null)}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt=""
+            className="h-full w-full object-cover"
+            style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
+            draggable={false}
+          />
+        ) : (
+          <div className="text-sm text-muted-foreground">No capture</div>
+        )}
+
+        {/* Polygon overlay */}
+        {src && (
+          <svg
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            {/* Outer dark outline for contrast */}
+            <polygon
+              points={points}
+              fill="none"
+              stroke="rgba(0,0,0,0.85)"
+              strokeWidth="0.9"
+              vectorEffect="non-scaling-stroke"
+              style={{ strokeWidth: 4 } as React.CSSProperties}
+            />
+            {/* Inner bright outline */}
+            <polygon
+              points={points}
+              fill="rgba(59,182,233,0.08)"
+              stroke="#3BB6E9"
+              vectorEffect="non-scaling-stroke"
+              style={{ strokeWidth: 2 } as React.CSSProperties}
+            />
+          </svg>
+        )}
+
+        {/* Polygon handles (editable) */}
+        {src && editing && (
+          <div className="absolute inset-0">
+            {poly.map((p, i) => (
+              <div
+                key={i}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                  setDragIdx(i);
+                }}
+                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
+                style={{ left: `${p.x}%`, top: `${p.y}%` }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Crop toggle button — bottom-left */}
+        {src && (
+          <button
+            type="button"
+            onClick={() => (editing ? confirmCrop() : setEditing(true))}
+            className="absolute bottom-2 left-2 inline-flex h-8 items-center gap-1.5 rounded-md bg-black/80 px-2.5 text-xs backdrop-blur transition hover:bg-black"
+            style={{ color: editing ? "#8FBFA3" : "#ffffff" }}
+            title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
+          >
+            {editing ? (
+              <>
+                <Check className="h-3.5 w-3.5" /> Done
+              </>
+            ) : (
+              <Crop className="h-3.5 w-3.5" />
+            )}
+          </button>
+        )}
+
+        {metaBottomLeft && !editing && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
+            {metaBottomLeft}
+          </div>
+        )}
+
+        {onApprove && onReject && (
+          <div className="absolute bottom-2 right-2 flex gap-1.5">
+            <button
+              type="button"
+              onClick={onReject}
+              disabled={!canAct}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-black/55 px-2.5 text-xs backdrop-blur transition hover:bg-black/70 disabled:opacity-40"
+              style={{ color: "#d97a72" }}
+              title="Reject (Backspace)"
+            >
+              <X className="h-3.5 w-3.5" /> Reject
+            </button>
+            <button
+              type="button"
+              onClick={onApprove}
+              disabled={!canAct}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs backdrop-blur transition disabled:opacity-40"
+              style={{
+                background: "rgba(59,182,233,0.15)",
+                borderColor: "rgba(59,182,233,0.5)",
+                color: "#3BB6E9",
+              }}
+              title="Approve (Enter)"
+            >
+              <Check className="h-3.5 w-3.5" /> Approve
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MatchScoreBadge({ score }: { score: number }) {
   const tone =
     score >= 80
@@ -820,7 +1010,7 @@ function SessionComplete({
 
   const stat = (label: string, n: number, color: string) => (
     <div className="rounded-lg border border-border bg-surface p-4">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 text-2xl font-medium tabular-nums" style={{ color }}>
         {n}
       </div>
@@ -830,7 +1020,7 @@ function SessionComplete({
   return (
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="w-full max-w-2xl rounded-xl border border-border bg-surface p-8">
-        <div className="text-xs uppercase tracking-wide text-muted-foreground">
+        <div className="text-xs text-muted-foreground">
           Session complete
         </div>
         <h1 className="mt-2 text-2xl font-medium text-foreground">
