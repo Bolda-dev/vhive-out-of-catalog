@@ -81,7 +81,7 @@ const seeds: Seed[] = [
   {
     id: "ooc-003",
     detectedOn: "13-06-2026 08:41:11",
-    status: "Mixed",
+    status: "Pending",
     equipmentType: "Server",
     manufacturer: "Multiple",
     model: "Multiple",
@@ -175,7 +175,7 @@ const seeds: Seed[] = [
   {
     id: "ooc-008",
     detectedOn: "15-06-2026 16:44:02",
-    status: "Mixed",
+    status: "Pending",
     equipmentType: "Storage Array",
     manufacturer: "NetApp",
     model: "AFF A400",

@@ -70,12 +70,7 @@ interface Filters {
 }
 
 function StatusCell({ status }: { status: OocStatus }) {
-  const color =
-    status === "Pending"
-      ? "#F2D066"
-      : status === "Mixed"
-        ? "#3BB6E9"
-        : "rgba(255,255,255,0.6)";
+  const color = status === "Pending" ? "#F2D066" : "rgba(255,255,255,0.6)";
   return <span style={{ color }}>{status}</span>;
 }
 

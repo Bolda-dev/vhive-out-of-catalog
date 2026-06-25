@@ -1,4 +1,4 @@
-export type OocStatus = "Pending" | "Unrecognized" | "Mixed";
+export type OocStatus = "Pending" | "Unrecognized";
 
 export interface OocCapture {
   id: string;
