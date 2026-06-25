@@ -27,7 +27,18 @@ import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { OocRow } from "@/data/outOfCatalogTypes";
+
 
 export const Route = createFileRoute("/review-session")({
   head: () => ({
