@@ -227,7 +227,7 @@ function ReviewSessionPage() {
               {/* Info / AI description card */}
               <div className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-lg border border-border bg-surface p-4">
                 <div className="flex flex-col gap-2">
-                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
                     Type
                   </div>
                   <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
@@ -236,7 +236,7 @@ function ReviewSessionPage() {
                 </div>
                 <div className="h-px bg-white/[0.06]" />
                 <div className="flex flex-col gap-2">
-                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
                     Manufacturer
                   </div>
                   <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
@@ -245,7 +245,7 @@ function ReviewSessionPage() {
                 </div>
                 <div className="h-px bg-white/[0.06]" />
                 <div className="flex flex-col gap-2">
-                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
                     Model
                   </div>
                   <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
@@ -254,7 +254,7 @@ function ReviewSessionPage() {
                 </div>
                 <div className="h-px bg-white/[0.06]" />
                 <div className="flex flex-col gap-2">
-                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
                     Confidence
                   </div>
                   <div>
@@ -265,7 +265,7 @@ function ReviewSessionPage() {
                   <>
                     <div className="h-px bg-white/[0.06]" />
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                      <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
                         <Sparkles className="h-3 w-3" style={{ color: "#3BB6E9" }} />
                         AI description
                       </div>
