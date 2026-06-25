@@ -254,37 +254,41 @@ function ReviewSessionPage() {
                   </button>
                 ))}
               </div>
-              <div className="flex min-h-0 items-center justify-center rounded-lg border border-border bg-surface">
+              <div className="relative flex min-h-0 items-center justify-center rounded-lg border border-border bg-surface">
                 <img
                   key={current.captures[captureIndex]?.id}
                   src={current.captures[captureIndex]?.imageUrl}
                   alt=""
                   className="max-h-full max-w-full object-contain p-2"
                 />
+                {current.captures[captureIndex] && (
+                  <div
+                    className="pointer-events-none absolute left-3 top-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-black/60 px-2.5 py-1.5 text-xs backdrop-blur-md"
+                    style={{ color: "rgba(255,255,255,0.85)" }}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {current.captures[captureIndex].capturedAt}
+                    </span>
+                    <span className="text-white/30">·</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {current.captures[captureIndex].location} · survey{" "}
+                      {current.captures[captureIndex].surveyId}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
-
-
-            {/* Caption */}
+            {/* AI caption (per image) */}
             {current.captures[captureIndex] && (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
-                <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {current.captures[captureIndex].capturedAt}
-                </span>
-                <span className="text-white/30">·</span>
-                <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {current.captures[captureIndex].location} · survey{" "}
-                  {current.captures[captureIndex].surveyId}
-                </span>
-                <span className="text-white/30">—</span>
+              <div className="flex text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
                 <span
-                  className="group inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-white/[0.06]"
+                  className="group inline-flex items-start gap-1.5 rounded px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-white/[0.06]"
                   title="AI-generated description from the LLM. Hover and click to edit."
                 >
-                  <Sparkles className="h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
+                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
                   <span
                     role="textbox"
                     aria-label="AI description (editable)"
@@ -303,6 +307,7 @@ function ReviewSessionPage() {
                 </span>
               </div>
             )}
+
 
           </section>
 
