@@ -1012,16 +1012,16 @@ function CaptureImagePanel({
                 type="button"
                 onClick={onApprove}
                 disabled={!canAct}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs transition disabled:opacity-40"
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
                 style={{
-                  background: "rgba(59,182,233,0.15)",
-                  borderColor: "rgba(59,182,233,0.5)",
-                  color: "#3BB6E9",
+                  background: "#8FD3A8",
+                  color: "#0F2A1C",
                 }}
                 title="Approve (Enter)"
               >
-                <Check className="h-3.5 w-3.5" /> Approve
+                <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
               </button>
+
             </div>
           )}
         </div>
