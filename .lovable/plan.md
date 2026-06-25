@@ -1,48 +1,59 @@
-# Out-of-Catalog Management — Plan
+# Prompt #1 — Mock data model + table enrichments
 
-Port the full table system from the **Drone Workflow Manager** project and re-skin it as the "Out-of-Catalog Management" screen shown in the Figma reference / attached screenshot.
+Front-end only, all state local. No backend calls.
 
-## What gets copied from the source project
+## 1. Extend data model (`src/data/outOfCatalogTypes.ts`)
 
-From `src/components/line/` in Drone Workflow Manager (all behaviors preserved):
+Add new types alongside existing `OocRow`:
 
-- `TasksTable.tsx` → renamed `OutOfCatalogTable.tsx` (drag-to-reorder headers, column resize, per-column filters in a second header row, sort, sticky header, custom scrollbar)
-- `Pagination.tsx` → reused as-is (page numbers, prev/next/first/last, page-size selector — matches the footer in the screenshot)
-- `ColumnDropdown.tsx`, `ColumnManagerDialog.tsx` → column show/hide + ordering
-- `MultiSelectFilter.tsx` → used by Status / Equipment Type filter dropdowns
-- `TableToolbar.tsx` → top toolbar (entries counter on the left, "Auto-Bind Attempt" button on the right)
-- `TopBar.tsx` → renamed/adapted to vHive top bar (logo, Equipment / Out-of-catalog Management / Civil Survey Categories tabs, user name + menu icon)
-- `RowActions.tsx` → the trailing chevron + per-row actions
-- Dark theme tokens from `src/styles.css` (background, border, row-hover, brand purple used for `Auto-Bind` icon and sort indicators) ported into our `src/styles.css` as semantic tokens
+- `OocStatus` → extend to `"Pending" | "Unrecognized" | "Mixed"`.
+- `OocCapture` — `{ id, imageUrl, surveyId, capturedAt, location, aiDescription }`.
+- `CatalogItem` — `{ id, type, manufacturer, model, category, classification, heightU, widthM, depthM, weightKg, powerW, thermalBtu, referenceImageUrl }`.
+- Extend `OocRow` with: `captures: OocCapture[]` (1–5), `confidence: number` (0–100), `aiType`, `aiManufacturer`, `aiModel` (strings, some `""` or `"Invalid"`), `aiSuggestionId?: string` (FK into catalog, optional).
 
-UI primitives already exist locally under `src/components/ui/*` (shadcn) — reuse those; do not re-copy.
+Existing fields (`detectedOn`, `status`, `equipmentType`, `manufacturer`, `model`, `instances`, `rackUnits`, `account`, `hasLink`) stay as-is — `instances` will be derived/aligned with `captures.length` in the mock.
 
-## New / changed pieces for this project
+## 2. New mock files
 
-1. **Route**: `src/routes/out-of-catalog.tsx` rendering the page; redirect `src/routes/index.tsx` to it (replaces the placeholder).
-2. **Data model** `src/data/outOfCatalogTypes.ts`:
-   - `status: "Pending" | "Unrecognized"`
-   - `detectedOn: string` (formatted `DD-MM-YYYY HH:mm:ss`)
-   - `equipmentType`, `manufacturer`, `model`, `instances: number`, `rackUnits?: string`, `account`, `hasLink: boolean`
-3. **Mock data** `src/data/mockOutOfCatalog.ts` — 200 rows mirroring the screenshot (Zebra/Cheeta/Edge Router/Battery/Macro Cell Antenna/Mounted Amplifier/Shelter etc.).
-4. **Columns** (in this order, matching the screenshot):
-   `Detected on` · `Status` · `Equipment Type` · `Manufacturer` · `Model` · `Instances` · `Rack Units` · `Account` · `Link` · `Actions`
-   - Header row 1: label + sort caret + drag handle + resize grip
-   - Header row 2: per-column controls — `Select…` dropdowns for Status & Equipment Type; `Search` text inputs for Manufacturer / Model / Instances / Account; empty cells for Detected on, Rack Units, Link, Actions
-5. **Row action cells** (right side):
-   - Pending rows → three buttons: `Add New & Bind` (purple wand icon), `Bind to Existing` (globe icon), `Mark as Unrecognized` (question-mark icon) + chevron
-   - Unrecognized rows → `Mark as Unrecognized` is disabled
-   - Some rows have only the external-link icon under the Link column and no action buttons (matches screenshot)
-6. **Toolbar**: left `Showing X to Y of N entries`, right `Auto-Bind Attempt` button with wand icon (purple stroke).
-7. **TopBar**: vHive arrow-logo placeholder, three tabs with active underline in brand purple on `Out-of-catalog Management`, right-side `Barel` + hamburger.
+- `src/data/mockCatalog.ts` — ~10 `CatalogItem`s spanning Switch / Router / Server / PDU / Patch Panel etc. `referenceImageUrl` uses `https://picsum.photos/seed/<slug>/200/200`.
+- Rewrite `src/data/mockOutOfCatalog.ts` — ~12 hand-authored rows:
+  - 1–5 captures each, distinct `surveyId` + `location` + timestamps, `imageUrl` from picsum seeded by row+capture index.
+  - Mix of statuses: ~7 Pending, ~3 Unrecognized, ~2 Mixed.
+  - Confidence values spread across <50 / 50–80 / >80 buckets.
+  - ~8 rows have `aiSuggestionId` pointing into mock catalog; ~4 don't.
+  - A couple rows with `aiType: "Invalid"` or empty AI fields.
+
+## 3. Table changes (`OutOfCatalogTable.tsx`)
+
+- **Thumbnail** in the Equipment Type cell: render `captures[0].imageUrl` as a 32×32 rounded image to the left of the type text. If no captures, show a neutral placeholder block.
+- **New "Confidence" column** inserted right after Equipment Type:
+  - Sortable.
+  - Cell = number `0–100` + colored pill badge.
+    - `<50` → red (`#EF4444` bg @ 16% opacity, red text)
+    - `50–80` → orange (`#F2D066` family — use `#F59E0B`)
+    - `>80` → green (`#22C55E`)
+  - Add to `ALL_OOC_COLUMNS`, `DEFAULT_VISIBLE_COLUMN_IDS`, `getRowSortValue` (numeric).
+  - Filter cell: leave empty for now (no spec).
+- **Status filter options**: add `Mixed`.
+
+## 4. Route toolbar (`src/routes/out-of-catalog.tsx`)
+
+Add **Start Session** as the primary CTA to the left of `Auto-Bind Attempt`:
+- Filled brand button: `bg-brand text-background hover:bg-brand/90`, same height (`h-9`), `font-medium`.
+- `onClick` → `toast.success("Session started")` (placeholder).
+
+Update `Filters.status` type to include `"Mixed"`.
+
+## 5. Preserved
+
+All existing columns, filter row, drag-reorder, resize, sort, sticky header, pagination, row actions, TopBar — untouched aside from the additions above.
+
+## Open clarification
+
+You wrote "שורות אם/בן הניתנות להרחבה" (parent/child expandable rows). The current table has **no** expand/collapse mechanism — each row is flat. I'm reading "שמור" as "don't break anything that exists," so I will **not** add expandable rows in this prompt. If you actually want a parent-row expand that reveals the captures gallery, tell me and I'll fold it in (or save it for prompt #2).
 
 ## Technical notes
 
-- TanStack Start file-based routing — new route is `src/routes/out-of-catalog.tsx` with proper `head()` metadata (title "Out-of-Catalog Management | vHive", description, og tags).
-- All copying done via `cross_project--read_project_file` then `code--write`; imports rewritten from `@/components/line/*` to `@/components/out-of-catalog/*`, and from `@/data/lineTypes`/`mockTasks` to the new data files.
-- Dark theme: extend `src/styles.css` with the source project's tokens (`--brand`, `--row-hover`, surface `#121212`, etc.) as semantic CSS variables — no hard-coded hex in components beyond what's already in the source files we're porting.
-- Out of scope for this turn: real backend, the actual `Auto-Bind` algorithm, the bind/add dialogs (action buttons render and are wired to toast stubs only).
-
-## Open question
-
-The screenshot is a single page; the source project also has BulkEditsDialog, TaskTimer, PriorityCell, AssignedToCell, WorkerCell, ProfileSwitcher, TaskTabs — these don't appear in the Out-of-Catalog screen. **I'll skip porting them.** Tell me if you want them carried over anyway.
+- Confidence badge uses inline `style` for the three hex colors (consistent with how Pending yellow is handled today) so Tailwind purge doesn't strip them.
+- Picsum URLs are stable per seed — good for prototype, zero asset weight.
+- No new dependencies.
