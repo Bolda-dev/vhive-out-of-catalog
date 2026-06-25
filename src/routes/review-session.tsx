@@ -489,9 +489,8 @@ function ReviewSessionPage() {
               <div className="text-xs text-muted-foreground">
                 Captured images
               </div>
-              <div className="text-xs text-muted-foreground tabular-nums">
-                {captureCount > 0 ? `${safeCaptureIdx + 1} / ${captureCount}` : "0 / 0"}
-              </div>
+
+
             </div>
             <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
               {captures.map((cap, i) => {
