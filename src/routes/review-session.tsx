@@ -7,6 +7,7 @@ import {
   Crop,
   HelpCircle,
   Plus,
+  RotateCcw,
   Search,
   SkipForward,
   Sparkles,
