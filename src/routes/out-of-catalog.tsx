@@ -129,52 +129,48 @@ function OutOfCatalogPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopBar activeTab="out-of-catalog" />
-      <main className="w-full p-6">
-        <section className="rounded-xl border border-border bg-card p-4">
+      <main className="w-full px-6 py-6">
+        {/* Toolbar */}
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="text-foreground">{fromIdx}</span> to{" "}
+            <span className="text-foreground">{toIdx}</span> of{" "}
+            <span className="text-foreground">{filtered.length}</span> entries
+          </p>
+          <button
+            type="button"
+            onClick={() => toast.success("Auto-Bind run started")}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition-colors hover:bg-row-hover"
+          >
+            <Wand2 className="h-4 w-4 text-brand" />
+            Auto-Bind Attempt
+          </button>
+        </div>
 
+        <OutOfCatalogTable
+          rows={pageRows}
+          visibleColumnIds={visibleColumnIds}
+          onReorderColumns={setVisibleColumnIds}
+          sortState={sortState}
+          onToggleSort={toggleSort}
+          filters={filters}
+          onFiltersChange={(f) => {
+            setFilters(f);
+            setPage(1);
+          }}
+          equipmentTypeOptions={equipmentTypeOptions}
+        />
 
-          {/* Toolbar */}
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              Showing <span className="text-foreground">{fromIdx}</span> to{" "}
-              <span className="text-foreground">{toIdx}</span> of{" "}
-              <span className="text-foreground">{filtered.length}</span> entries
-            </p>
-            <button
-              type="button"
-              onClick={() => toast.success("Auto-Bind run started")}
-              className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition-colors hover:bg-row-hover"
-            >
-              <Wand2 className="h-4 w-4 text-brand" />
-              Auto-Bind Attempt
-            </button>
-          </div>
-
-          <OutOfCatalogTable
-            rows={pageRows}
-            visibleColumnIds={visibleColumnIds}
-            onReorderColumns={setVisibleColumnIds}
-            sortState={sortState}
-            onToggleSort={toggleSort}
-            filters={filters}
-            onFiltersChange={(f) => {
-              setFilters(f);
-              setPage(1);
-            }}
-            equipmentTypeOptions={equipmentTypeOptions}
-          />
-
-          <Pagination
-            page={currentPage}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            onPage={setPage}
-            onPageSize={(s) => {
-              setPageSize(s);
-              setPage(1);
-            }}
-          />
-        </section>
+        <Pagination
+          page={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPage={setPage}
+          onPageSize={(s) => {
+            setPageSize(s);
+            setPage(1);
+          }}
+        />
       </main>
       <Toaster />
     </div>

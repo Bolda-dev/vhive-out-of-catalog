@@ -246,9 +246,9 @@ export function OutOfCatalogTable({
   };
 
   return (
-    <div className="custom-scrollbar overflow-auto">
+    <div className="custom-scrollbar overflow-auto rounded-lg border border-border bg-background [&_thead_th]:bg-[#121212]">
       <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
-        <thead className="sticky top-0 z-20 bg-surface-2">
+        <thead className="sticky top-0 z-20 bg-[#121212]">
           <tr>
             {cols.map((col) => {
               const active = sortState?.colId === col.id;
@@ -265,7 +265,7 @@ export function OutOfCatalogTable({
                   onDrop={(e) => handleHeaderDrop(e, col.id)}
                   style={{ width, minWidth: width }}
                   className={cn(
-                    "group relative cursor-grab select-none border-b border-border px-4 py-3 text-left text-sm font-medium text-muted-foreground active:cursor-grabbing",
+                    "group relative cursor-grab select-none border-b border-border px-3 py-3 text-left text-sm font-semibold text-white active:cursor-grabbing",
                     isDragging && "opacity-40",
                   )}
                 >
@@ -289,22 +289,24 @@ export function OutOfCatalogTable({
                         onMouseDown={(e) => e.stopPropagation()}
                         onDragStart={(e) => e.preventDefault()}
                         className={cn(
-                          "flex h-5 w-5 shrink-0 items-center justify-center rounded transition",
-                          active ? "text-brand" : "text-muted-foreground/70",
+                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] transition hover:bg-row-hover",
+                          active
+                            ? "text-brand"
+                            : "text-white/70 opacity-0 group-hover:opacity-100",
                         )}
                       >
                         {active ? (
                           sortState!.dir === "asc" ? (
-                            <ArrowUp className="h-3.5 w-3.5" />
+                            <ArrowUp className="h-4 w-4" />
                           ) : (
-                            <ArrowDown className="h-3.5 w-3.5" />
+                            <ArrowDown className="h-4 w-4" />
                           )
                         ) : (
-                          <ArrowUpDown className="h-3.5 w-3.5" />
+                          <ArrowUpDown className="h-4 w-4" />
                         )}
                       </button>
                     )}
-                    <GripVertical className="h-3 w-3 text-muted-foreground/40 opacity-0 transition-opacity group-hover:opacity-100" />
+                    <GripVertical className="h-3.5 w-3.5 text-white/40 opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
                   <div
                     onMouseDown={(e) => startResize(e, col)}
@@ -317,7 +319,7 @@ export function OutOfCatalogTable({
                 </th>
               );
             })}
-            <th className="border-b border-border px-4 py-3 text-right text-sm font-medium text-muted-foreground">
+            <th className="border-b border-border px-3 py-3 text-right text-sm font-semibold text-white">
               Actions
             </th>
           </tr>
@@ -329,13 +331,13 @@ export function OutOfCatalogTable({
                 <th
                   key={col.id}
                   style={{ width, minWidth: width }}
-                  className="border-b border-border bg-surface-2 px-3 py-2"
+                  className="border-b border-border px-2 py-2"
                 >
                   {renderFilterCell(col)}
                 </th>
               );
             })}
-            <th className="border-b border-border bg-surface-2 px-3 py-2" />
+            <th className="border-b border-border px-2 py-2" />
           </tr>
         </thead>
         <tbody>
