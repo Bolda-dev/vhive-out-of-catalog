@@ -1,5 +1,6 @@
 import { Menu } from "lucide-react";
 import logoAsset from "@/assets/vhive-logo.png.asset.json";
+import faviconChevrons from "@/assets/favicon-chevrons.png";
 import { cn } from "@/lib/utils";
 
 type TabId = "equipment" | "out-of-catalog" | "civil-survey";
