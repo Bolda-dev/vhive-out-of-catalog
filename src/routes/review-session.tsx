@@ -358,6 +358,16 @@ function ReviewSessionPage() {
             className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
             style={{ gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr) 280px" }}
           >
+          {/* Compare images + vertical suggestion rail */}
+          <section
+            className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
+            style={{
+              gridTemplateColumns:
+                suggestionCount === 0
+                  ? "minmax(0,1fr) minmax(0,2fr)"
+                  : "minmax(0,1fr) minmax(0,1fr) 280px",
+            }}
+          >
             <CaptureImagePanel
               src={currentCapture?.imageUrl}
               status={currentCapture ? statusFor(currentCapture.id) : "pending"}
@@ -371,89 +381,93 @@ function ReviewSessionPage() {
               canAct={!!currentCapture && !!selected}
               captureKey={currentCapture?.id ?? ""}
             />
-            <ImagePanel
-              label="Catalog reference"
-              src={selected?.item.referenceImageUrl}
-              empty="No suggestion"
-            />
-            {/* Vertical suggestion rail */}
-            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
-              <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
-                  AI suggested matches
-                </span>
 
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {suggestionCount > 0 ? `${safeSuggestionIdx + 1} / ${suggestionCount}` : "0 / 0"}
-                </span>
-              </div>
-              {suggestionCount === 0 ? (
-                <div className="m-3 rounded-md border border-dashed border-border bg-background/40 px-3 py-6 text-center text-xs text-muted-foreground">
-                  All suggestions dismissed — use{" "}
-                  <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">Ctrl+Enter</kbd>{" "}
-                  to add as new.
-                </div>
-              ) : (
-                <div className="ooc-scroll flex flex-1 flex-col gap-2 overflow-y-auto p-2">
-                  {suggestions.map((s, i) => {
-                    const active = i === safeSuggestionIdx;
-                    const label = `${s.item.manufacturer} ${s.item.model}`;
-                    return (
-                      <div
-                        key={s.item.id}
-                        className={`relative shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
-                          active
-                            ? "border-transparent ring-2 ring-[#3BB6E9]"
-                            : "border-border opacity-80 hover:opacity-100"
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSuggestionIndex(i)}
-                          className="block w-full text-left"
+            {suggestionCount === 0 ? (
+              <NoSuggestionsEmpty
+                onAddAsNew={addAsNew}
+                onUnrecognize={markUnrecognized}
+                onSearch={searchCatalog}
+              />
+            ) : (
+              <>
+                <ImagePanel
+                  label="Catalog reference"
+                  src={selected?.item.referenceImageUrl}
+                  empty="No suggestion"
+                />
+                {/* Vertical suggestion rail */}
+                <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+                  <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
+                      AI suggested matches
+                    </span>
+
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
+                    </span>
+                  </div>
+                  <div className="ooc-scroll flex flex-1 flex-col gap-2 overflow-y-auto p-2">
+                    {suggestions.map((s, i) => {
+                      const active = i === safeSuggestionIdx;
+                      const label = `${s.item.manufacturer} ${s.item.model}`;
+                      return (
+                        <div
+                          key={s.item.id}
+                          className={`relative shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
+                            active
+                              ? "border-transparent ring-2 ring-[#3BB6E9]"
+                              : "border-border opacity-80 hover:opacity-100"
+                          }`}
                         >
-                          <div className="h-[88px] w-full overflow-hidden bg-black/30">
-                            <img
-                              src={s.item.referenceImageUrl}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1 px-2.5 py-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <span
-                                className="font-mono text-[10px] text-muted-foreground"
-                                title={s.item.id}
+                          <button
+                            type="button"
+                            onClick={() => setSuggestionIndex(i)}
+                            className="block w-full text-left"
+                          >
+                            <div className="h-[88px] w-full overflow-hidden bg-black/30">
+                              <img
+                                src={s.item.referenceImageUrl}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div className="flex flex-col gap-1 px-2.5 py-2">
+                              <div className="flex items-center justify-between gap-2">
+                                <span
+                                  className="font-mono text-[10px] text-muted-foreground"
+                                  title={s.item.id}
+                                >
+                                  #{s.item.id}
+                                </span>
+                                <MatchScoreBadge score={s.score} />
+                              </div>
+                              <div
+                                className="truncate text-xs font-medium text-foreground"
+                                title={label}
                               >
-                                #{s.item.id}
-                              </span>
-                              <MatchScoreBadge score={s.score} />
+                                {label}
+                              </div>
                             </div>
-                            <div
-                              className="truncate text-xs font-medium text-foreground"
-                              title={label}
-                            >
-                              {label}
-                            </div>
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => dismissSuggestion(s.item.id)}
-                          aria-label="Dismiss suggestion"
-                          title="Dismiss"
-                          className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/50 text-[color:var(--color-danger,#d97a72)] backdrop-blur transition hover:bg-black/70"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    );
-                  })}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => dismissSuggestion(s.item.id)}
+                            aria-label="Dismiss suggestion"
+                            title="Dismiss"
+                            className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/50 text-[color:var(--color-danger,#d97a72)] backdrop-blur transition hover:bg-black/70"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </section>
+
 
           {/* Capture strip */}
           <div className="shrink-0 border-t border-border px-6 pt-3">
