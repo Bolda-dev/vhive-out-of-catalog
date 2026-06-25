@@ -224,7 +224,7 @@ function ReviewSessionPage() {
 
             {/* Rail (left) + Hero */}
             <div className="grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3">
-              <div className="custom-scrollbar flex w-[112px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto py-1">
+              <div className="custom-scrollbar flex w-[112px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto px-1 py-1">
                 {current.captures.map((cap, i) => {
                   const selected = i === captureIndex;
                   return (
@@ -232,22 +232,24 @@ function ReviewSessionPage() {
                       key={cap.id}
                       type="button"
                       onClick={() => setCaptureIndex(i)}
-                      className={`group relative h-24 w-24 shrink-0 overflow-hidden rounded-md transition ${
+                      className={`group relative h-24 w-24 shrink-0 rounded-md transition ${
                         selected
-                          ? "opacity-100 ring-2 ring-inset ring-brand"
-                          : "opacity-75 ring-1 ring-inset ring-border hover:opacity-100 hover:ring-white/40"
+                          ? "opacity-100 ring-2 ring-offset-2 ring-offset-[#1E1E1E] ring-[#3BB6E9]"
+                          : "opacity-75 hover:opacity-100"
                       }`}
                     >
-                      <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                      {(cap.imageCount ?? 1) > 1 && (
-                        <span
-                          className="absolute right-1 top-1 inline-flex items-center gap-0.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium leading-none text-white backdrop-blur-sm"
-                          title={`${cap.imageCount} images in this capture`}
-                        >
-                          <Images className="h-3 w-3" />
-                          {cap.imageCount}
-                        </span>
-                      )}
+                      <div className="relative h-full w-full overflow-hidden rounded-md">
+                        <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                        {(cap.imageCount ?? 1) > 1 && (
+                          <span
+                            className="absolute right-1 top-1 inline-flex items-center gap-0.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium leading-none text-white backdrop-blur-sm"
+                            title={`${cap.imageCount} images in this capture`}
+                          >
+                            <Images className="h-3 w-3" />
+                            {cap.imageCount}
+                          </span>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
