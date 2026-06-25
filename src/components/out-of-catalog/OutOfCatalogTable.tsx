@@ -211,7 +211,9 @@ export function OutOfCatalogTable({
       case "status":
         return <StatusCell status={row.status} />;
       case "equipmentType":
-        return <span className="text-foreground">{row.equipmentType}</span>;
+        return <EquipmentTypeCell row={row} />;
+      case "confidence":
+        return <ConfidenceCell value={row.confidence} />;
       case "manufacturer":
         return <span className="text-foreground">{row.manufacturer}</span>;
       case "model":
@@ -248,6 +250,7 @@ export function OutOfCatalogTable({
               { value: "", label: "Select.." },
               { value: "Pending", label: "Pending" },
               { value: "Unrecognized", label: "Unrecognized" },
+              { value: "Mixed", label: "Mixed" },
             ]}
           />
         );
