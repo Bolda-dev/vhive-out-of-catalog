@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   CheckCircle2 as CheckCircleIcon,
+  ChevronLeft,
+  ChevronRight,
   Crop,
   HelpCircle,
   Plus,
@@ -725,7 +727,7 @@ function ShortcutGroup({
   items: Array<{ keys: React.ReactNode; action: string }>;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex shrink-0 items-center gap-2">
       <span className="text-xs text-muted-foreground/70">{label}</span>
       <div className="flex items-center gap-3">
         {items.map((it, i) => (
@@ -787,7 +789,7 @@ function ShortcutBar({
           Bind
         </button>
       </div>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-border/50 pt-2">
+      <ShortcutsScroller>
         <ShortcutGroup
           label="Image"
           items={[
@@ -804,7 +806,7 @@ function ShortcutBar({
             },
           ]}
         />
-        <span className="h-4 w-px bg-white/10" />
+        <span className="h-4 w-px shrink-0 bg-white/10" />
         <ShortcutGroup
           label="Suggestion"
           items={[
@@ -829,7 +831,7 @@ function ShortcutBar({
             },
           ]}
         />
-        <span className="h-4 w-px bg-white/10" />
+        <span className="h-4 w-px shrink-0 bg-white/10" />
         <ShortcutGroup
           label="Global"
           items={[
@@ -855,7 +857,75 @@ function ShortcutBar({
             { keys: <Kbd>U</Kbd>, action: "Unrecognize" },
           ]}
         />
+      </ShortcutsScroller>
+    </div>
+  );
+}
+
+function ShortcutsScroller({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const update = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 1);
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    update();
+    const el = ref.current;
+    if (!el) return;
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [update]);
+
+  const scrollBy = (dx: number) => {
+    ref.current?.scrollBy({ left: dx, behavior: "smooth" });
+  };
+
+  const showArrows = canLeft || canRight;
+
+  return (
+    <div className="relative flex items-center border-t border-border/50 pt-2">
+      {showArrows && (
+        <button
+          type="button"
+          onClick={() => scrollBy(-200)}
+          disabled={!canLeft}
+          aria-label="Scroll shortcuts left"
+          className="z-10 mr-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground/70 transition hover:bg-white/5 disabled:opacity-30"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      )}
+      <div
+        ref={ref}
+        className="flex flex-1 items-center gap-x-5 overflow-x-auto whitespace-nowrap scrollbar-none"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {children}
       </div>
+      {showArrows && (
+        <button
+          type="button"
+          onClick={() => scrollBy(200)}
+          disabled={!canRight}
+          aria-label="Scroll shortcuts right"
+          className="z-10 ml-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground/70 transition hover:bg-white/5 disabled:opacity-30"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
