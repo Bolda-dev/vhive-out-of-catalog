@@ -163,6 +163,13 @@ function ReviewSessionPage() {
         <div className="flex min-h-0 flex-1 flex-col">
           {/* ===== TOP (case) ===== */}
           <section className="flex min-h-0 flex-[3] flex-col gap-3 border-b border-border px-6 pt-4 pb-3">
+            {banner && (
+              <BindBanner
+                banner={banner}
+                onDismiss={() => setBanner(null)}
+                onSimulateError={simulateBindError}
+              />
+            )}
             {/* Header bar */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex flex-wrap items-center gap-1.5">
