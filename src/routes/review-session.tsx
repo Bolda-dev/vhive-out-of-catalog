@@ -1333,10 +1333,10 @@ function NoSuggestionsEmpty({
         </p>
       </div>
 
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <EmptyAction
           onClick={onAddAsNew}
-          icon={<AddNewBindIcon className="h-5 w-5" />}
+          icon={<AddNewBindIcon className="h-6 w-6" />}
           title="Add as new equipment"
           subtitle="Create a fresh catalog entry"
           shortcut={
@@ -1349,14 +1349,14 @@ function NoSuggestionsEmpty({
         />
         <EmptyAction
           onClick={onSearch}
-          icon={<Search className="h-5 w-5" style={{ color: "#3BB6E9" }} />}
+          icon={<Search className="h-6 w-6" style={{ color: "#3BB6E9" }} />}
           title="Search the catalog"
           subtitle="Find a match manually"
           shortcut={<Kbd>F</Kbd>}
         />
         <EmptyAction
           onClick={onUnrecognize}
-          icon={<MarkUnrecognizedIcon className="h-5 w-5" />}
+          icon={<MarkUnrecognizedIcon className="h-6 w-6" />}
           title="Mark as unrecognized"
           subtitle="Send for human review"
           shortcut={<Kbd>U</Kbd>}
