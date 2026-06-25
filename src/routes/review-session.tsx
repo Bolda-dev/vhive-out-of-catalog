@@ -89,8 +89,8 @@ function ReviewSessionPage() {
       .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
   }, [current, dismissed]);
   const suggestionCount = suggestions.length;
-  const pastEnd = suggestionIndex >= suggestionCount;
-  const selected = !pastEnd ? suggestions[suggestionIndex] : null;
+  const safeIndex = suggestionCount > 0 ? Math.min(suggestionIndex, suggestionCount - 1) : 0;
+  const selected = suggestionCount > 0 ? suggestions[safeIndex] : null;
   const suggestion = selected?.item ?? null;
 
   const goNext = useCallback(() => {
