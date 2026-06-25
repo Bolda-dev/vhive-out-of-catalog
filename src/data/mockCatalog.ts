@@ -31,7 +31,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 7.5,
     powerW: 715,
     thermalBtu: 2440,
-    referenceImageUrl: img("cisco-9300"),
+    /* refImg */
   },
   {
     id: "cat-002",
@@ -46,7 +46,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 10.2,
     powerW: 550,
     thermalBtu: 1876,
-    referenceImageUrl: img("juniper-mx204"),
+    /* refImg */
   },
   {
     id: "cat-003",
@@ -61,7 +61,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 28.6,
     powerW: 1100,
     thermalBtu: 3752,
-    referenceImageUrl: img("dell-r750"),
+    /* refImg */
   },
   {
     id: "cat-004",
@@ -76,7 +76,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 27.4,
     powerW: 1000,
     thermalBtu: 3412,
-    referenceImageUrl: img("hpe-dl380"),
+    /* refImg */
   },
   {
     id: "cat-005",
@@ -91,7 +91,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 6.8,
     powerW: 0,
     thermalBtu: 0,
-    referenceImageUrl: img("apc-ap8959"),
+    /* refImg */
   },
   {
     id: "cat-006",
@@ -106,7 +106,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 1.1,
     powerW: 0,
     thermalBtu: 0,
-    referenceImageUrl: img("panduit-dp24"),
+    /* refImg */
   },
   {
     id: "cat-007",
@@ -121,7 +121,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 13.6,
     powerW: 750,
     thermalBtu: 2560,
-    referenceImageUrl: img("palo-pa3260"),
+    /* refImg */
   },
   {
     id: "cat-008",
@@ -136,7 +136,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 40.1,
     powerW: 1450,
     thermalBtu: 4948,
-    referenceImageUrl: img("netapp-a400"),
+    /* refImg */
   },
   {
     id: "cat-009",
@@ -151,7 +151,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 0.9,
     powerW: 15,
     thermalBtu: 51,
-    referenceImageUrl: img("raritan-kx4"),
+    /* refImg */
   },
   {
     id: "cat-010",
@@ -166,6 +166,6 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 65.0,
     powerW: 5400,
     thermalBtu: 1500,
-    referenceImageUrl: img("eaton-9px"),
+    /* refImg */
   },
 ];
