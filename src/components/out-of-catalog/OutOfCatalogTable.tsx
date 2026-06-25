@@ -79,20 +79,8 @@ function ConfidenceCell({ value }: { value: number }) {
 }
 
 function EquipmentTypeCell({ row }: { row: OocRow }) {
-  const thumb = row.captures[0]?.imageUrl;
-  return (
-    <div className="flex items-center gap-2.5">
-      {thumb ? (
-        <img
-          src={thumb}
-          alt=""
-          className="h-8 w-8 shrink-0 rounded object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <div className="h-8 w-8 shrink-0 rounded bg-white/[0.06]" />
-      )}
-      <span className="text-foreground">{row.equipmentType}</span>
+  return <span className="text-foreground">{row.equipmentType}</span>;
+}
     </div>
   );
 }
