@@ -363,33 +363,8 @@ function ReviewSessionPage() {
 
 
                 {suggestion && selected ? (
-                  <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] gap-4">
-                    {/* Large reference image of selected suggestion */}
-                    <div className="flex min-h-0 flex-col gap-2">
-                      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
-                        <img
-                          key={suggestion.id}
-                          src={suggestion.referenceImageUrl}
-                          alt=""
-                          className="max-h-full max-w-full object-contain p-2"
-                        />
-                        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[10px] font-medium text-background">
-                          {selected.score}% match
-                        </span>
-                      </div>
-                      <div className="text-sm font-medium text-foreground">
-                        {suggestion.manufacturer} · {suggestion.model}
-                      </div>
-                      <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
-                        {suggestion.category} / {suggestion.classification} · {suggestion.heightU}U
-                      </div>
-                      <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                        {stableBoundCount(suggestion.id)} bound
-                      </div>
-                    </div>
-
-                    {/* Candidate cards */}
+                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_280px] gap-4">
+                    {/* Candidate cards (left, primary) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
                       {suggestions.map((s, i) => {
                         const active = i === suggestionIndex;
@@ -431,6 +406,31 @@ function ReviewSessionPage() {
                           </button>
                         );
                       })}
+                    </div>
+
+                    {/* Selected reference (right, landscape) */}
+                    <div className="flex min-h-0 flex-col gap-2">
+                      <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
+                        <img
+                          key={suggestion.id}
+                          src={suggestion.referenceImageUrl}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[10px] font-medium text-background">
+                          {selected.score}% match
+                        </span>
+                      </div>
+                      <div className="text-sm font-medium text-foreground">
+                        {suggestion.manufacturer} · {suggestion.model}
+                      </div>
+                      <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+                        {suggestion.category} / {suggestion.classification} · {suggestion.heightU}U
+                      </div>
+                      <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
+                        <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                        {stableBoundCount(suggestion.id)} bound
+                      </div>
                     </div>
                   </div>
                 ) : (
