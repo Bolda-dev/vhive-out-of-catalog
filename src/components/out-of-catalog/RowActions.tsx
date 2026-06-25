@@ -1,6 +1,6 @@
 import type { OocRow } from "@/data/outOfCatalogTypes";
 
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 const BTN =
   "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border-0 bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40";
