@@ -1333,10 +1333,10 @@ function NoSuggestionsEmpty({
         </p>
       </div>
 
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <EmptyAction
           onClick={onAddAsNew}
-          icon={<AddNewBindIcon className="h-5 w-5" />}
+          icon={<AddNewBindIcon className="h-6 w-6" />}
           title="Add as new equipment"
           subtitle="Create a fresh catalog entry"
           shortcut={
@@ -1349,14 +1349,14 @@ function NoSuggestionsEmpty({
         />
         <EmptyAction
           onClick={onSearch}
-          icon={<Search className="h-5 w-5" style={{ color: "#3BB6E9" }} />}
+          icon={<Search className="h-6 w-6" style={{ color: "#3BB6E9" }} />}
           title="Search the catalog"
           subtitle="Find a match manually"
           shortcut={<Kbd>F</Kbd>}
         />
         <EmptyAction
           onClick={onUnrecognize}
-          icon={<MarkUnrecognizedIcon className="h-5 w-5" />}
+          icon={<MarkUnrecognizedIcon className="h-6 w-6" />}
           title="Mark as unrecognized"
           subtitle="Send for human review"
           shortcut={<Kbd>U</Kbd>}
@@ -1397,20 +1397,20 @@ function EmptyAction({
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-3 rounded-lg border bg-background/40 px-3 py-2.5 text-left transition hover:bg-background/70"
+      className="group relative flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-lg border bg-background/40 p-3 text-center transition hover:bg-background/70"
       style={{
         borderColor: primary ? "#3BB6E9" : "rgba(255,255,255,0.12)",
         boxShadow: primary ? "0 0 0 1px rgba(59,182,233,0.25)" : undefined,
       }}
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white/[0.04]">
+      <div className="absolute right-2 top-2 flex items-center gap-1">{shortcut}</div>
+      <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white/[0.04]">
         {icon}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-col items-center">
         <div className="truncate text-sm font-medium text-foreground">{title}</div>
         <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
       </div>
-      <div className="flex shrink-0 items-center gap-1">{shortcut}</div>
     </button>
   );
 }
