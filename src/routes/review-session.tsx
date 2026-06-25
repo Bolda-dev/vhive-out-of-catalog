@@ -598,10 +598,10 @@ function ImagePanel({
   return (
     <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
+        <span className="text-xs text-muted-foreground">{label}</span>
         {status && (
           <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
             style={
               status === "approved"
                 ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
