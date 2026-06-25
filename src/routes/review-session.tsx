@@ -366,7 +366,7 @@ function ReviewSessionPage() {
               {/* Captured images rail (inside same card) */}
               <div className="shrink-0 border-t border-border/60 px-3 pt-2 pb-2">
                 <div className="pb-1.5 text-xs text-muted-foreground">Captured images</div>
-                <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
+                <div className="custom-scrollbar flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
                   {captures.map((cap, i) => {
                     const status = statusFor(cap.id);
                     const active = i === safeCaptureIdx;
@@ -465,7 +465,7 @@ function ReviewSessionPage() {
                       {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
                     </span>
                   </div>
-                  <div className="ooc-scroll flex flex-1 flex-col gap-2 overflow-y-auto p-2">
+                  <div className="custom-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto p-2">
                     {suggestions.map((s, i) => {
                       const active = i === safeSuggestionIdx;
                       const label = `${s.item.manufacturer} ${s.item.model}`;
