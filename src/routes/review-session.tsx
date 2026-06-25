@@ -357,7 +357,7 @@ function ReviewSessionPage() {
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="flex min-w-0 max-w-full items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5">
                   <Sparkles className="h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
-                  <span className="shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                  <span className="shrink-0 text-xs text-muted-foreground">
                     AI suggestion
                   </span>
                   <span
@@ -389,12 +389,10 @@ function ReviewSessionPage() {
             className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
             style={{ gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr) 280px" }}
           >
-            <ImagePanel
-              label="Captured image"
+            <CaptureImagePanel
               src={currentCapture?.imageUrl}
-              empty="No capture"
               status={currentCapture ? statusFor(currentCapture.id) : "pending"}
-              metaTopLeft={
+              metaBottomLeft={
                 currentCapture
                   ? `${currentCapture.capturedAt} · ${currentCapture.location}`
                   : undefined
@@ -402,6 +400,7 @@ function ReviewSessionPage() {
               onApprove={() => setStatus("approved")}
               onReject={() => setStatus("rejected")}
               canAct={!!currentCapture && !!selected}
+              captureKey={currentCapture?.id ?? ""}
             />
             <ImagePanel
               label="Catalog reference"
