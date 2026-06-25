@@ -317,7 +317,7 @@ function ReviewSessionPage() {
                 )}
               </div>
 
-              <div className="custom-scrollbar flex w-[112px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto px-1 py-1">
+              <div className="custom-scrollbar flex w-[128px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto pl-1 pr-3 py-1">
                 {current.captures.map((cap, i) => {
                   const selected = i === captureIndex;
                   return (
