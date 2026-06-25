@@ -1,7 +1,6 @@
 import type { OocRow } from "@/data/outOfCatalogTypes";
 
 import { toast } from "sonner";
-import { ChevronDown } from "lucide-react";
 
 const BTN =
   "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border-0 bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40";
@@ -63,13 +62,7 @@ export function RowActions({ row }: { row: OocRow }) {
         <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
         Mark as Unrecognized
       </button>
-      <button
-        type="button"
-        aria-label="More"
-        className="flex h-8 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
-      >
-        <ChevronDown className="h-4 w-4" />
-      </button>
     </div>
   );
 }
+
