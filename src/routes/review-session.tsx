@@ -493,7 +493,7 @@ function ReviewSessionPage() {
                 {captureCount > 0 ? `${safeCaptureIdx + 1} / ${captureCount}` : "0 / 0"}
               </div>
             </div>
-            <div className="ooc-scroll flex gap-2 overflow-x-auto pb-2">
+            <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
               {captures.map((cap, i) => {
                 const status = statusFor(cap.id);
                 const active = i === safeCaptureIdx;
@@ -502,29 +502,60 @@ function ReviewSessionPage() {
                     key={cap.id}
                     type="button"
                     onClick={() => setCaptureIndex(i)}
-                    className={`group relative h-[72px] w-[108px] shrink-0 overflow-hidden rounded-md border transition ${
+                    className={`group relative h-[72px] w-[108px] shrink-0 overflow-hidden rounded-md border border-border transition ${
                       active
-                        ? "border-transparent ring-2 ring-[#3BB6E9]"
-                        : "border-border opacity-75 hover:opacity-100"
+                        ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-background"
+                        : "opacity-75 hover:opacity-100"
                     }`}
                   >
                     <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                    <span
-                      className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
-                      style={
-                        status === "approved"
-                          ? { background: "#3BB6E9", color: "#0b1418" }
-                          : status === "rejected"
-                            ? { background: "#d97a72", color: "#1a0e0d" }
-                            : { background: "rgba(0,0,0,0.55)", color: "rgba(255,255,255,0.7)" }
-                      }
-                    >
-                      {status === "approved" ? "✓" : status === "rejected" ? "✗" : "•"}
-                    </span>
+
+                    {/* Approved: strong green overlay + big check */}
+                    {status === "approved" && (
+                      <>
+                        <div
+                          className="pointer-events-none absolute inset-0"
+                          style={{ background: "rgba(143,211,168,0.55)" }}
+                        />
+                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                          <Check
+                            className="h-9 w-9"
+                            strokeWidth={4}
+                            style={{ color: "#0F2A1C", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.4))" }}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* Rejected: red overlay */}
+                    {status === "rejected" && (
+                      <>
+                        <div
+                          className="pointer-events-none absolute inset-0"
+                          style={{ background: "rgba(217,122,114,0.45)" }}
+                        />
+                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                          <X
+                            className="h-8 w-8"
+                            strokeWidth={4}
+                            style={{ color: "#2a0e0d", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.4))" }}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* Pending dot indicator */}
+                    {status === "pending" && (
+                      <span
+                        className="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full"
+                        style={{ background: "rgba(255,255,255,0.55)" }}
+                      />
+                    )}
                   </button>
                 );
               })}
             </div>
+
           </div>
 
 
