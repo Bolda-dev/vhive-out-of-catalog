@@ -8,6 +8,8 @@ import {
   Calendar,
   Check,
   Flag,
+  Images,
+
   MapPin,
   Plus,
   Search,
