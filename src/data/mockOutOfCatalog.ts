@@ -1,69 +1,290 @@
-import type { OocRow } from "./outOfCatalogTypes";
+import type { OocRow, OocCapture, OocStatus } from "./outOfCatalogTypes";
 
-// Seed roughly mirrors the Figma reference screenshot, then we fan out
-// to ~200 rows by varying detected times and rack-unit slots.
+const img = (seed: string) => `https://picsum.photos/seed/${seed}/400/300`;
 
-const EQUIPMENT = [
-  { type: "Zebra", manufacturer: "Invalid", model: "Bla" },
-  { type: "Cheeta", manufacturer: "LMK", model: "NY12" },
-  { type: "Edge Router", manufacturer: "Invalid", model: "Bla" },
-  { type: "Battery", manufacturer: "Ericson", model: "6630" },
-  { type: "Macro Cell Antenna", manufacturer: "Huawei", model: "AAU5613" },
-  { type: "Mounted Amplifier", manufacturer: "CommScope", model: "TMA-2000" },
-  { type: "Shelter", manufacturer: "American Tower", model: "ATC FlexiShelter" },
-  { type: "RRU", manufacturer: "Nokia", model: "AirScale" },
-  { type: "Tower Light", manufacturer: "Flash Technology", model: "FTS 370x" },
-  { type: "Cable Tray", manufacturer: "Andrew", model: "CT-19" },
+function makeCaptures(rowSeed: string, count: number, baseLocation: string, surveyBase: string): OocCapture[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${rowSeed}-cap-${i + 1}`,
+    imageUrl: img(`${rowSeed}-${i + 1}`),
+    surveyId: `${surveyBase}-${String(i + 1).padStart(3, "0")}`,
+    capturedAt: `0${(i % 9) + 1}-06-2026 1${i % 6}:2${i % 6}:1${i % 6}`,
+    location: `${baseLocation} / Rack ${String.fromCharCode(65 + (i % 6))}${10 + i}`,
+    aiDescription: [
+      "Rack-mount 1U device with multiple ethernet ports and status LEDs",
+      "2U server chassis, dual PSU, front bezel removed",
+      "Vertical PDU with C13/C19 outlets along the right rail",
+      "1U patch panel populated with blue cat6 patch cords",
+      "Edge router with QSFP cages visible, blue mgmt port on left",
+    ][i % 5],
+  }));
+}
+
+interface Seed {
+  id: string;
+  detectedOn: string;
+  status: OocStatus;
+  equipmentType: string;
+  manufacturer: string;
+  model: string;
+  rackUnits?: string;
+  account: string;
+  hasLink: boolean;
+  captureCount: number;
+  location: string;
+  surveyBase: string;
+  confidence: number;
+  aiType: string;
+  aiManufacturer: string;
+  aiModel: string;
+  aiSuggestionId?: string;
+}
+
+const seeds: Seed[] = [
+  {
+    id: "ooc-001",
+    detectedOn: "12-06-2026 09:14:22",
+    status: "Pending",
+    equipmentType: "Switch",
+    manufacturer: "Cisco",
+    model: "Catalyst 9300-48P",
+    rackUnits: "12",
+    account: "Verizon",
+    hasLink: false,
+    captureCount: 3,
+    location: "DC-East / Hall 2",
+    surveyBase: "SVY-2026-06-A",
+    confidence: 92,
+    aiType: "Switch",
+    aiManufacturer: "Cisco",
+    aiModel: "Catalyst 9300-48P",
+    aiSuggestionId: "cat-001",
+  },
+  {
+    id: "ooc-002",
+    detectedOn: "12-06-2026 10:02:51",
+    status: "Pending",
+    equipmentType: "Router",
+    manufacturer: "Juniper",
+    model: "MX204",
+    rackUnits: "9-10",
+    account: "Indara",
+    hasLink: false,
+    captureCount: 2,
+    location: "DC-West / Hall 1",
+    surveyBase: "SVY-2026-06-B",
+    confidence: 87,
+    aiType: "Router",
+    aiManufacturer: "Juniper",
+    aiModel: "MX204",
+    aiSuggestionId: "cat-002",
+  },
+  {
+    id: "ooc-003",
+    detectedOn: "13-06-2026 08:41:11",
+    status: "Mixed",
+    equipmentType: "Server",
+    manufacturer: "Multiple",
+    model: "Multiple",
+    rackUnits: "20-23",
+    account: "Multiple",
+    hasLink: false,
+    captureCount: 5,
+    location: "DC-East / Hall 4",
+    surveyBase: "SVY-2026-06-C",
+    confidence: 64,
+    aiType: "Server",
+    aiManufacturer: "Dell",
+    aiModel: "PowerEdge R750",
+    aiSuggestionId: "cat-003",
+  },
+  {
+    id: "ooc-004",
+    detectedOn: "13-06-2026 11:30:08",
+    status: "Pending",
+    equipmentType: "PDU",
+    manufacturer: "APC",
+    model: "AP8959",
+    rackUnits: "0",
+    account: "PTI",
+    hasLink: false,
+    captureCount: 1,
+    location: "DC-North / Hall 3",
+    surveyBase: "SVY-2026-06-D",
+    confidence: 78,
+    aiType: "PDU",
+    aiManufacturer: "APC",
+    aiModel: "AP8959",
+    aiSuggestionId: "cat-005",
+  },
+  {
+    id: "ooc-005",
+    detectedOn: "14-06-2026 07:55:33",
+    status: "Unrecognized",
+    equipmentType: "Unknown",
+    manufacturer: "Unknown",
+    model: "Unknown",
+    rackUnits: "6",
+    account: "Verizon",
+    hasLink: false,
+    captureCount: 2,
+    location: "DC-East / Hall 1",
+    surveyBase: "SVY-2026-06-E",
+    confidence: 23,
+    aiType: "Invalid",
+    aiManufacturer: "Invalid",
+    aiModel: "",
+  },
+  {
+    id: "ooc-006",
+    detectedOn: "14-06-2026 09:12:47",
+    status: "Pending",
+    equipmentType: "Patch Panel",
+    manufacturer: "Panduit",
+    model: "DP24688TGY",
+    rackUnits: "1",
+    account: "Indara",
+    hasLink: false,
+    captureCount: 1,
+    location: "DC-West / Hall 2",
+    surveyBase: "SVY-2026-06-F",
+    confidence: 95,
+    aiType: "Patch Panel",
+    aiManufacturer: "Panduit",
+    aiModel: "DP24688TGY",
+    aiSuggestionId: "cat-006",
+  },
+  {
+    id: "ooc-007",
+    detectedOn: "15-06-2026 14:08:19",
+    status: "Pending",
+    equipmentType: "Firewall",
+    manufacturer: "Palo Alto",
+    model: "PA-3260",
+    rackUnits: "14-15",
+    account: "PTI",
+    hasLink: true,
+    captureCount: 2,
+    location: "DC-North / Hall 1",
+    surveyBase: "SVY-2026-06-G",
+    confidence: 81,
+    aiType: "Firewall",
+    aiManufacturer: "Palo Alto",
+    aiModel: "PA-3260",
+    aiSuggestionId: "cat-007",
+  },
+  {
+    id: "ooc-008",
+    detectedOn: "15-06-2026 16:44:02",
+    status: "Mixed",
+    equipmentType: "Storage Array",
+    manufacturer: "NetApp",
+    model: "AFF A400",
+    rackUnits: "24-27",
+    account: "Verizon",
+    hasLink: false,
+    captureCount: 4,
+    location: "DC-East / Hall 5",
+    surveyBase: "SVY-2026-06-H",
+    confidence: 58,
+    aiType: "Storage Array",
+    aiManufacturer: "NetApp",
+    aiModel: "AFF A400",
+    aiSuggestionId: "cat-008",
+  },
+  {
+    id: "ooc-009",
+    detectedOn: "16-06-2026 08:21:55",
+    status: "Unrecognized",
+    equipmentType: "Unknown",
+    manufacturer: "Unknown",
+    model: "Unknown",
+    rackUnits: "3",
+    account: "Indara",
+    hasLink: false,
+    captureCount: 3,
+    location: "DC-West / Hall 3",
+    surveyBase: "SVY-2026-06-I",
+    confidence: 41,
+    aiType: "",
+    aiManufacturer: "",
+    aiModel: "",
+  },
+  {
+    id: "ooc-010",
+    detectedOn: "16-06-2026 12:36:40",
+    status: "Pending",
+    equipmentType: "KVM Switch",
+    manufacturer: "Raritan",
+    model: "Dominion KX IV-101",
+    rackUnits: "2",
+    account: "PTI",
+    hasLink: false,
+    captureCount: 1,
+    location: "DC-North / Hall 2",
+    surveyBase: "SVY-2026-06-J",
+    confidence: 73,
+    aiType: "KVM Switch",
+    aiManufacturer: "Raritan",
+    aiModel: "Dominion KX IV-101",
+    aiSuggestionId: "cat-009",
+  },
+  {
+    id: "ooc-011",
+    detectedOn: "17-06-2026 10:18:12",
+    status: "Pending",
+    equipmentType: "UPS",
+    manufacturer: "Eaton",
+    model: "9PX 6000i",
+    rackUnits: "28-30",
+    account: "Verizon",
+    hasLink: false,
+    captureCount: 2,
+    location: "DC-East / Hall 2",
+    surveyBase: "SVY-2026-06-K",
+    confidence: 89,
+    aiType: "UPS",
+    aiManufacturer: "Eaton",
+    aiModel: "9PX 6000i",
+    aiSuggestionId: "cat-010",
+  },
+  {
+    id: "ooc-012",
+    detectedOn: "17-06-2026 15:49:27",
+    status: "Unrecognized",
+    equipmentType: "Unknown",
+    manufacturer: "Unknown",
+    model: "Unknown",
+    rackUnits: "8",
+    account: "Multiple",
+    hasLink: false,
+    captureCount: 5,
+    location: "DC-West / Hall 4",
+    surveyBase: "SVY-2026-06-L",
+    confidence: 36,
+    aiType: "Invalid",
+    aiManufacturer: "",
+    aiModel: "Invalid",
+  },
 ];
 
-const ACCOUNTS = ["Verizon", "Indara", "PTI", "Multiple", "AT&T", "T-Mobile"];
-
-const RACK_SLOTS = [undefined, "1-5", "2-4", "2-6", "6-10", "9-11", "16-18", "18-20"];
-
-function pad(n: number, w = 2) {
-  return String(n).padStart(w, "0");
-}
-
-function fmt(d: Date) {
-  return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(
-    d.getHours(),
-  )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-
-function makeRows(): OocRow[] {
-  const rows: OocRow[] = [];
-  const seedDates = [
-    new Date(2024, 5, 21, 23, 41, 2),
-    new Date(2024, 1, 3, 8, 15, 43),
-    new Date(2024, 2, 17, 19, 22, 9),
-    new Date(2024, 3, 29, 0, 58, 31),
-    new Date(2024, 2, 14, 22, 23, 54),
-  ];
-
-  for (let i = 0; i < 200; i++) {
-    const eq = EQUIPMENT[i % EQUIPMENT.length];
-    const account = ACCOUNTS[i % ACCOUNTS.length];
-    const date = seedDates[i % seedDates.length];
-    // Walk dates slightly so they aren't all identical
-    const d = new Date(date.getTime() - i * 1000 * 60 * 37);
-    const hasLink = i % 4 === 2;            // every 4th-ish row only has the link
-    const isUnrecognized = i % 11 === 0;    // sprinkle "Unrecognized" rows
-    const rackUnits = hasLink ? RACK_SLOTS[(i % (RACK_SLOTS.length - 1)) + 1] : RACK_SLOTS[i % RACK_SLOTS.length];
-
-    rows.push({
-      id: `ooc-${i + 1}`,
-      detectedOn: fmt(d),
-      status: isUnrecognized ? "Unrecognized" : "Pending",
-      equipmentType: eq.type,
-      manufacturer: eq.manufacturer,
-      model: eq.model,
-      instances: ((i * 3) % 15) + 1,
-      rackUnits,
-      account,
-      hasLink,
-    });
-  }
-  return rows;
-}
-
-export const mockOutOfCatalog: OocRow[] = makeRows();
+export const mockOutOfCatalog: OocRow[] = seeds.map((s) => {
+  const captures = makeCaptures(s.id, s.captureCount, s.location, s.surveyBase);
+  return {
+    id: s.id,
+    detectedOn: s.detectedOn,
+    status: s.status,
+    equipmentType: s.equipmentType,
+    manufacturer: s.manufacturer,
+    model: s.model,
+    instances: captures.length,
+    rackUnits: s.rackUnits,
+    account: s.account,
+    hasLink: s.hasLink,
+    captures,
+    confidence: s.confidence,
+    aiType: s.aiType,
+    aiManufacturer: s.aiManufacturer,
+    aiModel: s.aiModel,
+    aiSuggestionId: s.aiSuggestionId,
+  };
+});
