@@ -149,7 +149,7 @@ function ReviewSessionPage() {
   const markUnrecognized = useCallback(() => {
     if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
-    toast.message("Marked as Unrecognized");
+    appToast({ title: "Marked as Unrecognized" });
     goNext();
   }, [current, goNext]);
 
