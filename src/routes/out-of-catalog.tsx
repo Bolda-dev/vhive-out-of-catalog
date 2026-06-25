@@ -140,9 +140,10 @@ function OutOfCatalogPage() {
           <button
             type="button"
             onClick={() => toast.success("Auto-Bind run started")}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition-colors hover:bg-row-hover"
+            className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+            style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
           >
-            <Wand2 className="h-4 w-4 text-brand" />
+            <Wand2 className="h-4 w-4" style={{ color: "#E0E0E0" }} />
             Auto-Bind Attempt
           </button>
         </div>
