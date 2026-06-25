@@ -358,7 +358,7 @@ function ReviewSessionPage() {
           <section className="flex flex-[2] min-h-0 flex-col">
             <div className="flex flex-1 min-h-0">
               {/* LEFT: AI Suggested Matches */}
-              <div className="flex min-h-0 flex-col overflow-hidden p-5">
+              <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-5">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     AI Suggested Matches
