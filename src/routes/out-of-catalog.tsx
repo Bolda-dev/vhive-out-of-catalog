@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Play, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { TopBar } from "@/components/out-of-catalog/TopBar";
@@ -12,6 +12,7 @@ import {
   type SortState,
   type ColumnMeta,
 } from "@/components/out-of-catalog/OutOfCatalogTable";
+import { SessionLoader } from "@/components/out-of-catalog/SessionLoader";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { Toaster } from "@/components/ui/sonner";
@@ -66,6 +67,19 @@ function OutOfCatalogPage() {
   const [visibleColumnIds, setVisibleColumnIds] = useState<ColumnMeta["id"][]>(
     DEFAULT_VISIBLE_COLUMN_IDS,
   );
+  const [loaderStep, setLoaderStep] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (loaderStep === null) return;
+    const timers = [
+      setTimeout(() => setLoaderStep(1), 450),
+      setTimeout(() => setLoaderStep(2), 900),
+      setTimeout(() => navigate({ to: "/review-session" }), 1400),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [loaderStep, navigate]);
+
+  const startSession = () => setLoaderStep(0);
 
   const equipmentTypeOptions = useMemo(
     () => Array.from(new Set(rows.map((r) => r.equipmentType))).sort(),
@@ -150,7 +164,7 @@ function OutOfCatalogPage() {
             </button>
             <button
               type="button"
-              onClick={() => navigate({ to: "/review-session" })}
+              onClick={startSession}
               className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
             >
               <Play className="h-4 w-4" />
@@ -185,6 +199,7 @@ function OutOfCatalogPage() {
         />
       </main>
       <Toaster />
+      {loaderStep !== null && <SessionLoader step={loaderStep} />}
     </div>
   );
 }
