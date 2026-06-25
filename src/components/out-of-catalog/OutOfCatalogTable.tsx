@@ -81,9 +81,6 @@ function ConfidenceCell({ value }: { value: number }) {
 function EquipmentTypeCell({ row }: { row: OocRow }) {
   return <span className="text-foreground">{row.equipmentType}</span>;
 }
-    </div>
-  );
-}
 
 export function OutOfCatalogTable({
   rows,
