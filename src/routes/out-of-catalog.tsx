@@ -199,7 +199,7 @@ function OutOfCatalogPage() {
         />
       </main>
       <Toaster />
-      {loaderStep !== null && <SessionLoader step={loaderStep} />
+      {loaderStep !== null && <SessionLoader step={loaderStep} />}
     </div>
   );
 }
