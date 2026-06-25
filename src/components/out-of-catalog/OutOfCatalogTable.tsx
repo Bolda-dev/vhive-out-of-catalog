@@ -68,10 +68,9 @@ interface Filters {
 function StatusCell({ status }: { status: OocStatus }) {
   return (
     <span
-      className={cn(
-        "text-sm",
-        status === "Pending" ? "text-status-pending" : "text-status-unrecognized",
-      )}
+      style={{
+        color: status === "Pending" ? "#FCD34D" : "rgba(255,255,255,0.6)",
+      }}
     >
       {status}
     </span>
@@ -247,7 +246,7 @@ export function OutOfCatalogTable({
   };
 
   return (
-    <div className="custom-scrollbar overflow-auto rounded-lg border border-border bg-surface">
+    <div className="custom-scrollbar overflow-auto">
       <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-20 bg-surface-2">
           <tr>
@@ -266,7 +265,7 @@ export function OutOfCatalogTable({
                   onDrop={(e) => handleHeaderDrop(e, col.id)}
                   style={{ width, minWidth: width }}
                   className={cn(
-                    "group relative cursor-grab select-none border-b border-border px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground active:cursor-grabbing",
+                    "group relative cursor-grab select-none border-b border-border px-4 py-3 text-left text-sm font-medium text-muted-foreground active:cursor-grabbing",
                     isDragging && "opacity-40",
                   )}
                 >
@@ -318,7 +317,7 @@ export function OutOfCatalogTable({
                 </th>
               );
             })}
-            <th className="border-b border-border px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <th className="border-b border-border px-4 py-3 text-right text-sm font-medium text-muted-foreground">
               Actions
             </th>
           </tr>
@@ -341,7 +340,17 @@ export function OutOfCatalogTable({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="transition-colors hover:bg-row-hover">
+            <tr
+              key={row.id}
+              className="transition-colors hover:bg-row-hover"
+              style={{
+                color: "rgba(255, 255, 255, 0.87)",
+                fontFamily: "Roboto, sans-serif",
+                fontSize: "14px",
+                fontWeight: 400,
+                lineHeight: "21px",
+              }}
+            >
               {cols.map((col) => (
                 <td
                   key={col.id}

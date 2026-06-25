@@ -129,8 +129,10 @@ function OutOfCatalogPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopBar activeTab="out-of-catalog" />
-      <main className="w-full px-6 py-6">
-        <section className="rounded-xl border border-border bg-card p-5">
+      <main className="w-full p-6">
+        <section className="rounded-xl border border-border bg-card p-4">
+
+
           {/* Toolbar */}
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
