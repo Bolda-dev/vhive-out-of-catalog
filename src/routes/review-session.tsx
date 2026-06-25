@@ -949,7 +949,7 @@ function CaptureImagePanel({
 
   const confirmCrop = () => {
     setEditing(false);
-    toast.message("Re-running AI search with new crop");
+    appToast({ title: "Re-running AI search with new crop" });
   };
 
   return (
