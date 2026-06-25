@@ -564,7 +564,10 @@ function ReviewSessionPage() {
             allApproved={allApproved}
             canBind={!!selected && allApproved}
             onBind={() => selected && setPendingBindId(selected.item.id)}
+            onUnrecognize={markUnrecognized}
+            onAddAsNew={addAsNew}
           />
+
         </div>
       ) : (
         <EmptyQueue onBack={() => navigate({ to: "/out-of-catalog" })} />
