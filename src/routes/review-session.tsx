@@ -52,6 +52,7 @@ function ReviewSessionPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
@@ -67,9 +68,19 @@ function ReviewSessionPage() {
   const total = queue.length;
   const done = currentIndex >= total;
   const current = !done ? queue[currentIndex] : null;
-  const suggestion = current?.aiSuggestionId
-    ? mockCatalog.find((c) => c.id === current.aiSuggestionId) ?? null
-    : null;
+  const suggestions = useMemo(() => {
+    if (!current?.aiSuggestions) return [];
+    return current.aiSuggestions
+      .map((s) => {
+        const item = mockCatalog.find((c) => c.id === s.catalogId);
+        return item ? { item, score: s.matchScore } : null;
+      })
+      .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
+  }, [current]);
+  const suggestionCount = suggestions.length;
+  const pastEnd = suggestionIndex >= suggestionCount;
+  const selected = !pastEnd ? suggestions[suggestionIndex] : null;
+  const suggestion = selected?.item ?? null;
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
