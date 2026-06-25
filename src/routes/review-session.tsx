@@ -14,7 +14,9 @@ import {
   Plus,
   Search,
   SkipForward,
+  Sparkles,
   X,
+
 } from "lucide-react";
 import { toast } from "sonner";
 import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
@@ -58,6 +60,8 @@ function ReviewSessionPage() {
   const [captureIndex, setCaptureIndex] = useState(0);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
+  const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
+
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
     | { kind: "error"; message: string }
@@ -276,9 +280,30 @@ function ReviewSessionPage() {
                   {current.captures[captureIndex].surveyId}
                 </span>
                 <span className="text-white/30">—</span>
-                <span className="italic">{current.captures[captureIndex].aiDescription}</span>
+                <span
+                  className="group inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-white/[0.06]"
+                  title="AI-generated description from the LLM. Hover and click to edit."
+                >
+                  <Sparkles className="h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
+                  <span
+                    role="textbox"
+                    aria-label="AI description (editable)"
+                    contentEditable
+                    suppressContentEditableWarning
+                    spellCheck={false}
+                    onBlur={(e) => {
+                      const cap = current.captures[captureIndex];
+                      if (!cap) return;
+                      setAiEdits((prev) => ({ ...prev, [cap.id]: e.currentTarget.textContent ?? "" }));
+                    }}
+                    className="italic outline-none cursor-text rounded group-hover:ring-1 group-hover:ring-white/15 focus:ring-1 focus:ring-[#3BB6E9]/60 px-0.5"
+                  >
+                    {aiEdits[current.captures[captureIndex].id] ?? current.captures[captureIndex].aiDescription}
+                  </span>
+                </span>
               </div>
             )}
+
           </section>
 
           {/* ===== BOTTOM (decision) ===== */}
