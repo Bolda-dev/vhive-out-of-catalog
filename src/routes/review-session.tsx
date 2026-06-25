@@ -1,30 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  AlertCircle,
-  ArrowLeft,
-  ArrowRight,
-
-  Calendar,
   Check,
   CheckCircle2 as CheckCircleIcon,
-  Crop,
-  Images,
-
-
-  MapPin,
   Plus,
   Search,
   SkipForward,
   Sparkles,
   X,
-
 } from "lucide-react";
 
 import { toast } from "sonner";
-import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
-
-
 import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
@@ -41,7 +27,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { OocRow } from "@/data/outOfCatalogTypes";
 
-
 export const Route = createFileRoute("/review-session")({
   head: () => ({
     meta: [
@@ -49,7 +34,7 @@ export const Route = createFileRoute("/review-session")({
       {
         name: "description",
         content:
-          "Review pending out-of-catalog detections one by one and bind, skip, or add them.",
+          "Compare captured images against AI-suggested catalog items and bind once all images are approved.",
       },
     ],
   }),
@@ -57,52 +42,30 @@ export const Route = createFileRoute("/review-session")({
 });
 
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
+type ImgStatus = "pending" | "approved" | "rejected";
+// key = `${rowId}|${suggestionCatalogId}|${captureId}`
+type ApprovalMap = Record<string, ImgStatus>;
 
 const pending = mockOutOfCatalog.filter((r) => r.status === "Pending");
 
-function stableBoundCount(id: string) {
-  // deterministic pseudo-counter so mock catalog "N bound" is stable per id
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
-  return (Math.abs(h) % 40) + 2;
-}
-
 function ReviewSessionPage() {
   const navigate = useNavigate();
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
-  const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
   const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
-  const DEFAULT_POLY: Array<{ x: number; y: number }> = [
-    { x: 18, y: 30 },
-    { x: 82, y: 30 },
-    { x: 82, y: 44 },
-    { x: 18, y: 44 },
-  ];
-  const [polygons, setPolygons] = useState<Record<string, Array<{ x: number; y: number }>>>({});
-  const [polyEditing, setPolyEditing] = useState(false);
-  const heroRef = useRef<HTMLDivElement | null>(null);
-  const dragIdxRef = useRef<number | null>(null);
+  const [approvals, setApprovals] = useState<ApprovalMap>({});
   const [pendingBindId, setPendingBindId] = useState<string | null>(null);
 
-
-  const [banner, setBanner] = useState<
-    | { kind: "success"; message: string }
-    | { kind: "error"; message: string }
-    | null
-  >(null);
-
-  const queue = useMemo<OocRow[]>(() => {
-    const sorted = [...pending].sort((a, b) => a.confidence - b.confidence);
-    return sortDir === "asc" ? sorted : sorted.reverse();
-  }, [sortDir]);
-
+  const queue = useMemo<OocRow[]>(
+    () => [...pending].sort((a, b) => a.confidence - b.confidence),
+    [],
+  );
   const total = queue.length;
   const done = currentIndex >= total;
   const current = !done ? queue[currentIndex] : null;
+
   const suggestions = useMemo(() => {
     if (!current?.aiSuggestions) return [];
     const dset = dismissed[current.id] ?? new Set<string>();
@@ -114,67 +77,84 @@ function ReviewSessionPage() {
       })
       .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
   }, [current, dismissed]);
+
   const suggestionCount = suggestions.length;
-  const safeIndex = suggestionCount > 0 ? Math.min(suggestionIndex, suggestionCount - 1) : 0;
-  const selected = suggestionCount > 0 ? suggestions[safeIndex]! : null;
-  const suggestion = selected ? selected.item : null;
+  const safeSuggestionIdx = suggestionCount > 0 ? Math.min(suggestionIndex, suggestionCount - 1) : 0;
+  const selected = suggestionCount > 0 ? suggestions[safeSuggestionIdx]! : null;
+
+  const captures = current?.captures ?? [];
+  const captureCount = captures.length;
+  const safeCaptureIdx = captureCount > 0 ? Math.min(captureIndex, captureCount - 1) : 0;
+  const currentCapture = captures[safeCaptureIdx] ?? null;
+
+  const statusFor = useCallback(
+    (capId: string): ImgStatus => {
+      if (!current || !selected) return "pending";
+      return approvals[`${current.id}|${selected.item.id}|${capId}`] ?? "pending";
+    },
+    [approvals, current, selected],
+  );
+
+  const allApproved = useMemo(() => {
+    if (!current || !selected || captureCount === 0) return false;
+    return captures.every((c) => statusFor(c.id) === "approved");
+  }, [captures, captureCount, current, selected, statusFor]);
+
+  const setStatus = useCallback(
+    (s: ImgStatus) => {
+      if (!current || !selected || !currentCapture) return;
+      const key = `${current.id}|${selected.item.id}|${currentCapture.id}`;
+      setApprovals((prev) => ({ ...prev, [key]: s }));
+      // advance to next pending image if any
+      const nextPendingIdx = (() => {
+        for (let step = 1; step <= captureCount; step++) {
+          const idx = (safeCaptureIdx + step) % captureCount;
+          const cap = captures[idx];
+          if (!cap) continue;
+          const k = `${current.id}|${selected.item.id}|${cap.id}`;
+          const status = idx === safeCaptureIdx ? s : (approvals[k] ?? "pending");
+          if (status === "pending") return idx;
+        }
+        return -1;
+      })();
+      if (nextPendingIdx >= 0) setCaptureIndex(nextPendingIdx);
+    },
+    [approvals, captureCount, captures, current, currentCapture, safeCaptureIdx, selected],
+  );
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
     setSuggestionIndex(0);
-    setBanner(null);
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
-  const goPrev = useCallback(() => {
-    setCaptureIndex(0);
-    setSuggestionIndex(0);
-    setBanner(null);
-    setCurrentIndex((i) => Math.max(i - 1, 0));
-  }, []);
-
-  const record = useCallback(
-    (d: Decision, msg: string) => {
-      if (!current) return;
-      setDecisions((prev) => ({ ...prev, [current.id]: d }));
-      toast.success(msg);
-      goNext();
-    },
-    [current, goNext],
-  );
 
   const confirmBind = useCallback(() => {
     if (!current || !selected) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-    setBanner({
-      kind: "success",
-      message: `New equipment bound successfully — ${selected.item.manufacturer} ${selected.item.model}`,
-    });
-    window.setTimeout(() => {
-      setBanner(null);
-      setCaptureIndex(0);
-      setSuggestionIndex(0);
-      setCurrentIndex((i) => Math.min(i + 1, total));
-    }, 900);
-  }, [current, selected, total]);
-  const simulateBindError = useCallback(() => {
-    setBanner({
-      kind: "error",
-      message: "Failed to bind equipment — please try again",
-    });
-  }, []);
-  const skip = useCallback(() => record("skipped", "Skipped"), [record]);
-  const markUnrecognized = useCallback(
-    () => record("unrecognized", "Marked as Unrecognized"),
-    [record],
-  );
-  const addAsNew = useCallback(
-    () => record("added", "Added as new equipment"),
-    [record],
-  );
-  const searchCatalog = useCallback(
-    () => toast.message("Catalog search — coming soon"),
-    [],
-  );
+    toast.success(`Bound to ${selected.item.manufacturer} ${selected.item.model}`);
+    goNext();
+  }, [current, selected, goNext]);
+
+  const skipSession = useCallback(() => {
+    navigate({ to: "/out-of-catalog" });
+  }, [navigate]);
+
+  const markUnrecognized = useCallback(() => {
+    if (!current) return;
+    setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
+    toast.message("Marked as Unrecognized");
+    goNext();
+  }, [current, goNext]);
+
+  const addAsNew = useCallback(() => {
+    if (!current) return;
+    setDecisions((prev) => ({ ...prev, [current.id]: "added" }));
+    toast.success("Added as new equipment");
+    goNext();
+  }, [current, goNext]);
+
+  const searchCatalog = useCallback(() => toast.message("Catalog search — coming soon"), []);
+
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
       if (!current) return;
@@ -207,7 +187,7 @@ function ReviewSessionPage() {
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold leading-tight">Suggestion dismissed</div>
               <div className="mt-0.5 text-sm leading-tight" style={{ color: "#3a4148" }}>
-                {item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed from suggestions"}
+                {item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed"}
               </div>
             </div>
             <button
@@ -238,39 +218,121 @@ function ReviewSessionPage() {
     [current],
   );
 
-
-
-
   // Keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      )
+        return;
       if (done) return;
+
+      // Global
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        addAsNew();
+        return;
+      }
       if (e.key === "Enter") {
         e.preventDefault();
-        confirmBind();
-      } else if (e.key === "s" || e.key === "S") {
+        if (allApproved) {
+          setPendingBindId(selected?.item.id ?? null);
+        } else {
+          setStatus("approved");
+        }
+        return;
+      }
+      if (e.key === "Backspace") {
         e.preventDefault();
-        skip();
-      } else if (e.key === "ArrowLeft") {
+        setStatus("rejected");
+        return;
+      }
+      if (e.key === "ArrowLeft") {
         e.preventDefault();
-        goPrev();
-      } else if (e.key === "ArrowRight") {
+        if (captureCount > 0) setCaptureIndex((i) => (i - 1 + captureCount) % captureCount);
+        return;
+      }
+      if (e.key === "ArrowRight") {
         e.preventDefault();
-        goNext();
+        if (captureCount > 0) setCaptureIndex((i) => (i + 1) % captureCount);
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (suggestionCount > 0) {
+          setSuggestionIndex((i) => (i - 1 + suggestionCount) % suggestionCount);
+          setCaptureIndex(0);
+        }
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (suggestionCount > 0) {
+          setSuggestionIndex((i) => (i + 1) % suggestionCount);
+          setCaptureIndex(0);
+        }
+        return;
+      }
+      if (e.key === "Delete") {
+        e.preventDefault();
+        if (selected) dismissSuggestion(selected.item.id);
+        return;
+      }
+      if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        searchCatalog();
+        return;
+      }
+      if (e.key === "s" || e.key === "S") {
+        e.preventDefault();
+        skipSession();
+        return;
+      }
+      if (e.key === "u" || e.key === "U") {
+        e.preventDefault();
+        markUnrecognized();
+        return;
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [confirmBind, skip, goPrev, goNext, done]);
+  }, [
+    addAsNew,
+    allApproved,
+    captureCount,
+    dismissSuggestion,
+    done,
+    markUnrecognized,
+    searchCatalog,
+    selected,
+    setStatus,
+    skipSession,
+    suggestionCount,
+  ]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background text-foreground">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-6">
-        <h1 className="text-base font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
-          Session Review
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-base font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
+            Session Review
+          </h1>
+          {current && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>·</span>
+              <span>{current.aiType || "Unknown type"}</span>
+              <ConfidenceBadge value={current.confidence} size="sm" />
+              <span>·</span>
+              <span className="tabular-nums">
+                {currentIndex + 1} / {total}
+              </span>
+            </div>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => navigate({ to: "/out-of-catalog" })}
@@ -289,439 +351,171 @@ function ReviewSessionPage() {
         />
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
-          {/* ===== TOP (case) ===== */}
-          <section className="flex min-h-0 flex-[3] flex-col gap-3 border-b border-border px-6 pt-4 pb-3">
-            {banner && (
-              <BindBanner
-                banner={banner}
-                onDismiss={() => setBanner(null)}
-                onSimulateError={simulateBindError}
-              />
+          {/* Suggestion ID chip */}
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-6 py-3">
+            {selected ? (
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5">
+                  <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
+                  <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                    AI suggestion
+                  </span>
+                  <span className="font-mono text-xs text-foreground/80">#{selected.item.id}</span>
+                  <span className="h-3 w-px bg-white/10" />
+                  <span className="text-sm font-medium text-foreground">
+                    {selected.item.manufacturer} · {selected.item.model}
+                  </span>
+                  <MatchScoreBadge score={selected.score} />
+                </div>
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {safeSuggestionIdx + 1} / {suggestionCount}
+                </span>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No suggestions remaining</div>
             )}
-            {/* Info card (left) + Rail + Hero */}
-            <div className="grid min-h-0 flex-1 grid-cols-[260px_minmax(0,1fr)_auto] gap-3">
-              {/* Info / AI description card */}
-              <div className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-lg border border-border bg-surface p-4">
-                <div className="flex flex-col gap-2">
-                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    Type
-                  </div>
-                  <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
-                    {current.aiType}
-                  </div>
-                </div>
-                <div className="h-px bg-white/[0.06]" />
-                <div className="flex flex-col gap-2">
-                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    Manufacturer
-                  </div>
-                  <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
-                    {current.aiManufacturer}
-                  </div>
-                </div>
-                <div className="h-px bg-white/[0.06]" />
-                <div className="flex flex-col gap-2">
-                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    Model
-                  </div>
-                  <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
-                    {current.aiModel}
-                  </div>
-                </div>
-                <div className="h-px bg-white/[0.06]" />
-                <div className="flex flex-col gap-2">
-                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    Confidence
-                  </div>
-                  <div>
-                    <ConfidenceBadge value={current.confidence} size="sm" />
-                  </div>
-                </div>
-                {current.captures[captureIndex] && (
-                  <>
-                    <div className="h-px bg-white/[0.06]" />
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                        <Sparkles className="h-3 w-3" style={{ color: "#3BB6E9" }} />
-                        AI description
-                      </div>
-                      <span
-                        role="textbox"
-                        aria-label="AI description (editable)"
-                        contentEditable
-                        suppressContentEditableWarning
-                        spellCheck={false}
-                        onBlur={(e) => {
-                          const cap = current.captures[captureIndex];
-                          if (!cap) return;
-                          setAiEdits((prev) => ({ ...prev, [cap.id]: e.currentTarget.textContent ?? "" }));
-                        }}
-                        title="AI-generated description from the LLM. Click to edit."
-                        className="rounded px-1 py-0.5 text-sm italic outline-none cursor-text transition-colors hover:bg-white/[0.06] hover:ring-1 hover:ring-white/15 focus:ring-1 focus:ring-[#3BB6E9]/60"
-                        style={{ color: "rgba(255,255,255,0.75)" }}
-                      >
-                        {aiEdits[current.captures[captureIndex].id] ?? current.captures[captureIndex].aiDescription}
-                      </span>
-                    </div>
-                  </>
-                )}
+          </div>
+
+          {/* Compare images */}
+          <section className="grid min-h-0 flex-[3] grid-cols-2 gap-3 px-6 pt-3">
+            <ImagePanel
+              label="Catalog reference"
+              src={selected?.item.referenceImageUrl}
+              empty="No suggestion"
+            />
+            <ImagePanel
+              label="Captured image"
+              src={currentCapture?.imageUrl}
+              empty="No capture"
+              status={currentCapture ? statusFor(currentCapture.id) : "pending"}
+              metaTopLeft={
+                currentCapture
+                  ? `${currentCapture.capturedAt} · ${currentCapture.location}`
+                  : undefined
+              }
+              onApprove={() => setStatus("approved")}
+              onReject={() => setStatus("rejected")}
+              canAct={!!currentCapture && !!selected}
+            />
+          </section>
+
+          {/* Capture strip */}
+          <div className="shrink-0 px-6 pt-3">
+            <div className="flex items-center justify-between pb-1.5">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Captured images
               </div>
-
-              <div
-                ref={heroRef}
-                className="relative flex min-h-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-surface"
-                onPointerMove={(e) => {
-                  if (dragIdxRef.current === null || !heroRef.current) return;
-                  const rect = heroRef.current.getBoundingClientRect();
-                  const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                  const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
-                  const capId = current.captures[captureIndex]?.id;
-                  if (!capId) return;
-                  setPolygons((prev) => {
-                    const poly = [...(prev[capId] ?? DEFAULT_POLY)];
-                    poly[dragIdxRef.current!] = { x, y };
-                    return { ...prev, [capId]: poly };
-                  });
-                }}
-                onPointerUp={() => {
-                  dragIdxRef.current = null;
-                }}
-              >
-                <img
-                  key={current.captures[captureIndex]?.id}
-                  src={current.captures[captureIndex]?.imageUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  style={{ transform: "scale(1.6)", transformOrigin: "50% 32%" }}
-                />
-                {current.captures[captureIndex] && (() => {
-                  const capId = current.captures[captureIndex].id;
-                  const poly = polygons[capId] ?? DEFAULT_POLY;
-                  const points = poly.map((p) => `${p.x},${p.y}`).join(" ");
-                  return (
-                    <>
-                      <svg
-                        className="pointer-events-none absolute inset-0 h-full w-full"
-                        viewBox="0 0 100 100"
-                        preserveAspectRatio="none"
-                      >
-                        <polygon
-                          points={points}
-                          fill="#3BB6E9"
-                          fillOpacity="0.12"
-                          stroke="#000"
-                          strokeWidth="3"
-                          strokeLinejoin="round"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                        <polygon
-                          points={points}
-                          fill="none"
-                          stroke="#3BB6E9"
-                          strokeWidth="1.5"
-                          strokeLinejoin="round"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </svg>
-
-                      {polyEditing && (
-                        <>
-                          {poly.map((p, i) => (
-                            <button
-                              key={i}
-                              type="button"
-                              aria-label={`Polygon point ${i + 1}`}
-                              onPointerDown={(e) => {
-                                e.preventDefault();
-                                (e.target as HTMLElement).setPointerCapture(e.pointerId);
-                                dragIdxRef.current = i;
-                              }}
-                              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-white bg-[#3BB6E9] shadow-md active:cursor-grabbing"
-                              style={{ left: `${p.x}%`, top: `${p.y}%`, touchAction: "none" }}
-                            />
-                          ))}
-                        </>
-                      )}
-                    </>
-                  );
-                })()}
-
-                <button
-                  type="button"
-                  onClick={() => setPolyEditing((v) => !v)}
-                  aria-label={polyEditing ? "Done editing region" : "Edit region"}
-                  title={polyEditing ? "Done editing region" : "Edit region"}
-                  className={`absolute bottom-12 left-3 z-10 inline-flex h-8 items-center justify-center gap-1.5 rounded-md border bg-black/80 shadow-md backdrop-blur-sm transition hover:bg-black ${
-                    polyEditing
-                      ? "border-[#22c55e]/60 px-2.5 text-[#22c55e]"
-                      : "w-8 border-white/10 text-white"
-                  }`}
-                >
-                  {polyEditing ? (
-                    <>
-                      <Check className="h-4 w-4" />
-                      <span className="text-xs font-medium">Done</span>
-                    </>
-                  ) : (
-                    <Crop className="h-4 w-4" />
-                  )}
-                </button>
-
-
-
-                {current.captures[captureIndex] && (
-                  <div
-                    className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-wrap items-center gap-x-2 gap-y-1 bg-black/60 px-3 py-2 text-xs backdrop-blur-md"
-                    style={{ color: "rgba(255,255,255,0.85)" }}
+              <div className="text-xs text-muted-foreground tabular-nums">
+                {captureCount > 0 ? `${safeCaptureIdx + 1} / ${captureCount}` : "0 / 0"}
+              </div>
+            </div>
+            <div className="ooc-scroll flex gap-2 overflow-x-auto pb-2">
+              {captures.map((cap, i) => {
+                const status = statusFor(cap.id);
+                const active = i === safeCaptureIdx;
+                return (
+                  <button
+                    key={cap.id}
+                    type="button"
+                    onClick={() => setCaptureIndex(i)}
+                    className={`group relative h-[72px] w-[108px] shrink-0 overflow-hidden rounded-md border transition ${
+                      active
+                        ? "border-transparent ring-2 ring-[#3BB6E9]"
+                        : "border-border opacity-75 hover:opacity-100"
+                    }`}
                   >
-                    <span className="inline-flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {current.captures[captureIndex].capturedAt}
-                    </span>
-                    <span className="text-white/30">·</span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {current.captures[captureIndex].location} · survey{" "}
-                      {current.captures[captureIndex].surveyId}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="custom-scrollbar flex w-[128px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto pl-1 pr-3 py-1">
-                {current.captures.map((cap, i) => {
-                  const selected = i === captureIndex;
-                  return (
-                    <button
-                      key={cap.id}
-                      type="button"
-                      onClick={() => setCaptureIndex(i)}
-                      className={`group relative h-24 w-24 shrink-0 rounded-md transition ${
-                        selected
-                          ? "opacity-100 ring-2 ring-offset-2 ring-offset-[#1E1E1E] ring-[#3BB6E9]"
-                          : "opacity-75 hover:opacity-100"
-                      }`}
+                    <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                    <span
+                      className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
+                      style={
+                        status === "approved"
+                          ? { background: "#3BB6E9", color: "#0b1418" }
+                          : status === "rejected"
+                            ? { background: "#d97a72", color: "#1a0e0d" }
+                            : { background: "rgba(0,0,0,0.55)", color: "rgba(255,255,255,0.7)" }
+                      }
                     >
-                      <div className="relative h-full w-full overflow-hidden rounded-md">
-                        <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                        {(cap.imageCount ?? 1) > 1 && (
-                          <span
-                            className="absolute right-1 top-1 inline-flex items-center gap-0.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium leading-none text-white backdrop-blur-sm"
-                            title={`${cap.imageCount} images in this capture`}
-                          >
-                            <Images className="h-3 w-3" />
-                            {cap.imageCount}
-                          </span>
-                        )}
-                      </div>
-                    </button>
+                      {status === "approved" ? "✓" : status === "rejected" ? "✗" : "•"}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Suggestion rail */}
+          <div className="shrink-0 border-t border-border px-6 pt-3">
+            <div className="flex items-center justify-between pb-1.5">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                AI suggested matches
+              </div>
+            </div>
+            {suggestionCount === 0 ? (
+              <div className="rounded-md border border-dashed border-border bg-surface px-3 py-6 text-center text-sm text-muted-foreground">
+                All suggestions dismissed — use{" "}
+                <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">Ctrl+Enter</kbd>{" "}
+                to add as new.
+              </div>
+            ) : (
+              <div className="ooc-scroll flex gap-2 overflow-x-auto pb-3">
+                {suggestions.map((s, i) => {
+                  const active = i === safeSuggestionIdx;
+                  return (
+                    <div
+                      key={s.item.id}
+                      className={`relative shrink-0 overflow-hidden rounded-md border bg-surface transition ${
+                        active
+                          ? "border-transparent ring-2 ring-[#3BB6E9]"
+                          : "border-border opacity-80 hover:opacity-100"
+                      }`}
+                      style={{ width: 240 }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setSuggestionIndex(i)}
+                        className="block w-full text-left"
+                      >
+                        <div className="h-[112px] w-full overflow-hidden bg-black/30">
+                          <img
+                            src={s.item.referenceImageUrl}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex items-start justify-between gap-2 px-3 py-2">
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-medium text-foreground">
+                              {s.item.manufacturer}
+                            </div>
+                            <div className="truncate text-xs text-muted-foreground">
+                              {s.item.model}
+                            </div>
+                          </div>
+                          <MatchScoreBadge score={s.score} />
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => dismissSuggestion(s.item.id)}
+                        aria-label="Dismiss suggestion"
+                        title="Dismiss"
+                        className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/50 text-[color:var(--color-danger,#d97a72)] backdrop-blur transition hover:bg-black/70"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
-            </div>
+            )}
+          </div>
 
-
-
-
-          </section>
-
-          {/* ===== BOTTOM (decision) ===== */}
-          <section className="flex flex-[2] min-h-0 flex-col">
-            <div className="flex flex-1 min-h-0">
-              {/* LEFT: AI Suggested Matches */}
-              <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-5">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    AI Suggested Matches
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={searchCatalog}
-                      className="inline-flex h-7 items-center gap-1.5 rounded-md bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                    >
-                      <Search className="h-3.5 w-3.5" />
-                      Search catalog manually
-                    </button>
-                  </div>
-                </div>
-
-
-                {suggestionCount > 0 && selected ? (
-                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(340px,400px)_minmax(0,1fr)_auto] gap-4">
-                    {/* Candidate cards (left) */}
-                    <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
-                      {suggestions.map((s, i) => {
-                        const active = i === suggestionIndex;
-                        return (
-                          <div
-                            key={s.item.id}
-                            className={`relative flex items-stretch rounded-md border transition ${
-                              active
-                                ? "border-brand bg-brand/10"
-                                : "border-border bg-white/[0.02] hover:bg-white/[0.05]"
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => setSuggestionIndex(i)}
-                              className="flex min-w-0 flex-1 items-center gap-3 rounded-l-md px-3 py-2 text-left"
-                            >
-                              <img
-                                src={s.item.referenceImageUrl}
-                                alt=""
-                                className="h-12 w-12 shrink-0 rounded border border-border object-cover"
-                              />
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                  <div className="truncate text-sm font-medium text-foreground">
-                                    {s.item.manufacturer} · {s.item.model}
-                                  </div>
-                                  {active && (
-                                    <span className="shrink-0 rounded-full bg-brand/20 px-1.5 py-0.5 text-[10px] font-medium text-brand">
-                                      selected
-                                    </span>
-                                  )}
-                                </div>
-                                <div
-                                  className="truncate text-xs"
-                                  style={{ color: "rgba(255,255,255,0.6)" }}
-                                >
-                                  {s.item.category} / {s.item.classification} · {s.item.heightU}U
-                                </div>
-                              </div>
-                              <MatchScoreBadge score={s.score} />
-                            </button>
-                            <div className="flex shrink-0 items-center gap-1 border-l border-border/60 px-2">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSuggestionIndex(i);
-                                  setPendingBindId(s.item.id);
-                                }}
-                                title="Confirm & Bind"
-                                aria-label="Confirm and bind"
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-brand transition hover:bg-brand/15"
-                              >
-                                <BindToExistingIcon className="h-4 w-4" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  dismissSuggestion(s.item.id);
-                                }}
-                                title="Dismiss suggestion"
-                                aria-label="Dismiss suggestion"
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-danger transition hover:bg-danger/15 hover:text-danger-hover"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-
-                    {/* Selected reference (right, large) */}
-                    <div className="flex min-h-0 flex-col">
-                      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
-                        <img
-                          key={selected.item.id}
-                          src={selected.item.referenceImageUrl}
-                          alt={`${selected.item.manufacturer} ${selected.item.model}`}
-                          className="max-h-full max-w-full object-contain"
-                        />
-
-                        <span className="absolute left-2 top-2">
-                          <MatchScoreBadge score={selected.score} />
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions (right, minimal width, no border) */}
-                    <div className="flex min-h-0 w-44 flex-col gap-2 overflow-auto">
-                      <button
-                        type="button"
-                        onClick={confirmBind}
-                        disabled={!selected}
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        <BindToExistingIcon className="h-4 w-4 shrink-0" />
-                        Confirm &amp; Bind ({current.instances})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={addAsNew}
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                      >
-                        <AddNewBindIcon className="h-4 w-4 shrink-0" />
-                        Add as new
-                      </button>
-                      <div className="my-1 h-px bg-border" />
-                      <button
-                        type="button"
-                        onClick={skip}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                      >
-                        <SkipForward className="h-4 w-4" />
-                        Skip
-                      </button>
-                      <button
-                        type="button"
-                        onClick={markUnrecognized}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                      >
-                        <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
-                        Mark Unrecognized
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-white/[0.02] p-6 text-center">
-                    <div className="text-sm font-medium text-foreground">
-                      No more suggestions
-                    </div>
-                    <div className="max-w-xs text-xs text-muted-foreground">
-                      Search the catalog manually or add this object as new equipment.
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        onClick={searchCatalog}
-                        className="inline-flex h-8 items-center gap-2 rounded-md border border-border px-3 text-xs text-foreground hover:bg-white/[0.04]"
-                      >
-                        <Search className="h-3.5 w-3.5" />
-                        Search catalog manually
-                      </button>
-                      <button
-                        type="button"
-                        onClick={addAsNew}
-                        className="inline-flex h-8 items-center gap-2 rounded-md border border-border px-3 text-xs text-foreground hover:bg-white/[0.04]"
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                        Add as new equipment
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            {/* Shortcut hint strip */}
-            <div className="border-t border-border px-6 py-2 text-xs text-muted-foreground">
-              <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">Enter</kbd> Confirm
-              {" · "}
-              <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">S</kbd> Skip
-              {" · "}
-              <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">←</kbd>{" "}
-              <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">→</kbd> Navigate
-            </div>
-          </section>
+          {/* Shortcut bar */}
+          <ShortcutBar
+            allApproved={allApproved}
+            canBind={!!selected && allApproved}
+            onBind={() => selected && setPendingBindId(selected.item.id)}
+          />
         </div>
       ) : (
         <EmptyQueue onBack={() => navigate({ to: "/out-of-catalog" })} />
@@ -759,95 +553,233 @@ function ReviewSessionPage() {
       </AlertDialog>
 
       <Toaster />
-
     </div>
   );
 }
 
-type BannerState =
-  | { kind: "success"; message: string }
-  | { kind: "error"; message: string };
-
-function BindBanner({
-  banner,
-  onDismiss,
-  onSimulateError,
+function ImagePanel({
+  label,
+  src,
+  empty,
+  status,
+  metaTopLeft,
+  onApprove,
+  onReject,
+  canAct,
 }: {
-  banner: BannerState;
-  onDismiss: () => void;
-  onSimulateError: () => void;
+  label: string;
+  src?: string;
+  empty: string;
+  status?: ImgStatus;
+  metaTopLeft?: string;
+  onApprove?: () => void;
+  onReject?: () => void;
+  canAct?: boolean;
 }) {
-  const isSuccess = banner.kind === "success";
   return (
-    <div
-      role="status"
-      className={`flex items-center gap-3 rounded-md border px-3 py-2 text-sm transition-opacity ${
-        isSuccess
-          ? "border-brand/40 bg-brand/15 text-foreground"
-          : "border-red-500/40 bg-red-500/15 text-foreground"
-      }`}
-    >
-      {isSuccess ? (
-        <Check size={16} style={{ color: "#3BB6E9" }} className="shrink-0" />
-      ) : (
-        <AlertCircle size={16} style={{ color: "#EF4444" }} className="shrink-0" />
-      )}
-      <span className="flex-1">{banner.message}</span>
-      {isSuccess && (
-        <button
-          type="button"
-          onClick={onSimulateError}
-          className="text-xs text-muted-foreground underline-offset-2 hover:underline"
-        >
-          Simulate error
-        </button>
-      )}
+    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
+        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</span>
+        {status && (
+          <span
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+            style={
+              status === "approved"
+                ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
+                : status === "rejected"
+                  ? { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
+                  : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)" }
+            }
+          >
+            {status}
+          </span>
+        )}
+      </div>
+      <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/30">
+        {src ? (
+          <img src={src} alt="" className="h-full w-full object-contain" />
+        ) : (
+          <div className="text-sm text-muted-foreground">{empty}</div>
+        )}
+        {metaTopLeft && (
+          <div className="absolute bottom-2 left-2 rounded bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
+            {metaTopLeft}
+          </div>
+        )}
+        {onApprove && onReject && (
+          <div className="absolute bottom-2 right-2 flex gap-1.5">
+            <button
+              type="button"
+              onClick={onReject}
+              disabled={!canAct}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-black/55 px-2.5 text-xs backdrop-blur transition hover:bg-black/70 disabled:opacity-40"
+              style={{ color: "#d97a72" }}
+              title="Reject (Backspace)"
+            >
+              <X className="h-3.5 w-3.5" /> Reject
+            </button>
+            <button
+              type="button"
+              onClick={onApprove}
+              disabled={!canAct}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs backdrop-blur transition disabled:opacity-40"
+              style={{
+                background: "rgba(59,182,233,0.15)",
+                borderColor: "rgba(59,182,233,0.5)",
+                color: "#3BB6E9",
+              }}
+              title="Approve (Enter)"
+            >
+              <Check className="h-3.5 w-3.5" /> Approve
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 font-mono text-[10px] text-foreground/80">
+      {children}
+    </kbd>
+  );
+}
+
+function ShortcutGroup({
+  label,
+  items,
+}: {
+  label: string;
+  items: Array<{ keys: React.ReactNode; action: string }>;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{label}</span>
+      <div className="flex items-center gap-3">
+        {items.map((it, i) => (
+          <span key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">{it.keys}</span>
+            <span>{it.action}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ShortcutBar({
+  allApproved,
+  canBind,
+  onBind,
+}: {
+  allApproved: boolean;
+  canBind: boolean;
+  onBind: () => void;
+}) {
+  return (
+    <div className="mt-auto flex shrink-0 items-center justify-between gap-4 border-t border-border bg-surface px-6 py-2.5">
+      <div className="flex flex-1 flex-wrap items-center gap-x-6 gap-y-2">
+        <ShortcutGroup
+          label="Image"
+          items={[
+            { keys: <Kbd>Enter</Kbd>, action: allApproved ? "Bind" : "Approve" },
+            { keys: <Kbd>⌫</Kbd>, action: "Reject" },
+            {
+              keys: (
+                <>
+                  <Kbd>←</Kbd>
+                  <Kbd>→</Kbd>
+                </>
+              ),
+              action: "Prev/Next image",
+            },
+          ]}
+        />
+        <span className="h-4 w-px bg-white/10" />
+        <ShortcutGroup
+          label="Suggestion"
+          items={[
+            {
+              keys: (
+                <>
+                  <Kbd>↑</Kbd>
+                  <Kbd>↓</Kbd>
+                </>
+              ),
+              action: "Prev/Next",
+            },
+            { keys: <Kbd>Del</Kbd>, action: "Dismiss" },
+            {
+              keys: (
+                <>
+                  <Kbd>F</Kbd>
+                  <Search className="h-3 w-3 text-muted-foreground" />
+                </>
+              ),
+              action: "Search catalog",
+            },
+          ]}
+        />
+        <span className="h-4 w-px bg-white/10" />
+        <ShortcutGroup
+          label="Global"
+          items={[
+            {
+              keys: (
+                <>
+                  <Kbd>Ctrl</Kbd>
+                  <Kbd>Enter</Kbd>
+                  <Plus className="h-3 w-3 text-muted-foreground" />
+                </>
+              ),
+              action: "Add as new",
+            },
+            {
+              keys: (
+                <>
+                  <Kbd>S</Kbd>
+                  <SkipForward className="h-3 w-3 text-muted-foreground" />
+                </>
+              ),
+              action: "Skip session",
+            },
+            { keys: <Kbd>U</Kbd>, action: "Unrecognize" },
+          ]}
+        />
+      </div>
       <button
         type="button"
-        onClick={onDismiss}
-        aria-label="Dismiss"
-        className="text-muted-foreground hover:text-foreground"
+        onClick={onBind}
+        disabled={!canBind}
+        className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
+        style={{ background: "#3BB6E9", color: "#0b1418" }}
+        title={canBind ? "Bind (Enter)" : "Approve all captured images first"}
       >
-        <X size={14} />
+        <Check className="h-4 w-4" />
+        Bind
       </button>
     </div>
   );
 }
 
-function Chip({ label, value }: { label: string; value: string }) {
-  const empty = !value || value === "Invalid";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${
-        empty
-          ? "border-white/10 bg-white/[0.02] text-white/40"
-          : "border-white/15 bg-white/[0.06] text-foreground"
-      }`}
-    >
-      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
-      <span>{value || "—"}</span>
-    </span>
-  );
-}
-
 function MatchScoreBadge({ score }: { score: number }) {
-  // Desaturated, dark-mode friendly tones aligned with ConfidenceBadge.
   const tone =
     score >= 80
       ? { bg: "rgba(150,200,170,0.10)", fg: "#8FBFA3" }
       : score >= 50
-      ? { bg: "rgba(220,190,140,0.10)", fg: "#C9B07A" }
-      : { bg: "rgba(220,150,150,0.10)", fg: "#C98A8A" };
+        ? { bg: "rgba(220,190,140,0.10)", fg: "#C9B07A" }
+        : { bg: "rgba(220,150,150,0.10)", fg: "#C98A8A" };
   return (
     <span
-      className="ml-2 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
+      className="ml-1 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
       style={{ backgroundColor: tone.bg, color: tone.fg }}
     >
       {score}%
     </span>
   );
 }
-
 
 function SessionComplete({
   decisions,
@@ -886,10 +818,10 @@ function SessionComplete({
         </h1>
 
         <div className="mt-6 grid grid-cols-4 gap-3">
-          {stat("Bound", counts.bound ?? 0, "#22C55E")}
-          {stat("Added", counts.added ?? 0, "#3BB6E9")}
+          {stat("Bound", counts.bound ?? 0, "#3BB6E9")}
+          {stat("Added", counts.added ?? 0, "#8FBFA3")}
           {stat("Skipped", counts.skipped ?? 0, "rgba(255,255,255,0.8)")}
-          {stat("Unrecognized", counts.unrecognized ?? 0, "#A878EC")}
+          {stat("Unrecognized", counts.unrecognized ?? 0, "#C98A8A")}
         </div>
 
         <div className="mt-6 flex justify-end">
