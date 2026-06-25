@@ -410,7 +410,7 @@ function ReviewSessionPage() {
             {/* Vertical suggestion rail */}
             <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
               <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-                <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   AI suggested matches
                 </span>
                 <span className="text-xs text-muted-foreground tabular-nums">
