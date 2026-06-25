@@ -4,12 +4,14 @@ import {
   Check,
   CheckCircle2 as CheckCircleIcon,
   Crop,
+  HelpCircle,
   Plus,
   Search,
   SkipForward,
   Sparkles,
   X,
 } from "lucide-react";
+
 
 import { toast } from "sonner";
 import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
