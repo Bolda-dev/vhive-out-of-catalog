@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const BTN =
   "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border-0 bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40";
 
-function AddNewBindIcon({ className }: { className?: string }) {
+export function AddNewBindIcon({ className }: { className?: string }) {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
       <path d="M12.0341 2.25C9.39106 2.25 7.14434 3.97782 6.36309 6.36309C3.97782 7.14434 2.25 9.39106 2.25 12.0341C2.25 15.3237 4.9263 18 8.2159 18C10.8589 18 13.1057 16.2722 13.8869 13.8869C16.2722 13.1057 18 10.8589 18 8.2159C18 4.9263 15.3237 2.25 12.0341 2.25ZM8.2159 16.5682C5.7158 16.5682 3.6818 14.5342 3.6818 12.0341C3.6818 10.3094 4.64981 8.80674 6.07094 8.04037C6.06928 8.09869 6.06818 8.1572 6.06818 8.2159C6.06818 11.5055 8.74448 14.1818 12.0341 14.1818C12.0928 14.1818 12.1513 14.1807 12.2096 14.179C11.4433 15.6002 9.94058 16.5682 8.2159 16.5682ZM14.1791 12.2096C14.1807 12.1513 14.1818 12.0928 14.1818 12.0341C14.1818 8.74451 11.5055 6.06821 8.21593 6.06821C8.15723 6.06821 8.09873 6.06931 8.0404 6.07097C8.80677 4.64984 10.3094 3.68184 12.0341 3.68184C14.5342 3.68184 16.5682 5.71583 16.5682 8.21593C16.5682 9.94058 15.6002 11.4433 14.1791 12.2096Z" fill="#F2D066" />
