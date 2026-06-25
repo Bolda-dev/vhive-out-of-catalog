@@ -1,6 +1,6 @@
 import type { OocRow } from "@/data/outOfCatalogTypes";
 
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 const BTN =
   "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border-0 bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40";
@@ -39,7 +39,7 @@ export function RowActions({ row }: { row: OocRow }) {
     <div className="flex items-center justify-end gap-1.5">
       <button
         type="button"
-        onClick={() => toast.success(`Added new & bound: ${row.equipmentType}`)}
+        onClick={() => appToast({ variant: "success", title: "Added new & bound", description: row.equipmentType })}
         className={BTN}
       >
         <AddNewBindIcon className="h-4 w-4 shrink-0" />
@@ -47,7 +47,7 @@ export function RowActions({ row }: { row: OocRow }) {
       </button>
       <button
         type="button"
-        onClick={() => toast.success(`Bind to existing: ${row.equipmentType}`)}
+        onClick={() => appToast({ variant: "success", title: "Bound to existing", description: row.equipmentType })}
         className={BTN}
       >
         <BindToExistingIcon className="h-4 w-4 shrink-0" />
@@ -56,7 +56,7 @@ export function RowActions({ row }: { row: OocRow }) {
       <button
         type="button"
         disabled={isUnrecognized}
-        onClick={() => toast(`Marked as Unrecognized: ${row.equipmentType}`)}
+        onClick={() => appToast({ title: "Marked as Unrecognized", description: row.equipmentType })}
         className={BTN}
       >
         <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />

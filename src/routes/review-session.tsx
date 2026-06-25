@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
-  CheckCircle2 as CheckCircleIcon,
   ChevronLeft,
   ChevronRight,
   Crop,
@@ -15,7 +14,8 @@ import {
 } from "lucide-react";
 
 
-import { toast } from "sonner";
+
+import { appToast } from "@/components/ui/app-toast";
 import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
@@ -137,7 +137,7 @@ function ReviewSessionPage() {
   const confirmBind = useCallback(() => {
     if (!current || !selected) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-    toast.success(`Bound to ${selected.item.manufacturer} ${selected.item.model}`);
+    appToast({ variant: "success", title: "Bound to catalog item", description: `${selected.item.manufacturer} ${selected.item.model}` });
     goNext();
   }, [current, selected, goNext]);
 
@@ -148,18 +148,18 @@ function ReviewSessionPage() {
   const markUnrecognized = useCallback(() => {
     if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
-    toast.message("Marked as Unrecognized");
+    appToast({ title: "Marked as Unrecognized" });
     goNext();
   }, [current, goNext]);
 
   const addAsNew = useCallback(() => {
     if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "added" }));
-    toast.success("Added as new equipment");
+    appToast({ variant: "success", title: "Added as new equipment" });
     goNext();
   }, [current, goNext]);
 
-  const searchCatalog = useCallback(() => toast.message("Catalog search — coming soon"), []);
+  const searchCatalog = useCallback(() => appToast({ title: "Catalog search — coming soon" }), []);
 
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
@@ -183,42 +183,12 @@ function ReviewSessionPage() {
           return next;
         });
       };
-      toast.custom(
-        (t) => (
-          <div
-            className="flex w-[460px] items-center gap-3 overflow-hidden rounded-md pr-4 py-3 shadow-lg"
-            style={{ background: "#D6F0FA", color: "#1c2127", borderLeft: "4px solid #3BB6E9" }}
-          >
-            <CheckCircleIcon className="ml-4 h-7 w-7 shrink-0" style={{ color: "#3BB6E9" }} />
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold leading-tight">Suggestion dismissed</div>
-              <div className="mt-0.5 text-sm leading-tight" style={{ color: "#3a4148" }}>
-                {item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed"}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                undo();
-                toast.dismiss(t);
-              }}
-              className="shrink-0 rounded px-2 py-1 text-sm font-medium text-black transition hover:bg-black/5"
-            >
-              Undo
-            </button>
-            <button
-              type="button"
-              onClick={() => toast.dismiss(t)}
-              aria-label="Close"
-              className="shrink-0 rounded p-1 transition hover:bg-black/5"
-              style={{ color: "#3BB6E9" }}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ),
-        { duration: 5000 },
-      );
+      appToast({
+        title: "Suggestion dismissed",
+        description: item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed",
+        duration: 5000,
+        action: { label: "Undo", onClick: undo },
+      });
     },
     [current],
   );
@@ -978,7 +948,7 @@ function CaptureImagePanel({
 
   const confirmCrop = () => {
     setEditing(false);
-    toast.message("Re-running AI search with new crop");
+    appToast({ title: "Re-running AI search with new crop" });
   };
 
   return (
