@@ -579,10 +579,11 @@ function ReviewSessionPage() {
                                 }}
                                 title="Dismiss suggestion"
                                 aria-label="Dismiss suggestion"
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.08] hover:text-foreground"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#EF4444] transition hover:bg-[#EF4444]/15 hover:text-[#F87171]"
                               >
                                 <X className="h-4 w-4" />
                               </button>
+
                             </div>
                           </div>
                         );
