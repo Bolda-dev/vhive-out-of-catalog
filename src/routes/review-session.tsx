@@ -348,14 +348,6 @@ function ReviewSessionPage() {
             {selected ? (
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="flex min-w-0 max-w-full items-center gap-3 rounded-md border border-border bg-surface px-3 py-1.5">
-                  <span
-                    className="shrink-0 font-mono text-xs text-foreground/80"
-                    title={currentCapture?.id ?? ""}
-                  >
-                    #{currentCapture?.id ?? "—"}
-                  </span>
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-
                   <MetaField label="Type" value={current.aiType || "—"} />
                   <span className="h-3 w-px shrink-0 bg-white/10" />
                   <MetaField label="Manufacturer" value={current.aiManufacturer || "—"} />
