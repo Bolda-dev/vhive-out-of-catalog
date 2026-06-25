@@ -176,6 +176,7 @@ function ReviewSessionPage() {
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
       if (!current) return;
+      const item = current.aiSuggestions?.find((x) => x.item.id === catalogId)?.item;
       setDismissed((prev) => {
         const next = { ...prev };
         const set = new Set(next[current.id] ?? []);
@@ -184,10 +185,13 @@ function ReviewSessionPage() {
         return next;
       });
       setSuggestionIndex(0);
-      toast.message("Suggestion dismissed");
+      toast.success("Suggestion dismissed", {
+        description: item ? `${item.manufacturer} · ${item.model} removed from suggestions` : undefined,
+      });
     },
     [current],
   );
+
 
   // Keyboard shortcuts
   useEffect(() => {
