@@ -1,4 +1,5 @@
-import type { OocRow, OocCapture, OocStatus } from "./outOfCatalogTypes";
+import type { OocRow, OocCapture, OocStatus, AiSuggestion } from "./outOfCatalogTypes";
+import { mockCatalog } from "./mockCatalog";
 
 const img = (seed: string) => `https://picsum.photos/seed/${seed}/400/300`;
 
@@ -37,6 +38,8 @@ interface Seed {
   aiManufacturer: string;
   aiModel: string;
   aiSuggestionId?: string;
+  /** Ranked suggestion list: top first. If omitted, derived from aiSuggestionId + similar catalog items. */
+  aiSuggestionIds?: string[];
 }
 
 const seeds: Seed[] = [
@@ -267,6 +270,31 @@ const seeds: Seed[] = [
   },
 ];
 
+function buildSuggestions(s: Seed): AiSuggestion[] | undefined {
+  if (!s.aiSuggestionId) return undefined;
+  const primary = mockCatalog.find((c) => c.id === s.aiSuggestionId);
+  if (!primary) return undefined;
+  // Order: primary first, then same-type catalog items, then fill with others.
+  const sameType = mockCatalog.filter(
+    (c) => c.id !== primary.id && c.type === primary.type,
+  );
+  const others = mockCatalog.filter(
+    (c) => c.id !== primary.id && c.type !== primary.type,
+  );
+  // Deterministic candidate count 3-5 based on id.
+  const hash = s.id.split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) | 0, 0);
+  const count = 3 + (Math.abs(hash) % 3); // 3,4,5
+  const pool = [primary, ...sameType, ...others].slice(0, count);
+  // Scores: start at row confidence, drop by 6-14 per step deterministically.
+  let score = s.confidence;
+  return pool.map((c, i) => {
+    if (i === 0) return { catalogId: c.id, matchScore: score };
+    const step = 6 + (Math.abs(hash + i * 7) % 9); // 6-14
+    score = Math.max(5, score - step);
+    return { catalogId: c.id, matchScore: score };
+  });
+}
+
 export const mockOutOfCatalog: OocRow[] = seeds.map((s) => {
   const captures = makeCaptures(s.id, s.captureCount, s.location, s.surveyBase);
   return {
@@ -286,5 +314,6 @@ export const mockOutOfCatalog: OocRow[] = seeds.map((s) => {
     aiManufacturer: s.aiManufacturer,
     aiModel: s.aiModel,
     aiSuggestionId: s.aiSuggestionId,
+    aiSuggestions: buildSuggestions(s),
   };
 });

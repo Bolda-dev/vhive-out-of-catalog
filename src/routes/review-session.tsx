@@ -52,6 +52,7 @@ function ReviewSessionPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
@@ -67,17 +68,29 @@ function ReviewSessionPage() {
   const total = queue.length;
   const done = currentIndex >= total;
   const current = !done ? queue[currentIndex] : null;
-  const suggestion = current?.aiSuggestionId
-    ? mockCatalog.find((c) => c.id === current.aiSuggestionId) ?? null
-    : null;
+  const suggestions = useMemo(() => {
+    if (!current?.aiSuggestions) return [];
+    return current.aiSuggestions
+      .map((s) => {
+        const item = mockCatalog.find((c) => c.id === s.catalogId);
+        return item ? { item, score: s.matchScore } : null;
+      })
+      .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
+  }, [current]);
+  const suggestionCount = suggestions.length;
+  const pastEnd = suggestionIndex >= suggestionCount;
+  const selected = !pastEnd ? suggestions[suggestionIndex] : null;
+  const suggestion = selected?.item ?? null;
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
+    setSuggestionIndex(0);
     setBanner(null);
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
   const goPrev = useCallback(() => {
     setCaptureIndex(0);
+    setSuggestionIndex(0);
     setBanner(null);
     setCurrentIndex((i) => Math.max(i - 1, 0));
   }, []);
@@ -93,18 +106,19 @@ function ReviewSessionPage() {
   );
 
   const confirmBind = useCallback(() => {
-    if (!current || !suggestion) return;
+    if (!current || !selected) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
     setBanner({
       kind: "success",
-      message: `New equipment bound successfully — ${suggestion.manufacturer} ${suggestion.model}`,
+      message: `New equipment bound successfully — ${selected.item.manufacturer} ${selected.item.model}`,
     });
     window.setTimeout(() => {
       setBanner(null);
       setCaptureIndex(0);
+      setSuggestionIndex(0);
       setCurrentIndex((i) => Math.min(i + 1, total));
     }, 900);
-  }, [current, suggestion, total]);
+  }, [current, selected, total]);
   const simulateBindError = useCallback(() => {
     setBanner({
       kind: "error",
@@ -275,49 +289,139 @@ function ReviewSessionPage() {
           {/* ===== BOTTOM (decision) ===== */}
           <section className="flex flex-[2] min-h-0 flex-col">
             <div className="grid flex-1 grid-cols-[1.4fr_1fr] divide-x divide-border">
-              {/* LEFT: AI suggestion */}
-              <div className="min-h-0 overflow-auto p-5">
-                <div className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  AI Suggestion
+              {/* LEFT: AI Suggested Matches */}
+              <div className="flex min-h-0 flex-col overflow-hidden p-5">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    AI Suggested Matches
+                  </div>
+                  {suggestionCount > 0 && (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setSuggestionIndex((i) => Math.max(0, i - 1))}
+                        disabled={suggestionIndex === 0}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label="Previous suggestion"
+                      >
+                        <ArrowLeft className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="min-w-[56px] text-center text-xs tabular-nums text-muted-foreground">
+                        <span className="text-foreground">
+                          {Math.min(suggestionIndex + 1, suggestionCount)}
+                        </span>{" "}
+                        of {suggestionCount}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSuggestionIndex((i) => Math.min(suggestionCount, i + 1))}
+                        disabled={pastEnd}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label="Next suggestion"
+                      >
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {suggestion ? (
-                  <div className="flex gap-4">
-                    <img
-                      src={suggestion.referenceImageUrl}
-                      alt=""
-                      className="h-[120px] w-[120px] shrink-0 rounded-lg border border-border object-cover"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-base font-medium text-foreground">
-                        {suggestion.type} · {suggestion.manufacturer} · {suggestion.model}
+
+                {suggestion && selected ? (
+                  <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] gap-4">
+                    {/* Large reference image of selected suggestion */}
+                    <div className="flex min-h-0 flex-col gap-2">
+                      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
+                        <img
+                          key={suggestion.id}
+                          src={suggestion.referenceImageUrl}
+                          alt=""
+                          className="max-h-full max-w-full object-contain p-2"
+                        />
+                        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[10px] font-medium text-background">
+                          {selected.score}% match
+                        </span>
                       </div>
-                      <div className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+                      <div className="text-sm font-medium text-foreground">
+                        {suggestion.manufacturer} · {suggestion.model}
+                      </div>
+                      <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
                         {suggestion.category} / {suggestion.classification} · {suggestion.heightU}U
                       </div>
-                      <div className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
-                        {suggestion.widthM}m W · {suggestion.depthM}m D · {suggestion.weightKg}kg ·{" "}
-                        {suggestion.powerW}W · {suggestion.thermalBtu} BTU
-                      </div>
-                      <div className="mt-3 inline-flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1 text-xs text-muted-foreground">
+                      <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
                         <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                        In catalog · {stableBoundCount(suggestion.id)} bound
+                        {stableBoundCount(suggestion.id)} bound
                       </div>
+                    </div>
+
+                    {/* Candidate cards */}
+                    <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
+                      {suggestions.map((s, i) => {
+                        const active = i === suggestionIndex;
+                        return (
+                          <button
+                            key={s.item.id}
+                            type="button"
+                            onClick={() => setSuggestionIndex(i)}
+                            className={`flex items-center gap-3 rounded-md border px-3 py-2 text-left transition ${
+                              active
+                                ? "border-brand bg-brand/10"
+                                : "border-border bg-white/[0.02] hover:bg-white/[0.05]"
+                            }`}
+                          >
+                            <img
+                              src={s.item.referenceImageUrl}
+                              alt=""
+                              className="h-12 w-12 shrink-0 rounded border border-border object-cover"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <div className="truncate text-sm font-medium text-foreground">
+                                  {s.item.manufacturer} · {s.item.model}
+                                </div>
+                                {active && (
+                                  <span className="shrink-0 rounded-full bg-brand/20 px-1.5 py-0.5 text-[10px] font-medium text-brand">
+                                    selected
+                                  </span>
+                                )}
+                              </div>
+                              <div
+                                className="truncate text-xs"
+                                style={{ color: "rgba(255,255,255,0.6)" }}
+                              >
+                                {s.item.category} / {s.item.classification} · {s.item.heightU}U
+                              </div>
+                            </div>
+                            <MatchScoreBadge score={s.score} />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (
-                  <div className="flex h-full min-h-[140px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-white/[0.02] p-6 text-center">
-                    <div className="text-sm font-medium text-foreground">No AI suggestion</div>
-                    <div className="text-xs text-muted-foreground">
-                      Search the catalog manually to find a match.
+                  <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-white/[0.02] p-6 text-center">
+                    <div className="text-sm font-medium text-foreground">
+                      No more suggestions
                     </div>
-                    <button
-                      type="button"
-                      onClick={searchCatalog}
-                      className="mt-2 inline-flex h-8 items-center gap-2 rounded-md border border-border px-3 text-xs text-foreground hover:bg-white/[0.04]"
-                    >
-                      <Search className="h-3.5 w-3.5" />
-                      Search catalog
-                    </button>
+                    <div className="max-w-xs text-xs text-muted-foreground">
+                      Search the catalog manually or add this object as new equipment.
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={searchCatalog}
+                        className="inline-flex h-8 items-center gap-2 rounded-md border border-border px-3 text-xs text-foreground hover:bg-white/[0.04]"
+                      >
+                        <Search className="h-3.5 w-3.5" />
+                        Search catalog manually
+                      </button>
+                      <button
+                        type="button"
+                        onClick={addAsNew}
+                        className="inline-flex h-8 items-center gap-2 rounded-md border border-border px-3 text-xs text-foreground hover:bg-white/[0.04]"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add as new equipment
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -327,7 +431,7 @@ function ReviewSessionPage() {
                 <button
                   type="button"
                   onClick={confirmBind}
-                  disabled={!suggestion}
+                  disabled={!selected}
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-brand text-sm font-medium text-background transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Check className="h-4 w-4" />
@@ -461,6 +565,25 @@ function Chip({ label, value }: { label: string; value: string }) {
     </span>
   );
 }
+
+function MatchScoreBadge({ score }: { score: number }) {
+  // Desaturated, dark-mode friendly tones aligned with ConfidenceBadge.
+  const tone =
+    score >= 80
+      ? { bg: "rgba(150,200,170,0.10)", fg: "#8FBFA3" }
+      : score >= 50
+      ? { bg: "rgba(220,190,140,0.10)", fg: "#C9B07A" }
+      : { bg: "rgba(220,150,150,0.10)", fg: "#C98A8A" };
+  return (
+    <span
+      className="ml-2 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
+      style={{ backgroundColor: tone.bg, color: tone.fg }}
+    >
+      {score}%
+    </span>
+  );
+}
+
 
 function SessionComplete({
   decisions,
