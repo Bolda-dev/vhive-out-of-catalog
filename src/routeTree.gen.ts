@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReviewSessionRouteImport } from './routes/review-session'
 import { Route as OutOfCatalogRouteImport } from './routes/out-of-catalog'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ReviewSessionRoute = ReviewSessionRouteImport.update({
+  id: '/review-session',
+  path: '/review-session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OutOfCatalogRoute = OutOfCatalogRouteImport.update({
   id: '/out-of-catalog',
   path: '/out-of-catalog',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
+  '/review-session': typeof ReviewSessionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
+  '/review-session': typeof ReviewSessionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
+  '/review-session': typeof ReviewSessionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/out-of-catalog'
+  fullPaths: '/' | '/out-of-catalog' | '/review-session'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/out-of-catalog'
-  id: '__root__' | '/' | '/out-of-catalog'
+  to: '/' | '/out-of-catalog' | '/review-session'
+  id: '__root__' | '/' | '/out-of-catalog' | '/review-session'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OutOfCatalogRoute: typeof OutOfCatalogRoute
+  ReviewSessionRoute: typeof ReviewSessionRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/review-session': {
+      id: '/review-session'
+      path: '/review-session'
+      fullPath: '/review-session'
+      preLoaderRoute: typeof ReviewSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/out-of-catalog': {
       id: '/out-of-catalog'
       path: '/out-of-catalog'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OutOfCatalogRoute: OutOfCatalogRoute,
+  ReviewSessionRoute: ReviewSessionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
