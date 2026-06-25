@@ -176,21 +176,34 @@ function ReviewSessionPage() {
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
       if (!current) return;
+      const captureId = current.id;
       const item = mockCatalog.find((c) => c.id === catalogId);
       setDismissed((prev) => {
         const next = { ...prev };
-        const set = new Set(next[current.id] ?? []);
+        const set = new Set(next[captureId] ?? []);
         set.add(catalogId);
-        next[current.id] = set;
+        next[captureId] = set;
         return next;
       });
       setSuggestionIndex(0);
-      toast.success("Suggestion dismissed", {
-        description: item ? `${item.manufacturer} · ${item.model} removed from suggestions` : undefined,
+      toast(item ? `${item.manufacturer} ${item.model} dismissed` : "Suggestion dismissed", {
+        action: {
+          label: "Undo",
+          onClick: () => {
+            setDismissed((prev) => {
+              const next = { ...prev };
+              const set = new Set(next[captureId] ?? []);
+              set.delete(catalogId);
+              next[captureId] = set;
+              return next;
+            });
+          },
+        },
       });
     },
     [current],
   );
+
 
 
   // Keyboard shortcuts
@@ -566,10 +579,11 @@ function ReviewSessionPage() {
                                 }}
                                 title="Dismiss suggestion"
                                 aria-label="Dismiss suggestion"
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.08] hover:text-foreground"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#EF4444] transition hover:bg-[#EF4444]/15 hover:text-[#F87171]"
                               >
                                 <X className="h-4 w-4" />
                               </button>
+
                             </div>
                           </div>
                         );
