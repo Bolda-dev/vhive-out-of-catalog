@@ -343,12 +343,22 @@ function ReviewSessionPage() {
                         <polygon
                           points={points}
                           fill="#3BB6E9"
-                          fillOpacity="0.18"
+                          fillOpacity="0.12"
+                          stroke="#000"
+                          strokeWidth="3"
+                          strokeLinejoin="round"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        <polygon
+                          points={points}
+                          fill="none"
                           stroke="#3BB6E9"
-                          strokeWidth="0.35"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
                           vectorEffect="non-scaling-stroke"
                         />
                       </svg>
+
                       {polyEditing && (
                         <>
                           {poly.map((p, i) => (
