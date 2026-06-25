@@ -1,4 +1,5 @@
 import { Menu } from "lucide-react";
+import logoAsset from "@/assets/vhive-logo.png.asset.json";
 import { cn } from "@/lib/utils";
 
 type TabId = "equipment" | "out-of-catalog" | "civil-survey";
@@ -11,25 +12,9 @@ const TABS: { id: TabId; label: string }[] = [
 
 export function TopBar({ activeTab = "out-of-catalog" as TabId }: { activeTab?: TabId }) {
   return (
-    <header className="flex h-[68px] items-center justify-between border-b border-border bg-card px-6">
+    <header className="flex h-[68px] items-center justify-between border-b border-border bg-card px-8">
       <div className="flex h-full items-center gap-10">
-        {/* Logo — vHive-style stacked arrows */}
-        <div className="flex items-center gap-2">
-          <svg
-            width="34"
-            height="34"
-            viewBox="0 0 34 34"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-label="vHive"
-          >
-            <path d="M6 6 L17 19 L28 6" stroke="hsl(217 91% 65%)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M6 15 L17 28 L28 15" stroke="hsl(217 91% 65%)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className="text-base font-semibold tracking-tight text-foreground">
-            vHive
-          </span>
-        </div>
+        <img src={logoAsset.url} alt="vHive" className="h-7 w-auto" />
 
         <nav className="flex h-full items-stretch gap-1 text-sm">
           {TABS.map((t) => {
@@ -60,9 +45,9 @@ export function TopBar({ activeTab = "out-of-catalog" as TabId }: { activeTab?: 
         <button
           type="button"
           aria-label="Menu"
-          className="rounded-md border border-border p-2 text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
+          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
         >
-          <Menu className="h-4 w-4" />
+          <Menu className="h-5 w-5" />
         </button>
       </div>
     </header>

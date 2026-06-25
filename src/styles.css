@@ -38,52 +38,59 @@
   --color-row-hover: var(--row-hover);
 
   --color-status-pending: var(--status-pending);
+  --color-status-pending-bg: var(--status-pending-bg);
   --color-status-unrecognized: var(--status-unrecognized);
+  --color-status-unrecognized-bg: var(--status-unrecognized-bg);
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.375rem;
 
-  --background: #0e1013;
-  --foreground: #f1f3f5;
+  /* Figma tokens — Lara dark theme, exact hex */
+  --background: #121212;
+  --foreground: #ffffff;
 
-  --card: #14171b;
-  --card-foreground: #f1f3f5;
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
 
-  --popover: #1a1d22;
-  --popover-foreground: #f1f3f5;
+  --popover: #1e1e1e;
+  --popover-foreground: #ffffff;
 
-  --primary: #8b5cf6;
-  --primary-foreground: #0e1013;
+  /* vHive brand cyan */
+  --primary: #3bb6e9;
+  --primary-foreground: #1c2127;
 
-  --secondary: #2a2f36;
-  --secondary-foreground: #f1f3f5;
+  --secondary: #4f565e;
+  --secondary-foreground: #ffffff;
 
-  --muted: #2a2f36;
-  --muted-foreground: #9aa3ad;
+  --muted: #4f565e;
+  --muted-foreground: #b4b6ba;
 
-  --accent: #2a2f36;
-  --accent-foreground: #f1f3f5;
+  --accent: #4f565e;
+  --accent-foreground: #ffffff;
 
-  --destructive: #ef4444;
-  --destructive-foreground: #f1f3f5;
+  --destructive: #ffaca7;
+  --destructive-foreground: #1c2127;
 
-  --border: #262a30;
-  --input: #2a2f36;
-  --ring: #8b5cf6;
+  --border: #6c757d;
+  --input: #6c757d;
+  --ring: #93c5fd;
 
-  /* vHive brand purple */
-  --brand: #8b5cf6;
-  --brand-foreground: #ffffff;
+  --brand: #3bb6e9;
+  --brand-foreground: #1c2127;
 
-  --surface: #14171b;       /* panel */
-  --surface-2: #1a1d22;     /* header strip */
-  --row-hover: #1a1d22;
+  /* Surfaces (panels / header strip) */
+  --surface: #1e1e1e;
+  --surface-2: #262626;
+  --row-hover: #1c1c1c;
 
-  --status-pending: #f7c948;
-  --status-unrecognized: #9aa3ad;
+  /* Status colors */
+  --status-pending: #fcd34d;
+  --status-pending-bg: rgb(252 211 77 / 8%);
+  --status-unrecognized: #b4b6ba;
+  --status-unrecognized-bg: rgb(180 182 186 / 6%);
 }
 
 @layer base {
@@ -98,12 +105,11 @@
   }
 }
 
-/* Thin brand scrollbar */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+/* Thin, brand-cyan, rounded scrollbars */
+.custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--brand);
   border-radius: 9999px;
-  opacity: 0.6;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #a78bfa; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #5cc4ee; }
