@@ -322,17 +322,6 @@ function ReviewSessionPage() {
           <h1 className="text-base font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
             Session Review
           </h1>
-          {current && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>·</span>
-              <span>{current.aiType || "Unknown type"}</span>
-              <ConfidenceBadge value={current.confidence} size="sm" />
-              <span>·</span>
-              <span className="tabular-nums">
-                {currentIndex + 1} / {total}
-              </span>
-            </div>
-          )}
         </div>
         <button
           type="button"
