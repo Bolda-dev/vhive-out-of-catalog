@@ -422,30 +422,34 @@ function ReviewSessionPage() {
 
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
             <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
-              {/* Top: catalog reference */}
-              <div className="flex min-h-0 flex-1 flex-col">
-                <div className="flex h-8 shrink-0 items-center border-b border-border/60 px-3">
-                  <span className="text-xs text-muted-foreground">Catalog reference</span>
-                </div>
-                <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/30">
-                  {selected?.item.referenceImageUrl ? (
-                    <img
-                      src={selected.item.referenceImageUrl}
-                      alt=""
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <div className="text-sm text-muted-foreground">No suggestion</div>
-                  )}
-                </div>
-              </div>
+              {/* Top: catalog reference — hidden when no suggestions so empty state can fill */}
+              {suggestionCount > 0 && (
+                <>
+                  <div className="flex min-h-0 flex-1 flex-col">
+                    <div className="flex h-8 shrink-0 items-center border-b border-border/60 px-3">
+                      <span className="text-xs text-muted-foreground">Catalog reference</span>
+                    </div>
+                    <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/30">
+                      {selected?.item.referenceImageUrl ? (
+                        <img
+                          src={selected.item.referenceImageUrl}
+                          alt=""
+                          className="h-full w-full object-contain"
+                        />
+                      ) : (
+                        <div className="text-sm text-muted-foreground">No suggestion</div>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Horizontal divider */}
-              <div className="h-px shrink-0 bg-border/60" />
+                  {/* Horizontal divider */}
+                  <div className="h-px shrink-0 bg-border/60" />
+                </>
+              )}
 
               {/* Bottom: suggestions / empty state */}
               {suggestionCount === 0 ? (
-                <div className="flex shrink-0 flex-col">
+                <div className="flex min-h-0 flex-1 flex-col">
                   <NoSuggestionsEmpty
                     onAddAsNew={addAsNew}
                     onUnrecognize={markUnrecognized}
@@ -1314,7 +1318,7 @@ function NoSuggestionsEmpty({
   canRecreate: boolean;
 }) {
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-y-auto p-4">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch justify-center overflow-y-auto p-4">
       <div className="flex flex-col items-center">
         <div className="relative mb-3 flex h-14 w-14 items-center justify-center">
           <div
