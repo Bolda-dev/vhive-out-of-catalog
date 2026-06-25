@@ -78,21 +78,10 @@ function StatusCell({ status }: { status: OocStatus }) {
   return <span style={{ color }}>{status}</span>;
 }
 
+import { ConfidenceBadge } from "./ConfidenceBadge";
+
 function ConfidenceCell({ value }: { value: number }) {
-  const { bg, fg } =
-    value < 50
-      ? { bg: "rgba(239,68,68,0.16)", fg: "#EF4444" }
-      : value <= 80
-        ? { bg: "rgba(245,158,11,0.16)", fg: "#F59E0B" }
-        : { bg: "rgba(34,197,94,0.16)", fg: "#22C55E" };
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium tabular-nums"
-      style={{ backgroundColor: bg, color: fg }}
-    >
-      {value}%
-    </span>
-  );
+  return <ConfidenceBadge value={value} />;
 }
 
 function EquipmentTypeCell({ row }: { row: OocRow }) {
