@@ -65,15 +65,6 @@ interface Filters {
   account: string;
 }
 
-const EMPTY_FILTERS: Filters = {
-  status: "",
-  equipmentType: "",
-  manufacturer: "",
-  model: "",
-  instances: "",
-  account: "",
-};
-
 function StatusCell({ status }: { status: OocStatus }) {
   return (
     <span
