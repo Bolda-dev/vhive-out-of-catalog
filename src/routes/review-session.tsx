@@ -138,7 +138,7 @@ function ReviewSessionPage() {
   const confirmBind = useCallback(() => {
     if (!current || !selected) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-    toast.success(`Bound to ${selected.item.manufacturer} ${selected.item.model}`);
+    appToast({ variant: "success", title: "Bound to catalog item", description: `${selected.item.manufacturer} ${selected.item.model}` });
     goNext();
   }, [current, selected, goNext]);
 
