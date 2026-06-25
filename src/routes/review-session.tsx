@@ -921,6 +921,9 @@ const DEFAULT_POLY: Pt[] = [
 function CaptureImagePanel({
   src,
   status,
+  type,
+  manufacturer,
+  model,
   metaBottomLeft,
   onApprove,
   onReject,
@@ -929,6 +932,9 @@ function CaptureImagePanel({
 }: {
   src?: string;
   status?: ImgStatus;
+  type?: string;
+  manufacturer?: string;
+  model?: string;
   metaBottomLeft?: string;
   onApprove?: () => void;
   onReject?: () => void;
