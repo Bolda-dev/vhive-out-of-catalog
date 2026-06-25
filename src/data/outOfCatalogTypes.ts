@@ -42,5 +42,11 @@ export interface OocRow {
   aiType: string;              // may be "" or "Invalid"
   aiManufacturer: string;
   aiModel: string;
-  aiSuggestionId?: string;     // FK into mock catalog
+  aiSuggestionId?: string;     // FK into mock catalog — top suggestion (legacy)
+  aiSuggestions?: AiSuggestion[]; // ranked list of catalog candidates, high→low
+}
+
+export interface AiSuggestion {
+  catalogId: string;
+  matchScore: number; // 0-100
 }
