@@ -372,39 +372,11 @@ function ReviewSessionPage() {
                       <Search className="h-3.5 w-3.5" />
                       Search catalog manually
                     </button>
-                    {suggestionCount > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSuggestionIndex((i) => Math.max(0, i - 1))}
-                          disabled={suggestionIndex === 0}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                          aria-label="Previous suggestion"
-                        >
-                          <ArrowLeft className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="min-w-[56px] text-center text-xs tabular-nums text-muted-foreground">
-                          <span className="text-foreground">
-                            {Math.min(suggestionIndex + 1, suggestionCount)}
-                          </span>{" "}
-                          of {suggestionCount}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setSuggestionIndex((i) => Math.min(suggestionCount, i + 1))}
-                          disabled={pastEnd}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                          aria-label="Next suggestion"
-                        >
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
 
 
-                {suggestion && selected ? (
+                {suggestionCount > 0 && selected ? (
                   <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(360px,42%)] gap-4">
                     {/* Candidate cards (left, primary) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
