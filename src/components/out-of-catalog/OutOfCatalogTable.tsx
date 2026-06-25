@@ -233,7 +233,7 @@ export function OutOfCatalogTable({
               { value: "", label: "Select.." },
               { value: "Pending", label: "Pending" },
               { value: "Unrecognized", label: "Unrecognized" },
-              { value: "Mixed", label: "Mixed" },
+              
             ]}
           />
         );
