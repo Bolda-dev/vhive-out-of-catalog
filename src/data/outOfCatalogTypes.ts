@@ -7,7 +7,9 @@ export interface OocCapture {
   capturedAt: string; // "DD-MM-YYYY HH:mm:ss"
   location: string;
   aiDescription: string;
+  imageCount?: number; // number of images in this capture series (>=1)
 }
+
 
 export interface CatalogItem {
   id: string;
