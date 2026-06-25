@@ -461,7 +461,7 @@ function ReviewSessionPage() {
                   />
                 </div>
               ) : (
-                <div className="flex shrink-0 flex-col">
+                <div className="flex h-[196px] shrink-0 flex-col">
                   <div className="flex h-8 shrink-0 items-center justify-between border-b border-border/60 px-3">
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
