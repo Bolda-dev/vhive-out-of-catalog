@@ -79,13 +79,15 @@ function ReviewSessionPage() {
   const current = !done ? queue[currentIndex] : null;
   const suggestions = useMemo(() => {
     if (!current?.aiSuggestions) return [];
+    const dset = dismissed[current.id] ?? new Set<string>();
     return current.aiSuggestions
+      .filter((s) => !dset.has(s.catalogId))
       .map((s) => {
         const item = mockCatalog.find((c) => c.id === s.catalogId);
         return item ? { item, score: s.matchScore } : null;
       })
       .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
-  }, [current]);
+  }, [current, dismissed]);
   const suggestionCount = suggestions.length;
   const pastEnd = suggestionIndex >= suggestionCount;
   const selected = !pastEnd ? suggestions[suggestionIndex] : null;
