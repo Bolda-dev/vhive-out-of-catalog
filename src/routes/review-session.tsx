@@ -838,7 +838,7 @@ function ShortcutBar({
           className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-normal text-foreground/85 transition hover:bg-white/5"
           title="Unrecognize (U)"
         >
-          <HelpCircle className="h-4 w-4" />
+          <MarkUnrecognizedIcon className="h-4 w-4" />
           Unrecognize
         </button>
         <button
