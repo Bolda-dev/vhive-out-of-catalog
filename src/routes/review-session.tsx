@@ -384,14 +384,17 @@ function ReviewSessionPage() {
                 <button
                   type="button"
                   onClick={() => setPolyEditing((v) => !v)}
-                  aria-label={polyEditing ? "Finish editing region" : "Edit region"}
-                  title={polyEditing ? "Finish editing region" : "Edit region"}
-                  className={`absolute bottom-12 left-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-black/80 text-white shadow-md backdrop-blur-sm transition hover:bg-black ${
-                    polyEditing ? "ring-2 ring-[#3BB6E9]" : ""
+                  aria-label={polyEditing ? "Confirm region" : "Edit region"}
+                  title={polyEditing ? "Confirm region" : "Edit region"}
+                  className={`absolute bottom-12 left-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md border shadow-md backdrop-blur-sm transition ${
+                    polyEditing
+                      ? "border-[#22c55e]/40 bg-[#22c55e] text-white hover:bg-[#16a34a]"
+                      : "border-white/10 bg-black/80 text-white hover:bg-black"
                   }`}
                 >
-                  <Crop className="h-4 w-4" />
+                  {polyEditing ? <Check className="h-4 w-4" /> : <Crop className="h-4 w-4" />}
                 </button>
+
 
                 {current.captures[captureIndex] && (
                   <div
