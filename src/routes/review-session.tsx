@@ -1001,7 +1001,7 @@ function CaptureImagePanel({
                 onClick={onReject}
                 disabled={!canAct}
                 className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
-                style={{ color: "#d97a72", border: "2px solid #d97a72" }}
+                style={{ color: "#d97a72", border: "1px solid #d97a72" }}
                 title="Reject (Backspace)"
               >
                 <X className="h-3.5 w-3.5" /> Reject
