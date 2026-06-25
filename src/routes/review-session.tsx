@@ -7,6 +7,7 @@ import {
 
   Calendar,
   Check,
+  CheckCircle2 as CheckCircleIcon,
   Crop,
   Images,
 
@@ -19,6 +20,7 @@ import {
   X,
 
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
 
@@ -186,23 +188,56 @@ function ReviewSessionPage() {
         return next;
       });
       setSuggestionIndex(0);
-      toast(item ? `${item.manufacturer} ${item.model} dismissed` : "Suggestion dismissed", {
-        action: {
-          label: "Undo",
-          onClick: () => {
-            setDismissed((prev) => {
-              const next = { ...prev };
-              const set = new Set(next[captureId] ?? []);
-              set.delete(catalogId);
-              next[captureId] = set;
-              return next;
-            });
-          },
-        },
-      });
+      const undo = () => {
+        setDismissed((prev) => {
+          const next = { ...prev };
+          const set = new Set(next[captureId] ?? []);
+          set.delete(catalogId);
+          next[captureId] = set;
+          return next;
+        });
+      };
+      toast.custom(
+        (t) => (
+          <div
+            className="flex w-[460px] items-center gap-3 rounded-md px-4 py-3 shadow-lg"
+            style={{ background: "#D6F0FA", color: "#1c2127" }}
+          >
+            <CheckCircleIcon className="h-7 w-7 shrink-0" style={{ color: "#3BB6E9" }} />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-semibold leading-tight">Suggestion dismissed</div>
+              <div className="mt-0.5 text-sm leading-tight" style={{ color: "#3a4148" }}>
+                {item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed from suggestions"}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                undo();
+                toast.dismiss(t);
+              }}
+              className="shrink-0 rounded px-2 py-1 text-sm font-medium transition hover:bg-black/5"
+              style={{ color: "#3BB6E9" }}
+            >
+              Undo
+            </button>
+            <button
+              type="button"
+              onClick={() => toast.dismiss(t)}
+              aria-label="Close"
+              className="shrink-0 rounded p-1 transition hover:bg-black/5"
+              style={{ color: "#3BB6E9" }}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ),
+        { duration: 5000 },
+      );
     },
     [current],
   );
+
 
 
 
