@@ -829,7 +829,7 @@ function SessionComplete({
   return (
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="w-full max-w-2xl rounded-xl border border-border bg-surface p-8">
-        <div className="text-xs uppercase tracking-wide text-muted-foreground">
+        <div className="text-xs text-muted-foreground">
           Session complete
         </div>
         <h1 className="mt-2 text-2xl font-medium text-foreground">
