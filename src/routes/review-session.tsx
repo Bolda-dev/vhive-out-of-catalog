@@ -1319,10 +1319,14 @@ function NoSuggestionsEmpty({
   onAddAsNew,
   onUnrecognize,
   onSearch,
+  onRecreate,
+  canRecreate,
 }: {
   onAddAsNew: () => void;
   onUnrecognize: () => void;
   onSearch: () => void;
+  onRecreate: () => void;
+  canRecreate: boolean;
 }) {
   return (
     <div className="col-span-2 flex min-h-0 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface/60 p-8">
@@ -1368,6 +1372,17 @@ function NoSuggestionsEmpty({
           shortcut={<Kbd>U</Kbd>}
         />
       </div>
+
+      <button
+        type="button"
+        onClick={onRecreate}
+        disabled={!canRecreate}
+        className="mt-6 inline-flex items-center gap-2 rounded-md border border-border bg-transparent px-3 py-1.5 text-xs text-foreground/80 transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+        title={canRecreate ? "Bring back dismissed suggestions" : "Nothing to recreate"}
+      >
+        <RotateCcw className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
+        Recreate AI suggestions
+      </button>
     </div>
   );
 }
