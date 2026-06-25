@@ -207,12 +207,7 @@ function ReviewSessionPage() {
             {/* Header: hierarchical info + confidence */}
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="flex flex-col leading-tight">
-                <span
-                  className="text-lg font-medium"
-                  style={{ color: "rgba(255,255,255,0.87)" }}
-                >
-                  {current.aiType}
-                </span>
+
                 <span className="text-sm flex items-center flex-wrap" style={{ color: "rgba(255,255,255,0.6)" }}>
                   {current.aiType}
                   <span className="mx-1.5 text-white/30">›</span>
