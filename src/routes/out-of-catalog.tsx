@@ -69,15 +69,13 @@ function OutOfCatalogPage() {
   );
   const [loaderStep, setLoaderStep] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (loaderStep === null) return;
-    const timers = [
-      setTimeout(() => setLoaderStep(1), 450),
-      setTimeout(() => setLoaderStep(2), 900),
-      setTimeout(() => navigate({ to: "/review-session" }), 1400),
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, [loaderStep, navigate]);
+  const startSession = () => {
+    if (loaderStep !== null) return;
+    setLoaderStep(0);
+    setTimeout(() => setLoaderStep(1), 450);
+    setTimeout(() => setLoaderStep(2), 900);
+    setTimeout(() => navigate({ to: "/review-session" }), 1400);
+  };
 
   const startSession = () => setLoaderStep(0);
 
