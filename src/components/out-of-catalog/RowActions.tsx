@@ -39,7 +39,7 @@ export function RowActions({ row }: { row: OocRow }) {
     <div className="flex items-center justify-end gap-1.5">
       <button
         type="button"
-        onClick={() => toast.success(`Added new & bound: ${row.equipmentType}`)}
+        onClick={() => appToast({ variant: "success", title: "Added new & bound", description: row.equipmentType })}
         className={BTN}
       >
         <AddNewBindIcon className="h-4 w-4 shrink-0" />
