@@ -164,7 +164,7 @@ function OutOfCatalogPage() {
             </button>
             <button
               type="button"
-              onClick={() => navigate({ to: "/review-session" })}
+              onClick={startSession}
               className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
             >
               <Play className="h-4 w-4" />
@@ -199,6 +199,7 @@ function OutOfCatalogPage() {
         />
       </main>
       <Toaster />
+      {loaderStep !== null && <SessionLoader step={loaderStep} />
     </div>
   );
 }
