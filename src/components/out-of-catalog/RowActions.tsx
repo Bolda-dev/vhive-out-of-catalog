@@ -1,5 +1,5 @@
 import type { OocRow } from "@/data/outOfCatalogTypes";
-import { cn } from "@/lib/utils";
+
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 
