@@ -1340,7 +1340,7 @@ function NoSuggestionsEmpty({
   canRecreate: boolean;
 }) {
   return (
-    <div className="flex min-h-0 min-w-0 flex-col items-stretch overflow-y-auto rounded-lg border border-dashed border-border bg-surface/60 p-4">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch overflow-y-auto p-4">
       <div className="flex flex-col items-center">
         <div className="relative mb-3 flex h-14 w-14 items-center justify-center">
           <div
