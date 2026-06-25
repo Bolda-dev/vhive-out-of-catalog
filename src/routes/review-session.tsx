@@ -63,6 +63,7 @@ function ReviewSessionPage() {
   const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
   const [approvals, setApprovals] = useState<ApprovalMap>({});
   const [pendingBindId, setPendingBindId] = useState<string | null>(null);
+  const [bindAnim, setBindAnim] = useState<{ label: string } | null>(null);
 
   const queue = useMemo<OocRow[]>(
     () => [...pending].sort((a, b) => a.confidence - b.confidence),
@@ -136,9 +137,15 @@ function ReviewSessionPage() {
 
   const confirmBind = useCallback(() => {
     if (!current || !selected) return;
-    setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-    appToast({ variant: "success", title: "Bound to catalog item", description: `${selected.item.manufacturer} ${selected.item.model}` });
-    goNext();
+    const label = `${selected.item.manufacturer} ${selected.item.model}`;
+    playBindSound();
+    setBindAnim({ label });
+    window.setTimeout(() => {
+      setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
+      appToast({ variant: "success", title: "Bound to catalog item", description: label });
+      setBindAnim(null);
+      goNext();
+    }, 1100);
   }, [current, selected, goNext]);
 
   const skipSession = useCallback(() => {
@@ -349,7 +356,12 @@ function ReviewSessionPage() {
           {/* Compare images + vertical suggestion rail */}
           <section
             className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
-            style={{ gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr) 280px" }}
+            style={{
+              gridTemplateColumns:
+                suggestionCount === 0
+                  ? "minmax(0,1fr) minmax(0,2fr)"
+                  : "minmax(0,1fr) minmax(0,1fr) 280px",
+            }}
           >
             <CaptureImagePanel
               src={currentCapture?.imageUrl}
@@ -364,89 +376,93 @@ function ReviewSessionPage() {
               canAct={!!currentCapture && !!selected}
               captureKey={currentCapture?.id ?? ""}
             />
-            <ImagePanel
-              label="Catalog reference"
-              src={selected?.item.referenceImageUrl}
-              empty="No suggestion"
-            />
-            {/* Vertical suggestion rail */}
-            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
-              <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
-                  AI suggested matches
-                </span>
 
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {suggestionCount > 0 ? `${safeSuggestionIdx + 1} / ${suggestionCount}` : "0 / 0"}
-                </span>
-              </div>
-              {suggestionCount === 0 ? (
-                <div className="m-3 rounded-md border border-dashed border-border bg-background/40 px-3 py-6 text-center text-xs text-muted-foreground">
-                  All suggestions dismissed — use{" "}
-                  <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px]">Ctrl+Enter</kbd>{" "}
-                  to add as new.
-                </div>
-              ) : (
-                <div className="ooc-scroll flex flex-1 flex-col gap-2 overflow-y-auto p-2">
-                  {suggestions.map((s, i) => {
-                    const active = i === safeSuggestionIdx;
-                    const label = `${s.item.manufacturer} ${s.item.model}`;
-                    return (
-                      <div
-                        key={s.item.id}
-                        className={`relative shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
-                          active
-                            ? "border-transparent ring-2 ring-[#3BB6E9]"
-                            : "border-border opacity-80 hover:opacity-100"
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSuggestionIndex(i)}
-                          className="block w-full text-left"
+            {suggestionCount === 0 ? (
+              <NoSuggestionsEmpty
+                onAddAsNew={addAsNew}
+                onUnrecognize={markUnrecognized}
+                onSearch={searchCatalog}
+              />
+            ) : (
+              <>
+                <ImagePanel
+                  label="Catalog reference"
+                  src={selected?.item.referenceImageUrl}
+                  empty="No suggestion"
+                />
+                {/* Vertical suggestion rail */}
+                <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+                  <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
+                      AI suggested matches
+                    </span>
+
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
+                    </span>
+                  </div>
+                  <div className="ooc-scroll flex flex-1 flex-col gap-2 overflow-y-auto p-2">
+                    {suggestions.map((s, i) => {
+                      const active = i === safeSuggestionIdx;
+                      const label = `${s.item.manufacturer} ${s.item.model}`;
+                      return (
+                        <div
+                          key={s.item.id}
+                          className={`relative shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
+                            active
+                              ? "border-transparent ring-2 ring-[#3BB6E9]"
+                              : "border-border opacity-80 hover:opacity-100"
+                          }`}
                         >
-                          <div className="h-[88px] w-full overflow-hidden bg-black/30">
-                            <img
-                              src={s.item.referenceImageUrl}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1 px-2.5 py-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <span
-                                className="font-mono text-[10px] text-muted-foreground"
-                                title={s.item.id}
+                          <button
+                            type="button"
+                            onClick={() => setSuggestionIndex(i)}
+                            className="block w-full text-left"
+                          >
+                            <div className="h-[88px] w-full overflow-hidden bg-black/30">
+                              <img
+                                src={s.item.referenceImageUrl}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div className="flex flex-col gap-1 px-2.5 py-2">
+                              <div className="flex items-center justify-between gap-2">
+                                <span
+                                  className="font-mono text-[10px] text-muted-foreground"
+                                  title={s.item.id}
+                                >
+                                  #{s.item.id}
+                                </span>
+                                <MatchScoreBadge score={s.score} />
+                              </div>
+                              <div
+                                className="truncate text-xs font-medium text-foreground"
+                                title={label}
                               >
-                                #{s.item.id}
-                              </span>
-                              <MatchScoreBadge score={s.score} />
+                                {label}
+                              </div>
                             </div>
-                            <div
-                              className="truncate text-xs font-medium text-foreground"
-                              title={label}
-                            >
-                              {label}
-                            </div>
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => dismissSuggestion(s.item.id)}
-                          aria-label="Dismiss suggestion"
-                          title="Dismiss"
-                          className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/50 text-[color:var(--color-danger,#d97a72)] backdrop-blur transition hover:bg-black/70"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    );
-                  })}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => dismissSuggestion(s.item.id)}
+                            aria-label="Dismiss suggestion"
+                            title="Dismiss"
+                            className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/50 text-[color:var(--color-danger,#d97a72)] backdrop-blur transition hover:bg-black/70"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </section>
+
 
           {/* Capture strip */}
           <div className="shrink-0 border-t border-border px-6 pt-3">
@@ -567,6 +583,8 @@ function ReviewSessionPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {bindAnim && <BindBurst label={bindAnim.label} />}
 
       <Toaster />
     </div>
@@ -1185,5 +1203,192 @@ function EmptyQueue({ onBack }: { onBack: () => void }) {
         </button>
       </div>
     </div>
+  );
+}
+
+// ---------- Bind sound (Web Audio) ----------
+function playBindSound() {
+  try {
+    const AC: typeof AudioContext =
+      window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!AC) return;
+    const ctx = new AC();
+    const now = ctx.currentTime;
+    const tones = [
+      { f: 660, t: 0.0 },
+      { f: 880, t: 0.12 },
+      { f: 1320, t: 0.26 },
+    ];
+    tones.forEach(({ f, t }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = f;
+      gain.gain.setValueAtTime(0.0001, now + t);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.22);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + t);
+      osc.stop(now + t + 0.25);
+    });
+    window.setTimeout(() => ctx.close(), 900);
+  } catch {
+    /* ignore */
+  }
+}
+
+// ---------- Bind success animation overlay ----------
+function BindBurst({ label }: { label: string }) {
+  return (
+    <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/55 backdrop-blur-sm">
+      <style>{`
+        @keyframes bb-left { 0%{transform:translateX(-180px) scale(.9);opacity:0} 30%{opacity:1} 60%{transform:translateX(-6px) scale(1)} 100%{transform:translateX(-6px) scale(1)} }
+        @keyframes bb-right { 0%{transform:translateX(180px) scale(.9);opacity:0} 30%{opacity:1} 60%{transform:translateX(6px) scale(1)} 100%{transform:translateX(6px) scale(1)} }
+        @keyframes bb-merge { 0%,55%{opacity:0;transform:scale(.4)} 70%{opacity:1;transform:scale(1.15)} 100%{opacity:1;transform:scale(1)} }
+        @keyframes bb-ring { 0%,55%{opacity:0;transform:scale(.4)} 60%{opacity:.9;transform:scale(.6)} 100%{opacity:0;transform:scale(2.4)} }
+        @keyframes bb-label { 0%,60%{opacity:0;transform:translateY(6px)} 100%{opacity:1;transform:translateY(0)} }
+      `}</style>
+      <div className="relative flex flex-col items-center">
+        <div className="relative h-[120px] w-[260px]">
+          {/* Left circle (capture / camera) */}
+          <div
+            className="absolute left-1/2 top-1/2 h-[88px] w-[88px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-lg"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              borderColor: "rgba(255,255,255,0.6)",
+              animation: "bb-left 700ms cubic-bezier(.22,1,.36,1) forwards",
+            }}
+          />
+          {/* Right circle (catalog / brand) */}
+          <div
+            className="absolute left-1/2 top-1/2 h-[88px] w-[88px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-lg"
+            style={{
+              background: "rgba(59,182,233,0.18)",
+              borderColor: "#3BB6E9",
+              animation: "bb-right 700ms cubic-bezier(.22,1,.36,1) forwards",
+            }}
+          />
+          {/* Merge burst */}
+          <div
+            className="absolute left-1/2 top-1/2 flex h-[96px] w-[96px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
+            style={{
+              background: "#3BB6E9",
+              color: "#06222e",
+              boxShadow: "0 0 40px rgba(59,182,233,0.65)",
+              animation: "bb-merge 900ms cubic-bezier(.22,1,.36,1) forwards",
+            }}
+          >
+            <Check className="h-12 w-12" strokeWidth={3.5} />
+          </div>
+          {/* Outward ring */}
+          <div
+            className="absolute left-1/2 top-1/2 h-[96px] w-[96px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              border: "2px solid #3BB6E9",
+              animation: "bb-ring 900ms ease-out forwards",
+            }}
+          />
+        </div>
+        <div
+          className="mt-4 text-sm font-medium text-white"
+          style={{ animation: "bb-label 900ms ease-out forwards", opacity: 0 }}
+        >
+          Bound to <span style={{ color: "#3BB6E9" }}>{label}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Empty state: no AI suggestions ----------
+function NoSuggestionsEmpty({
+  onAddAsNew,
+  onUnrecognize,
+  onSearch,
+}: {
+  onAddAsNew: () => void;
+  onUnrecognize: () => void;
+  onSearch: () => void;
+}) {
+  return (
+    <div className="col-span-2 flex min-h-0 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface/60 p-8">
+      <div className="relative mb-5 flex h-20 w-20 items-center justify-center">
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(59,182,233,0.18), transparent 70%)" }}
+        />
+        <Sparkles className="h-10 w-10" style={{ color: "#3BB6E9" }} />
+      </div>
+      <h2 className="text-lg font-medium text-foreground">No more AI suggestions</h2>
+      <p className="mt-1.5 max-w-md text-center text-sm text-muted-foreground">
+        We&apos;re out of ideas for this one. Pick what fits best — add it as a brand new piece of
+        equipment, mark it as unrecognized, or hunt for it in the catalog yourself.
+      </p>
+
+      <div className="mt-6 flex flex-wrap items-stretch justify-center gap-3">
+        <EmptyAction
+          onClick={onAddAsNew}
+          icon={<AddNewBindIcon className="h-5 w-5" />}
+          title="Add as new equipment"
+          subtitle="Create a fresh catalog entry"
+          shortcut={
+            <>
+              <Kbd>Ctrl</Kbd>
+              <Kbd>Enter</Kbd>
+            </>
+          }
+          primary
+        />
+        <EmptyAction
+          onClick={onSearch}
+          icon={<Search className="h-5 w-5" style={{ color: "#3BB6E9" }} />}
+          title="Search the catalog"
+          subtitle="Find a match manually"
+          shortcut={<Kbd>F</Kbd>}
+        />
+        <EmptyAction
+          onClick={onUnrecognize}
+          icon={<MarkUnrecognizedIcon className="h-5 w-5" />}
+          title="Mark as unrecognized"
+          subtitle="Send for human review"
+          shortcut={<Kbd>U</Kbd>}
+        />
+      </div>
+    </div>
+  );
+}
+
+function EmptyAction({
+  onClick,
+  icon,
+  title,
+  subtitle,
+  shortcut,
+  primary,
+}: {
+  onClick: () => void;
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  shortcut: React.ReactNode;
+  primary?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex w-[200px] flex-col items-start gap-2 rounded-lg border bg-background/40 px-4 py-3 text-left transition hover:-translate-y-0.5 hover:bg-background/70"
+      style={{
+        borderColor: primary ? "#3BB6E9" : "rgba(255,255,255,0.12)",
+        boxShadow: primary ? "0 0 0 1px rgba(59,182,233,0.25)" : undefined,
+      }}
+    >
+      <div className="flex h-9 w-9 items-center justify-center rounded-md bg-white/[0.04]">
+        {icon}
+      </div>
+      <div className="text-sm font-medium text-foreground">{title}</div>
+      <div className="text-xs text-muted-foreground">{subtitle}</div>
+      <div className="mt-1 flex items-center gap-1">{shortcut}</div>
+    </button>
   );
 }
