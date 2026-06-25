@@ -246,7 +246,7 @@ export function OutOfCatalogTable({
   };
 
   return (
-    <div className="custom-scrollbar overflow-auto rounded-lg border border-border bg-surface">
+    <div className="custom-scrollbar overflow-auto">
       <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-20 bg-surface-2">
           <tr>
