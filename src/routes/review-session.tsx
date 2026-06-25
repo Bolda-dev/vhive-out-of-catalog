@@ -16,6 +16,7 @@ import {
 
 
 import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
