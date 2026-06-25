@@ -49,7 +49,7 @@ export function RowActions({ row }: { row: OocRow }) {
       <button
         type="button"
         onClick={() => toast.success(`Bind to existing: ${row.equipmentType}`)}
-        className={cn(BTN, "text-foreground hover:bg-row-hover")}
+        className={BTN}
       >
         <BindToExistingIcon className="h-4 w-4 shrink-0" />
         Bind to Existing
