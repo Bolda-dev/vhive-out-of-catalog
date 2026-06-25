@@ -363,7 +363,7 @@ function ReviewSessionPage() {
 
 
                 {suggestion && selected ? (
-                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_280px] gap-4">
+                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(360px,42%)] gap-4">
                     {/* Candidate cards (left, primary) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
                       {suggestions.map((s, i) => {
