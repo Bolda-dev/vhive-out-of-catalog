@@ -413,9 +413,9 @@ function ReviewSessionPage() {
                       <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
                         <img
                           key={suggestion.id}
-                          src={suggestion.referenceImageUrl}
+                          src={current.captures[captureIndex]?.imageUrl}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover origin-center scale-[3.5] -translate-y-[8%]"
                         />
                         <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[10px] font-medium text-background">
                           {selected.score}% match
