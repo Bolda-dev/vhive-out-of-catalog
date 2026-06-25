@@ -90,8 +90,8 @@ function ReviewSessionPage() {
   }, [current, dismissed]);
   const suggestionCount = suggestions.length;
   const safeIndex = suggestionCount > 0 ? Math.min(suggestionIndex, suggestionCount - 1) : 0;
-  const selected = suggestionCount > 0 ? suggestions[safeIndex] : null;
-  const suggestion = selected?.item ?? null;
+  const selected = suggestionCount > 0 ? suggestions[safeIndex]! : null;
+  const suggestion = selected ? selected.item : null;
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
