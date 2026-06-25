@@ -164,8 +164,20 @@ function ReviewSessionPage() {
   }, [confirmBind, skip, goPrev, goNext, done]);
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
-      <TopBar activeTab="out-of-catalog" />
+    <div className="fixed inset-0 z-50 flex flex-col bg-background text-foreground">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-6">
+        <h1 className="text-base font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
+          Session Review
+        </h1>
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/out-of-catalog" })}
+          aria-label="Close review session"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.04] hover:text-foreground"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </header>
 
       {done ? (
         <SessionComplete
