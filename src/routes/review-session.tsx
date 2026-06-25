@@ -61,6 +61,7 @@ function ReviewSessionPage() {
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
+  const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
 
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
@@ -78,13 +79,15 @@ function ReviewSessionPage() {
   const current = !done ? queue[currentIndex] : null;
   const suggestions = useMemo(() => {
     if (!current?.aiSuggestions) return [];
+    const dset = dismissed[current.id] ?? new Set<string>();
     return current.aiSuggestions
+      .filter((s) => !dset.has(s.catalogId))
       .map((s) => {
         const item = mockCatalog.find((c) => c.id === s.catalogId);
         return item ? { item, score: s.matchScore } : null;
       })
       .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
-  }, [current]);
+  }, [current, dismissed]);
   const suggestionCount = suggestions.length;
   const pastEnd = suggestionIndex >= suggestionCount;
   const selected = !pastEnd ? suggestions[suggestionIndex] : null;
@@ -145,6 +148,21 @@ function ReviewSessionPage() {
   const searchCatalog = useCallback(
     () => toast.message("Catalog search — coming soon"),
     [],
+  );
+  const dismissSuggestion = useCallback(
+    (catalogId: string) => {
+      if (!current) return;
+      setDismissed((prev) => {
+        const next = { ...prev };
+        const set = new Set(next[current.id] ?? []);
+        set.add(catalogId);
+        next[current.id] = set;
+        return next;
+      });
+      setSuggestionIndex(0);
+      toast.message("Suggestion dismissed");
+    },
+    [current],
   );
 
   // Keyboard shortcuts
@@ -369,41 +387,58 @@ function ReviewSessionPage() {
                       {suggestions.map((s, i) => {
                         const active = i === suggestionIndex;
                         return (
-                          <button
+                          <div
                             key={s.item.id}
-                            type="button"
-                            onClick={() => setSuggestionIndex(i)}
-                            className={`flex items-center gap-3 rounded-md border px-3 py-2 text-left transition ${
+                            className={`group relative rounded-md border transition ${
                               active
                                 ? "border-brand bg-brand/10"
                                 : "border-border bg-white/[0.02] hover:bg-white/[0.05]"
                             }`}
                           >
-                            <img
-                              src={s.item.referenceImageUrl}
-                              alt=""
-                              className="h-12 w-12 shrink-0 rounded border border-border object-cover"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <div className="truncate text-sm font-medium text-foreground">
-                                  {s.item.manufacturer} · {s.item.model}
+                            <button
+                              type="button"
+                              onClick={() => setSuggestionIndex(i)}
+                              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left"
+                            >
+                              <img
+                                src={s.item.referenceImageUrl}
+                                alt=""
+                                className="h-12 w-12 shrink-0 rounded border border-border object-cover"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <div className="truncate text-sm font-medium text-foreground">
+                                    {s.item.manufacturer} · {s.item.model}
+                                  </div>
+                                  {active && (
+                                    <span className="shrink-0 rounded-full bg-brand/20 px-1.5 py-0.5 text-[10px] font-medium text-brand">
+                                      selected
+                                    </span>
+                                  )}
                                 </div>
-                                {active && (
-                                  <span className="shrink-0 rounded-full bg-brand/20 px-1.5 py-0.5 text-[10px] font-medium text-brand">
-                                    selected
-                                  </span>
-                                )}
+                                <div
+                                  className="truncate text-xs"
+                                  style={{ color: "rgba(255,255,255,0.6)" }}
+                                >
+                                  {s.item.category} / {s.item.classification} · {s.item.heightU}U
+                                </div>
                               </div>
-                              <div
-                                className="truncate text-xs"
-                                style={{ color: "rgba(255,255,255,0.6)" }}
-                              >
-                                {s.item.category} / {s.item.classification} · {s.item.heightU}U
-                              </div>
-                            </div>
-                            <MatchScoreBadge score={s.score} />
-                          </button>
+                              <MatchScoreBadge score={s.score} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                dismissSuggestion(s.item.id);
+                              }}
+                              title="Dismiss suggestion"
+                              aria-label="Dismiss suggestion"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 items-center gap-1 rounded-md bg-background/80 px-2 text-[11px] text-muted-foreground opacity-0 backdrop-blur-sm transition hover:bg-white/[0.08] hover:text-foreground group-hover:opacity-100 focus:opacity-100"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                              Dismiss
+                            </button>
+                          </div>
                         );
                       })}
                     </div>
@@ -427,9 +462,19 @@ function ReviewSessionPage() {
                       <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
                         {suggestion.category} / {suggestion.classification} · {suggestion.heightU}U
                       </div>
-                      <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                        {stableBoundCount(suggestion.id)} bound
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
+                          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                          {stableBoundCount(suggestion.id)} bound
+                        </div>
+                        <button
+                          type="button"
+                          onClick={confirmBind}
+                          className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition hover:bg-brand/90"
+                        >
+                          <BindToExistingIcon className="h-4 w-4" />
+                          Confirm & Bind
+                        </button>
                       </div>
                     </div>
                   </div>
