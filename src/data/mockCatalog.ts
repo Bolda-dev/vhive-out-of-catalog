@@ -1,6 +1,21 @@
 import type { CatalogItem } from "./outOfCatalogTypes";
+import rackServer from "@/assets/catalog-rack-server.jpg";
+import rackSwitch from "@/assets/catalog-switch.jpg";
+import rackRouter from "@/assets/catalog-router.jpg";
+import rackStorage from "@/assets/catalog-storage.jpg";
 
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/200/200`;
+const pick = (category: string) => {
+  switch (category) {
+    case "Networking":
+      return rackSwitch;
+    case "Storage":
+      return rackStorage;
+    case "Compute":
+      return rackServer;
+    default:
+      return rackRouter;
+  }
+};
 
 export const mockCatalog: CatalogItem[] = [
   {
@@ -16,7 +31,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 7.5,
     powerW: 715,
     thermalBtu: 2440,
-    referenceImageUrl: img("cisco-9300"),
+    referenceImageUrl: pick("Networking"),
   },
   {
     id: "cat-002",
@@ -31,7 +46,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 10.2,
     powerW: 550,
     thermalBtu: 1876,
-    referenceImageUrl: img("juniper-mx204"),
+    referenceImageUrl: pick("Networking"),
   },
   {
     id: "cat-003",
@@ -46,7 +61,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 28.6,
     powerW: 1100,
     thermalBtu: 3752,
-    referenceImageUrl: img("dell-r750"),
+    referenceImageUrl: pick("Compute"),
   },
   {
     id: "cat-004",
@@ -61,7 +76,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 27.4,
     powerW: 1000,
     thermalBtu: 3412,
-    referenceImageUrl: img("hpe-dl380"),
+    referenceImageUrl: pick("Compute"),
   },
   {
     id: "cat-005",
@@ -76,7 +91,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 6.8,
     powerW: 0,
     thermalBtu: 0,
-    referenceImageUrl: img("apc-ap8959"),
+    referenceImageUrl: pick("Power"),
   },
   {
     id: "cat-006",
@@ -91,7 +106,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 1.1,
     powerW: 0,
     thermalBtu: 0,
-    referenceImageUrl: img("panduit-dp24"),
+    referenceImageUrl: pick("Cabling"),
   },
   {
     id: "cat-007",
@@ -106,7 +121,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 13.6,
     powerW: 750,
     thermalBtu: 2560,
-    referenceImageUrl: img("palo-pa3260"),
+    referenceImageUrl: pick("Security"),
   },
   {
     id: "cat-008",
@@ -121,7 +136,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 40.1,
     powerW: 1450,
     thermalBtu: 4948,
-    referenceImageUrl: img("netapp-a400"),
+    referenceImageUrl: pick("Storage"),
   },
   {
     id: "cat-009",
@@ -136,7 +151,7 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 0.9,
     powerW: 15,
     thermalBtu: 51,
-    referenceImageUrl: img("raritan-kx4"),
+    referenceImageUrl: pick("Management"),
   },
   {
     id: "cat-010",
@@ -151,6 +166,6 @@ export const mockCatalog: CatalogItem[] = [
     weightKg: 65.0,
     powerW: 5400,
     thermalBtu: 1500,
-    referenceImageUrl: img("eaton-9px"),
+    referenceImageUrl: pick("Power"),
   },
 ];
