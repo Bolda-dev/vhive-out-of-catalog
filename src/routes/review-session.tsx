@@ -819,7 +819,7 @@ function SessionComplete({
 
   const stat = (label: string, n: number, color: string) => (
     <div className="rounded-lg border border-border bg-surface p-4">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 text-2xl font-medium tabular-nums" style={{ color }}>
         {n}
       </div>
