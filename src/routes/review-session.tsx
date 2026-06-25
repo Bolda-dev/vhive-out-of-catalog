@@ -396,6 +396,56 @@ function ReviewSessionPage() {
   );
 }
 
+type BannerState =
+  | { kind: "success"; message: string }
+  | { kind: "error"; message: string };
+
+function BindBanner({
+  banner,
+  onDismiss,
+  onSimulateError,
+}: {
+  banner: BannerState;
+  onDismiss: () => void;
+  onSimulateError: () => void;
+}) {
+  const isSuccess = banner.kind === "success";
+  return (
+    <div
+      role="status"
+      className={`flex items-center gap-3 rounded-md border px-3 py-2 text-sm transition-opacity ${
+        isSuccess
+          ? "border-brand/40 bg-brand/15 text-foreground"
+          : "border-red-500/40 bg-red-500/15 text-foreground"
+      }`}
+    >
+      {isSuccess ? (
+        <Check size={16} style={{ color: "#3BB6E9" }} className="shrink-0" />
+      ) : (
+        <AlertCircle size={16} style={{ color: "#EF4444" }} className="shrink-0" />
+      )}
+      <span className="flex-1">{banner.message}</span>
+      {isSuccess && (
+        <button
+          type="button"
+          onClick={onSimulateError}
+          className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+        >
+          Simulate error
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        className="text-muted-foreground hover:text-foreground"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  );
+}
+
 function Chip({ label, value }: { label: string; value: string }) {
   const empty = !value || value === "Invalid";
   return (
