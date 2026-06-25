@@ -63,6 +63,7 @@ function ReviewSessionPage() {
   const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
   const [approvals, setApprovals] = useState<ApprovalMap>({});
   const [pendingBindId, setPendingBindId] = useState<string | null>(null);
+  const [bindAnim, setBindAnim] = useState<{ label: string } | null>(null);
 
   const queue = useMemo<OocRow[]>(
     () => [...pending].sort((a, b) => a.confidence - b.confidence),
