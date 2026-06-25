@@ -184,42 +184,12 @@ function ReviewSessionPage() {
           return next;
         });
       };
-      toast.custom(
-        (t) => (
-          <div
-            className="flex w-[460px] items-center gap-3 overflow-hidden rounded-md pr-4 py-3 shadow-lg"
-            style={{ background: "#D6F0FA", color: "#1c2127", borderLeft: "4px solid #3BB6E9" }}
-          >
-            <CheckCircleIcon className="ml-4 h-7 w-7 shrink-0" style={{ color: "#3BB6E9" }} />
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold leading-tight">Suggestion dismissed</div>
-              <div className="mt-0.5 text-sm leading-tight" style={{ color: "#3a4148" }}>
-                {item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed"}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                undo();
-                toast.dismiss(t);
-              }}
-              className="shrink-0 rounded px-2 py-1 text-sm font-medium text-black transition hover:bg-black/5"
-            >
-              Undo
-            </button>
-            <button
-              type="button"
-              onClick={() => toast.dismiss(t)}
-              aria-label="Close"
-              className="shrink-0 rounded p-1 transition hover:bg-black/5"
-              style={{ color: "#3BB6E9" }}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ),
-        { duration: 5000 },
-      );
+      appToast({
+        title: "Suggestion dismissed",
+        description: item ? `${item.manufacturer} ${item.model} removed from suggestions` : "Removed",
+        duration: 5000,
+        action: { label: "Undo", onClick: undo },
+      });
     },
     [current],
   );
