@@ -7,8 +7,8 @@ import {
   
   Calendar,
   Check,
-  Flag,
   Images,
+
 
   MapPin,
   Plus,
@@ -17,6 +17,8 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
+
 
 import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
@@ -288,35 +290,46 @@ function ReviewSessionPage() {
                   <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     AI Suggested Matches
                   </div>
-                  {suggestionCount > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setSuggestionIndex((i) => Math.max(0, i - 1))}
-                        disabled={suggestionIndex === 0}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                        aria-label="Previous suggestion"
-                      >
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                      </button>
-                      <span className="min-w-[56px] text-center text-xs tabular-nums text-muted-foreground">
-                        <span className="text-foreground">
-                          {Math.min(suggestionIndex + 1, suggestionCount)}
-                        </span>{" "}
-                        of {suggestionCount}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setSuggestionIndex((i) => Math.min(suggestionCount, i + 1))}
-                        disabled={pastEnd}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                        aria-label="Next suggestion"
-                      >
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={searchCatalog}
+                      className="inline-flex h-7 items-center gap-1.5 rounded-md bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08]"
+                    >
+                      <Search className="h-3.5 w-3.5" />
+                      Search catalog manually
+                    </button>
+                    {suggestionCount > 0 && (
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSuggestionIndex((i) => Math.max(0, i - 1))}
+                          disabled={suggestionIndex === 0}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+                          aria-label="Previous suggestion"
+                        >
+                          <ArrowLeft className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="min-w-[56px] text-center text-xs tabular-nums text-muted-foreground">
+                          <span className="text-foreground">
+                            {Math.min(suggestionIndex + 1, suggestionCount)}
+                          </span>{" "}
+                          of {suggestionCount}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setSuggestionIndex((i) => Math.min(suggestionCount, i + 1))}
+                          disabled={pastEnd}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+                          aria-label="Next suggestion"
+                        >
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
+
 
                 {suggestion && selected ? (
                   <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] gap-4">
@@ -425,27 +438,17 @@ function ReviewSessionPage() {
                   type="button"
                   onClick={confirmBind}
                   disabled={!selected}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-brand text-sm font-medium text-background transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <Check className="h-4 w-4" />
+                  <BindToExistingIcon className="h-4 w-4 shrink-0" />
                   Confirm &amp; Bind ({current.instances})
                 </button>
                 <button
                   type="button"
-                  onClick={searchCatalog}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border text-sm font-normal transition hover:bg-white/[0.04]"
-                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                >
-                  <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                  Search catalog manually
-                </button>
-                <button
-                  type="button"
                   onClick={addAsNew}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border text-sm font-normal transition hover:bg-white/[0.04]"
-                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                 >
-                  <Plus className="h-4 w-4" style={{ color: "#E0E0E0" }} />
+                  <AddNewBindIcon className="h-4 w-4 shrink-0" />
                   Add as new equipment
                 </button>
 
@@ -455,7 +458,7 @@ function ReviewSessionPage() {
                   <button
                     type="button"
                     onClick={skip}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm text-foreground transition hover:bg-white/[0.08]"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                   >
                     <SkipForward className="h-4 w-4" />
                     Skip
@@ -463,14 +466,14 @@ function ReviewSessionPage() {
                   <button
                     type="button"
                     onClick={markUnrecognized}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm transition hover:bg-white/[0.08]"
-                    style={{ color: "#A878EC" }}
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                   >
-                    <Flag className="h-4 w-4" />
+                    <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
                     Mark Unrecognized
                   </button>
                 </div>
               </div>
+
             </div>
 
             {/* Shortcut hint strip */}
