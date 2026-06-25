@@ -273,6 +273,7 @@ export function OutOfCatalogTable({
       <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-20 bg-[#121212]">
           <tr>
+            <th className="w-9 border-b border-border px-2 py-3" aria-label="Expand" />
             {cols.map((col) => {
               const active = sortState?.colId === col.id;
               const isDragging = dragColId === col.id;
@@ -348,6 +349,7 @@ export function OutOfCatalogTable({
           </tr>
           {/* Per-column filter row */}
           <tr>
+            <th className="w-9 border-b border-border px-2 py-2" />
             {cols.map((col) => {
               const width = getColWidth(col);
               return (
@@ -376,6 +378,15 @@ export function OutOfCatalogTable({
                 lineHeight: "21px",
               }}
             >
+              <td className="w-9 border-b border-border/60 px-2 py-2 align-middle">
+                <button
+                  type="button"
+                  aria-label="Expand row"
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </td>
               {cols.map((col) => (
                 <td
                   key={col.id}
@@ -392,7 +403,7 @@ export function OutOfCatalogTable({
           {rows.length === 0 && (
             <tr>
               <td
-                colSpan={cols.length + 1}
+                colSpan={cols.length + 2}
                 className="px-4 py-12 text-center text-sm text-muted-foreground"
               >
                 No entries match the current filters.
