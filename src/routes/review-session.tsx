@@ -11,6 +11,7 @@ import {
   SkipForward,
   Sparkles,
   X,
+  Sparkles as SparklesIcon,
 } from "lucide-react";
 
 
