@@ -995,7 +995,8 @@ function CaptureImagePanel({
   };
 
   return (
-    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
+
       <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
         <span className="text-xs text-muted-foreground">Captured image</span>
         {status && (
