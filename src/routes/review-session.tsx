@@ -406,9 +406,11 @@ function ReviewSessionPage() {
             {/* Vertical suggestion rail */}
             <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
               <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-                <span className="text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
                   AI suggested matches
                 </span>
+
                 <span className="text-xs text-muted-foreground tabular-nums">
                   {suggestionCount > 0 ? `${safeSuggestionIdx + 1} / ${suggestionCount}` : "0 / 0"}
                 </span>
