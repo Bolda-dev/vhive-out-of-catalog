@@ -1,4 +1,5 @@
-import type { OocRow, OocCapture, OocStatus } from "./outOfCatalogTypes";
+import type { OocRow, OocCapture, OocStatus, AiSuggestion } from "./outOfCatalogTypes";
+import { mockCatalog } from "./mockCatalog";
 
 const img = (seed: string) => `https://picsum.photos/seed/${seed}/400/300`;
 
@@ -37,6 +38,8 @@ interface Seed {
   aiManufacturer: string;
   aiModel: string;
   aiSuggestionId?: string;
+  /** Ranked suggestion list: top first. If omitted, derived from aiSuggestionId + similar catalog items. */
+  aiSuggestionIds?: string[];
 }
 
 const seeds: Seed[] = [
