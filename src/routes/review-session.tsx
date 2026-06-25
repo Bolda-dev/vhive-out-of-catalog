@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   ArrowUpDown,
@@ -52,6 +53,11 @@ function ReviewSessionPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
+  const [banner, setBanner] = useState<
+    | { kind: "success"; message: string }
+    | { kind: "error"; message: string }
+    | null
+  >(null);
 
   const queue = useMemo<OocRow[]>(() => {
     const sorted = [...pending].sort((a, b) => a.confidence - b.confidence);
@@ -67,10 +73,12 @@ function ReviewSessionPage() {
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
+    setBanner(null);
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
   const goPrev = useCallback(() => {
     setCaptureIndex(0);
+    setBanner(null);
     setCurrentIndex((i) => Math.max(i - 1, 0));
   }, []);
 
@@ -86,8 +94,23 @@ function ReviewSessionPage() {
 
   const confirmBind = useCallback(() => {
     if (!current || !suggestion) return;
-    record("bound", `Bound to ${suggestion.manufacturer} ${suggestion.model}`);
-  }, [current, suggestion, record]);
+    setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
+    setBanner({
+      kind: "success",
+      message: `New equipment bound successfully — ${suggestion.manufacturer} ${suggestion.model}`,
+    });
+    window.setTimeout(() => {
+      setBanner(null);
+      setCaptureIndex(0);
+      setCurrentIndex((i) => Math.min(i + 1, total));
+    }, 900);
+  }, [current, suggestion, total]);
+  const simulateBindError = useCallback(() => {
+    setBanner({
+      kind: "error",
+      message: "Failed to bind equipment — please try again",
+    });
+  }, []);
   const skip = useCallback(() => record("skipped", "Skipped"), [record]);
   const markUnrecognized = useCallback(
     () => record("unrecognized", "Marked as Unrecognized"),
@@ -140,6 +163,13 @@ function ReviewSessionPage() {
         <div className="flex min-h-0 flex-1 flex-col">
           {/* ===== TOP (case) ===== */}
           <section className="flex min-h-0 flex-[3] flex-col gap-3 border-b border-border px-6 pt-4 pb-3">
+            {banner && (
+              <BindBanner
+                banner={banner}
+                onDismiss={() => setBanner(null)}
+                onSimulateError={simulateBindError}
+              />
+            )}
             {/* Header bar */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex flex-wrap items-center gap-1.5">
@@ -362,6 +392,56 @@ function ReviewSessionPage() {
       )}
 
       <Toaster />
+    </div>
+  );
+}
+
+type BannerState =
+  | { kind: "success"; message: string }
+  | { kind: "error"; message: string };
+
+function BindBanner({
+  banner,
+  onDismiss,
+  onSimulateError,
+}: {
+  banner: BannerState;
+  onDismiss: () => void;
+  onSimulateError: () => void;
+}) {
+  const isSuccess = banner.kind === "success";
+  return (
+    <div
+      role="status"
+      className={`flex items-center gap-3 rounded-md border px-3 py-2 text-sm transition-opacity ${
+        isSuccess
+          ? "border-brand/40 bg-brand/15 text-foreground"
+          : "border-red-500/40 bg-red-500/15 text-foreground"
+      }`}
+    >
+      {isSuccess ? (
+        <Check size={16} style={{ color: "#3BB6E9" }} className="shrink-0" />
+      ) : (
+        <AlertCircle size={16} style={{ color: "#EF4444" }} className="shrink-0" />
+      )}
+      <span className="flex-1">{banner.message}</span>
+      {isSuccess && (
+        <button
+          type="button"
+          onClick={onSimulateError}
+          className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+        >
+          Simulate error
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        className="text-muted-foreground hover:text-foreground"
+      >
+        <X size={14} />
+      </button>
     </div>
   );
 }
