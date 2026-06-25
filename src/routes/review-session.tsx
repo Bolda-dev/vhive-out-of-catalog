@@ -63,6 +63,16 @@ function ReviewSessionPage() {
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
   const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
+  const DEFAULT_POLY: Array<{ x: number; y: number }> = [
+    { x: 18, y: 30 },
+    { x: 82, y: 30 },
+    { x: 82, y: 44 },
+    { x: 18, y: 44 },
+  ];
+  const [polygons, setPolygons] = useState<Record<string, Array<{ x: number; y: number }>>>({});
+  const [polyEditing, setPolyEditing] = useState(false);
+  const heroRef = useRef<HTMLDivElement | null>(null);
+  const dragIdxRef = useRef<number | null>(null);
 
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
