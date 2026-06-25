@@ -61,6 +61,7 @@ function ReviewSessionPage() {
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
+  const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
 
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
