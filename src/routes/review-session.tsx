@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
-  CheckCircle2 as CheckCircleIcon,
+  Check,
   ChevronLeft,
   ChevronRight,
   Crop,
