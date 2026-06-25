@@ -1326,21 +1326,22 @@ function NoSuggestionsEmpty({
   canRecreate: boolean;
 }) {
   return (
-    <div className="flex min-h-0 flex-col items-center justify-center overflow-y-auto rounded-lg border border-dashed border-border bg-surface/60 p-4">
-      <div className="relative mb-5 flex h-20 w-20 items-center justify-center">
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(59,182,233,0.18), transparent 70%)" }}
-        />
-        <Sparkles className="h-10 w-10" style={{ color: "#3BB6E9" }} />
+    <div className="flex min-h-0 min-w-0 flex-col items-stretch overflow-y-auto rounded-lg border border-dashed border-border bg-surface/60 p-4">
+      <div className="flex flex-col items-center">
+        <div className="relative mb-3 flex h-14 w-14 items-center justify-center">
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(59,182,233,0.18), transparent 70%)" }}
+          />
+          <Sparkles className="h-7 w-7" style={{ color: "#3BB6E9" }} />
+        </div>
+        <h2 className="text-sm font-medium text-foreground">No more AI suggestions</h2>
+        <p className="mt-1 text-center text-xs text-muted-foreground">
+          Pick what fits best for this capture.
+        </p>
       </div>
-      <h2 className="text-lg font-medium text-foreground">No more AI suggestions</h2>
-      <p className="mt-1.5 max-w-md text-center text-sm text-muted-foreground">
-        We&apos;re out of ideas for this one. Pick what fits best — add it as a brand new piece of
-        equipment, mark it as unrecognized, or hunt for it in the catalog yourself.
-      </p>
 
-      <div className="mt-6 flex flex-wrap items-stretch justify-center gap-3">
+      <div className="mt-4 flex flex-col gap-2">
         <EmptyAction
           onClick={onAddAsNew}
           icon={<AddNewBindIcon className="h-5 w-5" />}
@@ -1374,7 +1375,7 @@ function NoSuggestionsEmpty({
         type="button"
         onClick={onRecreate}
         disabled={!canRecreate}
-        className="mt-6 inline-flex items-center gap-2 rounded-md border border-border bg-transparent px-3 py-1.5 text-xs text-foreground/80 transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-4 inline-flex items-center justify-center gap-2 self-center rounded-md border border-border bg-transparent px-3 py-1.5 text-xs text-foreground/80 transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
         title={canRecreate ? "Bring back dismissed suggestions" : "Nothing to recreate"}
       >
         <RotateCcw className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
@@ -1383,6 +1384,7 @@ function NoSuggestionsEmpty({
     </div>
   );
 }
+
 
 function EmptyAction({
   onClick,
