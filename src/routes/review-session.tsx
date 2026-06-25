@@ -149,6 +149,21 @@ function ReviewSessionPage() {
     () => toast.message("Catalog search — coming soon"),
     [],
   );
+  const dismissSuggestion = useCallback(
+    (catalogId: string) => {
+      if (!current) return;
+      setDismissed((prev) => {
+        const next = { ...prev };
+        const set = new Set(next[current.id] ?? []);
+        set.add(catalogId);
+        next[current.id] = set;
+        return next;
+      });
+      setSuggestionIndex(0);
+      toast.message("Suggestion dismissed");
+    },
+    [current],
+  );
 
   // Keyboard shortcuts
   useEffect(() => {
