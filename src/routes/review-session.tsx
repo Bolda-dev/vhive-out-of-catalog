@@ -446,7 +446,7 @@ function ReviewSessionPage() {
                           key={selected.item.id}
                           src={selected.item.referenceImageUrl}
                           alt={`${selected.item.manufacturer} ${selected.item.model}`}
-                          className="h-full w-full object-cover"
+                          className="max-h-full max-w-full object-contain"
                         />
 
                         <span className="absolute left-2 top-2">
