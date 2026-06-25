@@ -345,7 +345,7 @@ function ReviewSessionPage() {
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-6 py-3">
             {selected ? (
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="flex min-w-0 max-w-full items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5">
+                <div className="flex min-w-0 max-w-full items-center gap-3 rounded-md border border-border bg-surface px-3 py-1.5">
                   <Sparkles className="h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
                   <span className="shrink-0 text-xs text-muted-foreground">
                     AI suggestion
@@ -357,12 +357,21 @@ function ReviewSessionPage() {
                     #{currentCapture?.id ?? "—"}
                   </span>
                   <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <span
-                    className="min-w-0 truncate text-sm font-medium text-foreground"
-                    title={`${selected.item.manufacturer} · ${selected.item.model}`}
-                  >
-                    {selected.item.manufacturer} · {selected.item.model}
-                  </span>
+                  <MetaField label="Type" value={current.aiType || "—"} />
+                  <span className="h-3 w-px shrink-0 bg-white/10" />
+                  <MetaField label="Manufacturer" value={current.aiManufacturer || "—"} />
+                  <span className="h-3 w-px shrink-0 bg-white/10" />
+                  <MetaField label="Model" value={current.aiModel || "—"} />
+                  {currentCapture?.aiDescription && (
+                    <>
+                      <span className="h-3 w-px shrink-0 bg-white/10" />
+                      <MetaField
+                        label="Panel description"
+                        value={currentCapture.aiDescription}
+                        truncate
+                      />
+                    </>
+                  )}
                   <MatchScoreBadge score={selected.score} />
                 </div>
                 <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
@@ -565,6 +574,32 @@ function ReviewSessionPage() {
     </div>
   );
 }
+
+function MetaField({
+  label,
+  value,
+  truncate,
+}: {
+  label: string;
+  value: string;
+  truncate?: boolean;
+}) {
+  return (
+    <span
+      className={`flex min-w-0 items-baseline gap-1.5 ${truncate ? "min-w-0" : "shrink-0"}`}
+      title={value}
+    >
+      <span className="shrink-0 text-[11px] text-muted-foreground">{label}</span>
+      <span
+        className={`text-sm font-medium text-foreground ${truncate ? "max-w-[280px] truncate" : "shrink-0"}`}
+      >
+        {value}
+      </span>
+    </span>
+  );
+}
+
+
 
 function ImagePanel({
   label,
