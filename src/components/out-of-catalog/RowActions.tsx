@@ -43,7 +43,7 @@ export function RowActions({ row }: { row: OocRow }) {
         onClick={() => toast.success(`Added new & bound: ${row.equipmentType}`)}
         className={cn(BTN, "text-foreground hover:bg-row-hover")}
       >
-        <AddNewBindIcon className="h-4 w-4" />
+        <AddNewBindIcon className="h-4 w-4 shrink-0" />
         Add New &amp; Bind
       </button>
       <button
@@ -51,7 +51,7 @@ export function RowActions({ row }: { row: OocRow }) {
         onClick={() => toast.success(`Bind to existing: ${row.equipmentType}`)}
         className={cn(BTN, "text-foreground hover:bg-row-hover")}
       >
-        <BindToExistingIcon className="h-4 w-4" />
+        <BindToExistingIcon className="h-4 w-4 shrink-0" />
         Bind to Existing
       </button>
       <button
@@ -60,13 +60,13 @@ export function RowActions({ row }: { row: OocRow }) {
         onClick={() => toast(`Marked as Unrecognized: ${row.equipmentType}`)}
         className={cn(BTN, "text-foreground hover:bg-row-hover")}
       >
-        <MarkUnrecognizedIcon className="h-4 w-4" />
+        <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
         Mark as Unrecognized
       </button>
       <button
         type="button"
         aria-label="More"
-        className="flex h-8 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
+        className="flex h-8 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
       >
         <ChevronDown className="h-4 w-4" />
       </button>
