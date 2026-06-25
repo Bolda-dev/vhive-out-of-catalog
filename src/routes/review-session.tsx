@@ -420,10 +420,10 @@ function ReviewSessionPage() {
             </div>
 
 
-            {/* Combined Catalog reference + AI suggestions card */}
-            <div className="flex min-h-0 overflow-hidden rounded-lg border border-border bg-surface">
-              {/* Left: catalog reference */}
-              <div className="flex min-w-0 flex-1 flex-col">
+            {/* Combined Catalog reference + AI suggestions card (stacked) */}
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+              {/* Top: catalog reference */}
+              <div className="flex min-h-0 flex-1 flex-col">
                 <div className="flex h-8 shrink-0 items-center border-b border-border/60 px-3">
                   <span className="text-xs text-muted-foreground">Catalog reference</span>
                 </div>
@@ -440,12 +440,12 @@ function ReviewSessionPage() {
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="w-px shrink-0 bg-border/60" />
+              {/* Horizontal divider */}
+              <div className="h-px shrink-0 bg-border/60" />
 
-              {/* Right: suggestions / empty state */}
+              {/* Bottom: suggestions / empty state */}
               {suggestionCount === 0 ? (
-                <div className="flex w-[300px] shrink-0 min-h-0 flex-col">
+                <div className="flex shrink-0 flex-col">
                   <NoSuggestionsEmpty
                     onAddAsNew={addAsNew}
                     onUnrecognize={markUnrecognized}
@@ -455,7 +455,7 @@ function ReviewSessionPage() {
                   />
                 </div>
               ) : (
-                <div className="flex w-[280px] shrink-0 min-h-0 flex-col">
+                <div className="flex shrink-0 flex-col">
                   <div className="flex h-8 shrink-0 items-center justify-between border-b border-border/60 px-3">
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
@@ -465,14 +465,14 @@ function ReviewSessionPage() {
                       {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
                     </span>
                   </div>
-                  <div className="custom-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto p-2">
+                  <div className="custom-scrollbar flex gap-2 overflow-x-auto p-2">
                     {suggestions.map((s, i) => {
                       const active = i === safeSuggestionIdx;
                       const label = `${s.item.manufacturer} ${s.item.model}`;
                       return (
                         <div
                           key={s.item.id}
-                          className={`relative shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
+                          className={`relative w-[180px] shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
                             active
                               ? "border-transparent ring-2 ring-[#3BB6E9]"
                               : "border-border opacity-80 hover:opacity-100"
