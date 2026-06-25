@@ -349,6 +349,9 @@ function ReviewSessionPage() {
               <CaptureImagePanel
                 src={currentCapture?.imageUrl}
                 status={currentCapture ? statusFor(currentCapture.id) : "pending"}
+                type={current.aiType}
+                manufacturer={current.aiManufacturer}
+                model={current.aiModel}
                 metaBottomLeft={
                   currentCapture
                     ? `${currentCapture.capturedAt} · ${currentCapture.location}`
