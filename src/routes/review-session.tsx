@@ -784,6 +784,196 @@ function ShortcutBar({
   );
 }
 
+type Pt = { x: number; y: number };
+const DEFAULT_POLY: Pt[] = [
+  { x: 28, y: 36 },
+  { x: 72, y: 36 },
+  { x: 74, y: 66 },
+  { x: 26, y: 66 },
+];
+
+function CaptureImagePanel({
+  src,
+  status,
+  metaBottomLeft,
+  onApprove,
+  onReject,
+  canAct,
+  captureKey,
+}: {
+  src?: string;
+  status?: ImgStatus;
+  metaBottomLeft?: string;
+  onApprove?: () => void;
+  onReject?: () => void;
+  canAct?: boolean;
+  captureKey: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [poly, setPoly] = useState<Pt[]>(DEFAULT_POLY);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  // Reset polygon when capture changes
+  useEffect(() => {
+    setPoly(DEFAULT_POLY);
+    setEditing(false);
+  }, [captureKey]);
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragIdx === null) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(2, Math.min(98, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(2, Math.min(98, ((e.clientY - rect.top) / rect.height) * 100));
+    setPoly((prev) => prev.map((p, i) => (i === dragIdx ? { x, y } : p)));
+  };
+
+  const points = poly.map((p) => `${p.x},${p.y}`).join(" ");
+
+  const confirmCrop = () => {
+    setEditing(false);
+    toast.message("Re-running AI search with new crop");
+  };
+
+  return (
+    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
+        <span className="text-xs text-muted-foreground">Captured image</span>
+        {status && (
+          <span
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
+            style={
+              status === "approved"
+                ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
+                : status === "rejected"
+                  ? { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
+                  : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)" }
+            }
+          >
+            {status}
+          </span>
+        )}
+      </div>
+      <div
+        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
+        onPointerMove={onPointerMove}
+        onPointerUp={() => setDragIdx(null)}
+        onPointerLeave={() => setDragIdx(null)}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt=""
+            className="h-full w-full object-cover"
+            style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
+            draggable={false}
+          />
+        ) : (
+          <div className="text-sm text-muted-foreground">No capture</div>
+        )}
+
+        {/* Polygon overlay */}
+        {src && (
+          <svg
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            {/* Outer dark outline for contrast */}
+            <polygon
+              points={points}
+              fill="none"
+              stroke="rgba(0,0,0,0.85)"
+              strokeWidth="0.9"
+              vectorEffect="non-scaling-stroke"
+              style={{ strokeWidth: 4 } as React.CSSProperties}
+            />
+            {/* Inner bright outline */}
+            <polygon
+              points={points}
+              fill="rgba(59,182,233,0.08)"
+              stroke="#3BB6E9"
+              vectorEffect="non-scaling-stroke"
+              style={{ strokeWidth: 2 } as React.CSSProperties}
+            />
+          </svg>
+        )}
+
+        {/* Polygon handles (editable) */}
+        {src && editing && (
+          <div className="absolute inset-0">
+            {poly.map((p, i) => (
+              <div
+                key={i}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                  setDragIdx(i);
+                }}
+                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
+                style={{ left: `${p.x}%`, top: `${p.y}%` }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Crop toggle button — bottom-left */}
+        {src && (
+          <button
+            type="button"
+            onClick={() => (editing ? confirmCrop() : setEditing(true))}
+            className="absolute bottom-2 left-2 inline-flex h-8 items-center gap-1.5 rounded-md bg-black/80 px-2.5 text-xs backdrop-blur transition hover:bg-black"
+            style={{ color: editing ? "#8FBFA3" : "#ffffff" }}
+            title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
+          >
+            {editing ? (
+              <>
+                <Check className="h-3.5 w-3.5" /> Done
+              </>
+            ) : (
+              <Crop className="h-3.5 w-3.5" />
+            )}
+          </button>
+        )}
+
+        {metaBottomLeft && !editing && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
+            {metaBottomLeft}
+          </div>
+        )}
+
+        {onApprove && onReject && (
+          <div className="absolute bottom-2 right-2 flex gap-1.5">
+            <button
+              type="button"
+              onClick={onReject}
+              disabled={!canAct}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-black/55 px-2.5 text-xs backdrop-blur transition hover:bg-black/70 disabled:opacity-40"
+              style={{ color: "#d97a72" }}
+              title="Reject (Backspace)"
+            >
+              <X className="h-3.5 w-3.5" /> Reject
+            </button>
+            <button
+              type="button"
+              onClick={onApprove}
+              disabled={!canAct}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs backdrop-blur transition disabled:opacity-40"
+              style={{
+                background: "rgba(59,182,233,0.15)",
+                borderColor: "rgba(59,182,233,0.5)",
+                color: "#3BB6E9",
+              }}
+              title="Approve (Enter)"
+            >
+              <Check className="h-3.5 w-3.5" /> Approve
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MatchScoreBadge({ score }: { score: number }) {
   const tone =
     score >= 80
