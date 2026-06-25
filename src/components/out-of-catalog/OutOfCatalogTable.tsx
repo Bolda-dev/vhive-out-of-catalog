@@ -68,10 +68,9 @@ interface Filters {
 function StatusCell({ status }: { status: OocStatus }) {
   return (
     <span
-      className={cn(
-        "text-sm",
-        status === "Pending" ? "text-status-pending" : "text-status-unrecognized",
-      )}
+      style={{
+        color: status === "Pending" ? "#FCD34D" : "rgba(255,255,255,0.6)",
+      }}
     >
       {status}
     </span>
