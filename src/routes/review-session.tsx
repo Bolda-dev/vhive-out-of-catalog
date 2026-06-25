@@ -264,7 +264,7 @@ function ReviewSessionPage() {
                 />
                 {current.captures[captureIndex] && (
                   <div
-                    className="pointer-events-none absolute left-3 top-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-black/60 px-2.5 py-1.5 text-xs backdrop-blur-md"
+                    className="pointer-events-none absolute bottom-3 left-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-black/60 px-2.5 py-1.5 text-xs backdrop-blur-md"
                     style={{ color: "rgba(255,255,255,0.85)" }}
                   >
                     <span className="inline-flex items-center gap-1.5">
