@@ -436,27 +436,17 @@ function ReviewSessionPage() {
                   type="button"
                   onClick={confirmBind}
                   disabled={!selected}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-brand text-sm font-medium text-background transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <Check className="h-4 w-4" />
+                  <BindToExistingIcon className="h-4 w-4 shrink-0" />
                   Confirm &amp; Bind ({current.instances})
                 </button>
                 <button
                   type="button"
-                  onClick={searchCatalog}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border text-sm font-normal transition hover:bg-white/[0.04]"
-                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                >
-                  <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                  Search catalog manually
-                </button>
-                <button
-                  type="button"
                   onClick={addAsNew}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border text-sm font-normal transition hover:bg-white/[0.04]"
-                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                 >
-                  <Plus className="h-4 w-4" style={{ color: "#E0E0E0" }} />
+                  <AddNewBindIcon className="h-4 w-4 shrink-0" />
                   Add as new equipment
                 </button>
 
@@ -466,7 +456,7 @@ function ReviewSessionPage() {
                   <button
                     type="button"
                     onClick={skip}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm text-foreground transition hover:bg-white/[0.08]"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                   >
                     <SkipForward className="h-4 w-4" />
                     Skip
@@ -474,14 +464,14 @@ function ReviewSessionPage() {
                   <button
                     type="button"
                     onClick={markUnrecognized}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm transition hover:bg-white/[0.08]"
-                    style={{ color: "#A878EC" }}
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                   >
-                    <Flag className="h-4 w-4" />
+                    <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
                     Mark Unrecognized
                   </button>
                 </div>
               </div>
+
             </div>
 
             {/* Shortcut hint strip */}
