@@ -491,7 +491,7 @@ function ReviewSessionPage() {
 
 
             </div>
-            <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
+            <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-4 pt-1">
               {captures.map((cap, i) => {
                 const status = statusFor(cap.id);
                 const active = i === safeCaptureIdx;
