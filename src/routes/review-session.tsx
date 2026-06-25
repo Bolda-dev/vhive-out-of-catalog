@@ -363,10 +363,12 @@ function ReviewSessionPage() {
                 captureKey={currentCapture?.id ?? ""}
               />
 
-              {/* Captured images rail (inside same card) */}
-              <div className="shrink-0 border-t border-border/60 px-3 pt-2 pb-2">
-                <div className="pb-1.5 text-xs text-muted-foreground">Captured images</div>
-                <div className="custom-scrollbar flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
+              {/* Captured images rail (inside same card) — height matches right-card suggestions rail */}
+              <div className="flex h-[196px] shrink-0 flex-col border-t border-border/60">
+                <div className="flex h-8 shrink-0 items-center px-3">
+                  <span className="text-xs text-muted-foreground">Captured images</span>
+                </div>
+                <div className="custom-scrollbar flex flex-1 gap-2 overflow-x-auto px-2 pb-2 pt-1">
                   {captures.map((cap, i) => {
                     const status = statusFor(cap.id);
                     const active = i === safeCaptureIdx;
@@ -375,7 +377,7 @@ function ReviewSessionPage() {
                         key={cap.id}
                         type="button"
                         onClick={() => setCaptureIndex(i)}
-                        className={`group relative h-[120px] w-[180px] shrink-0 overflow-hidden rounded-md border-2 transition ${
+                        className={`group relative h-full w-[220px] shrink-0 overflow-hidden rounded-md border-2 transition ${
                           active
                             ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-surface"
                             : "opacity-90 hover:opacity-100"
