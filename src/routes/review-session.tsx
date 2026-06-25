@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Check,
   CheckCircle2 as CheckCircleIcon,
+  Crop,
   Plus,
   Search,
   SkipForward,
