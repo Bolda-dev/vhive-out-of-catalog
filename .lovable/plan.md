@@ -1,59 +1,85 @@
-# Prompt #1 — Mock data model + table enrichments
+# Prompt #2 — Review Session screen
 
-Front-end only, all state local. No backend calls.
+A full-screen modal-route experience for going object-by-object through Pending items. Prototype only — local state, no persistence.
 
-## 1. Extend data model (`src/data/outOfCatalogTypes.ts`)
+## Routing & entry
 
-Add new types alongside existing `OocRow`:
+- New route: `src/routes/review-session.tsx` (`/review-session`).
+- "Start Session" in `out-of-catalog.tsx` → `navigate({ to: "/review-session" })` instead of toast.
+- Route loads `mockOutOfCatalog`, filters `status === "Pending"`, sorts by `confidence` asc (default). If empty → empty state with "Back to list".
 
-- `OocStatus` → extend to `"Pending" | "Unrecognized" | "Mixed"`.
-- `OocCapture` — `{ id, imageUrl, surveyId, capturedAt, location, aiDescription }`.
-- `CatalogItem` — `{ id, type, manufacturer, model, category, classification, heightU, widthM, depthM, weightKg, powerW, thermalBtu, referenceImageUrl }`.
-- Extend `OocRow` with: `captures: OocCapture[]` (1–5), `confidence: number` (0–100), `aiType`, `aiManufacturer`, `aiModel` (strings, some `""` or `"Invalid"`), `aiSuggestionId?: string` (FK into catalog, optional).
+## Local state
 
-Existing fields (`detectedOn`, `status`, `equipmentType`, `manufacturer`, `model`, `instances`, `rackUnits`, `account`, `hasLink`) stay as-is — `instances` will be derived/aligned with `captures.length` in the mock.
+```
+currentIndex: number
+sortDir: "asc" | "desc"
+captureIndex: number  // active thumbnail per object (resets on next/prev)
+decisions: Record<rowId, "bound" | "skipped" | "unrecognized" | "added">
+```
 
-## 2. New mock files
+`queue = useMemo(() => pendingRows.sort(by confidence, sortDir))`.
+`current = queue[currentIndex]`. Reaching past the last → "Session complete" summary card with counts per decision + "Back to list".
 
-- `src/data/mockCatalog.ts` — ~10 `CatalogItem`s spanning Switch / Router / Server / PDU / Patch Panel etc. `referenceImageUrl` uses `https://picsum.photos/seed/<slug>/200/200`.
-- Rewrite `src/data/mockOutOfCatalog.ts` — ~12 hand-authored rows:
-  - 1–5 captures each, distinct `surveyId` + `location` + timestamps, `imageUrl` from picsum seeded by row+capture index.
-  - Mix of statuses: ~7 Pending, ~3 Unrecognized, ~2 Mixed.
-  - Confidence values spread across <50 / 50–80 / >80 buckets.
-  - ~8 rows have `aiSuggestionId` pointing into mock catalog; ~4 don't.
-  - A couple rows with `aiType: "Invalid"` or empty AI fields.
+## Layout (dark, full viewport under TopBar)
 
-## 3. Table changes (`OutOfCatalogTable.tsx`)
+Reuse `TopBar` for consistency. Page = `flex flex-col h-[calc(100vh-topbar)]`.
 
-- **Thumbnail** in the Equipment Type cell: render `captures[0].imageUrl` as a 32×32 rounded image to the left of the type text. If no captures, show a neutral placeholder block.
-- **New "Confidence" column** inserted right after Equipment Type:
-  - Sortable.
-  - Cell = number `0–100` + colored pill badge.
-    - `<50` → red (`#EF4444` bg @ 16% opacity, red text)
-    - `50–80` → orange (`#F2D066` family — use `#F59E0B`)
-    - `>80` → green (`#22C55E`)
-  - Add to `ALL_OOC_COLUMNS`, `DEFAULT_VISIBLE_COLUMN_IDS`, `getRowSortValue` (numeric).
-  - Filter cell: leave empty for now (no spec).
-- **Status filter options**: add `Mixed`.
+### Top half — the case (≈ 60% height)
 
-## 4. Route toolbar (`src/routes/out-of-catalog.tsx`)
+Header bar:
+- Left: chips `AI: <aiType>` · `<aiManufacturer>` · `<aiModel>` (chip = `bg-white/[0.06]` border `border/40` rounded-full). Empty/"Invalid" values render greyed-out chip.
+- Middle-left: confidence pill (same `ConfidenceCell` colors red/orange/green) extracted into `src/components/out-of-catalog/ConfidenceBadge.tsx` so table + session share it.
+- Right: `Prev` (←) · "X of N" · `Next` (→) · sort-toggle button (`ArrowUpDown` with current dir label).
 
-Add **Start Session** as the primary CTA to the left of `Auto-Bind Attempt`:
-- Filled brand button: `bg-brand text-background hover:bg-brand/90`, same height (`h-9`), `font-medium`.
-- `onClick` → `toast.success("Session started")` (placeholder).
+Body grid: `grid grid-cols-[1fr_auto]`
+- Hero image: large, `object-contain` on `bg-surface` rounded panel, max-h so caption stays visible. Source = `current.captures[captureIndex].imageUrl`.
+- Right rail: vertical thumbnail strip (`flex flex-col gap-2 overflow-y-auto`) with all `captures`. Each thumb 64×64, active = `ring-2 ring-brand`. Label above rail: "{captures.length} captures".
 
-Update `Filters.status` type to include `"Mixed"`.
+Caption row below hero:
+`📅 capturedAt  ·  📍 location · survey {surveyId}  —  {aiDescription}`
+Icons are Lucide `Calendar` / `MapPin`. Uses `rgba(255,255,255,0.7)` text.
 
-## 5. Preserved
+### Bottom half — the decision (≈ 40% height)
 
-All existing columns, filter row, drag-reorder, resize, sort, sticky header, pagination, row actions, TopBar — untouched aside from the additions above.
+Single panel, `grid grid-cols-[1.4fr_1fr]` with divider.
 
-## Open clarification
+**Left — AI suggestion**
+- If `aiSuggestionId` resolves in `mockCatalog`:
+  - Reference image (catalog `referenceImageUrl`) 120×120 rounded.
+  - Title: `{type} · {manufacturer} · {model}`.
+  - Meta rows: `{category} / {classification} · {heightU}U`.
+  - Footer line: `In catalog · {Math.floor(Math.random()*40)+2} bound` (mock counter — seeded so it's stable per id).
+- Else: empty state — dashed border panel, "No AI suggestion" headline, sub "Search the catalog manually" + small `Search` button that triggers the same handler as the right-column "Search catalog manually".
 
-You wrote "שורות אם/בן הניתנות להרחבה" (parent/child expandable rows). The current table has **no** expand/collapse mechanism — each row is flat. I'm reading "שמור" as "don't break anything that exists," so I will **not** add expandable rows in this prompt. If you actually want a parent-row expand that reveals the captures gallery, tell me and I'll fold it in (or save it for prompt #2).
+**Right — actions column** (vertical stack, `gap-2`)
+- `Check` + "Confirm & Bind ({instances})" — primary brand-filled button (`bg-brand text-background`). Disabled if no `aiSuggestionId`.
+- `Search` + "Search catalog manually" — outline `#E0E0E0` (matches Auto-Bind Attempt style).
+- `Plus` + "Add as new equipment" — outline `#E0E0E0`.
+- Divider line.
+- Bottom row `grid grid-cols-2 gap-2`: "Skip" (`ArrowRight` icon) and "Mark Unrecognized" (`Flag` icon, purple `#A878EC` text).
 
-## Technical notes
+All actions record into `decisions[current.id]` and advance to next via `goNext()`. Toast for each action ("Bound to catalog", "Skipped", "Marked Unrecognized", "Added as new").
 
-- Confidence badge uses inline `style` for the three hex colors (consistent with how Pending yellow is handled today) so Tailwind purge doesn't strip them.
-- Picsum URLs are stable per seed — good for prototype, zero asset weight.
-- No new dependencies.
+## Keyboard shortcuts
+
+`useEffect` listens on `window` while route is mounted:
+- `Enter` → Confirm & Bind (if enabled, else no-op)
+- `S` / `s` → Skip
+- `ArrowLeft` → prev (clamped at 0)
+- `ArrowRight` → next (advances; at end → completion screen)
+- Ignored if `e.target` is `INPUT`/`TEXTAREA`.
+
+Footer hint strip (subtle, `text-xs text-muted-foreground`): "Enter Confirm · S Skip · ← → navigate".
+
+## Files
+
+- `src/routes/review-session.tsx` — route + page component (most of the logic here for prototype simplicity).
+- `src/components/out-of-catalog/ConfidenceBadge.tsx` — extracted shared pill.
+- Refactor `OutOfCatalogTable.tsx`'s `ConfidenceCell` to use the shared component.
+
+## Out of scope
+
+- No real persistence; decisions live for the session lifetime.
+- "Search catalog manually" opens nothing yet — toast placeholder. (Reserve for a later prompt.)
+- No multi-select / bulk decisions.
+- No image zoom/lightbox on the hero (basic `object-contain` only).
