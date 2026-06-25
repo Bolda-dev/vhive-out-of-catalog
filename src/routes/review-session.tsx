@@ -675,7 +675,7 @@ function ShortcutGroup({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{label}</span>
+      <span className="text-xs text-muted-foreground/70">{label}</span>
       <div className="flex items-center gap-3">
         {items.map((it, i) => (
           <span key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
