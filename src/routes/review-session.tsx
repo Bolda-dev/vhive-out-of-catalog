@@ -727,7 +727,7 @@ function ShortcutGroup({
   items: Array<{ keys: React.ReactNode; action: string }>;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex shrink-0 items-center gap-2">
       <span className="text-xs text-muted-foreground/70">{label}</span>
       <div className="flex items-center gap-3">
         {items.map((it, i) => (
