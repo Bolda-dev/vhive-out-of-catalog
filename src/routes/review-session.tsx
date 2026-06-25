@@ -566,6 +566,25 @@ function Chip({ label, value }: { label: string; value: string }) {
   );
 }
 
+function MatchScoreBadge({ score }: { score: number }) {
+  // Desaturated, dark-mode friendly tones aligned with ConfidenceBadge.
+  const tone =
+    score >= 80
+      ? { bg: "rgba(150,200,170,0.10)", fg: "#8FBFA3" }
+      : score >= 50
+      ? { bg: "rgba(220,190,140,0.10)", fg: "#C9B07A" }
+      : { bg: "rgba(220,150,150,0.10)", fg: "#C98A8A" };
+  return (
+    <span
+      className="ml-2 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
+      style={{ backgroundColor: tone.bg, color: tone.fg }}
+    >
+      {score}%
+    </span>
+  );
+}
+
+
 function SessionComplete({
   decisions,
   total,
