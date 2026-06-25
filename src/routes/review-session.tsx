@@ -183,10 +183,10 @@ function ReviewSessionPage() {
       toast.custom(
         (t) => (
           <div
-            className="flex w-[460px] items-center gap-3 rounded-md px-4 py-3 shadow-lg"
-            style={{ background: "#D6F0FA", color: "#1c2127" }}
+            className="flex w-[460px] items-center gap-3 overflow-hidden rounded-md pr-4 py-3 shadow-lg"
+            style={{ background: "#D6F0FA", color: "#1c2127", borderLeft: "4px solid #3BB6E9" }}
           >
-            <CheckCircleIcon className="h-7 w-7 shrink-0" style={{ color: "#3BB6E9" }} />
+            <CheckCircleIcon className="ml-4 h-7 w-7 shrink-0" style={{ color: "#3BB6E9" }} />
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold leading-tight">Suggestion dismissed</div>
               <div className="mt-0.5 text-sm leading-tight" style={{ color: "#3a4148" }}>
@@ -199,8 +199,7 @@ function ReviewSessionPage() {
                 undo();
                 toast.dismiss(t);
               }}
-              className="shrink-0 rounded px-2 py-1 text-sm font-medium transition hover:bg-black/5"
-              style={{ color: "#3BB6E9" }}
+              className="shrink-0 rounded px-2 py-1 text-sm font-medium text-black transition hover:bg-black/5"
             >
               Undo
             </button>
