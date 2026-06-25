@@ -584,6 +584,8 @@ function ReviewSessionPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {bindAnim && <BindBurst label={bindAnim.label} />}
+
       <Toaster />
     </div>
   );
