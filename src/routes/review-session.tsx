@@ -8,6 +8,8 @@ import {
   Calendar,
   Check,
   Flag,
+  Images,
+
   MapPin,
   Plus,
   Search,
@@ -221,19 +223,28 @@ function ReviewSessionPage() {
 
             {/* Rail (left) + Hero */}
             <div className="grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3">
-              <div className="custom-scrollbar flex w-[88px] flex-col gap-2 overflow-y-auto pr-1">
+              <div className="custom-scrollbar flex w-[112px] flex-col gap-2 overflow-y-auto pr-1.5">
                 {current.captures.map((cap, i) => (
                   <button
                     key={cap.id}
                     type="button"
                     onClick={() => setCaptureIndex(i)}
-                    className={`h-16 w-16 shrink-0 overflow-hidden rounded border transition ${
+                    className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-md border transition ${
                       i === captureIndex
                         ? "border-brand ring-2 ring-brand"
                         : "border-border hover:border-white/40"
                     }`}
                   >
                     <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                    {(cap.imageCount ?? 1) > 1 && (
+                      <span
+                        className="absolute right-1 top-1 inline-flex items-center gap-0.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium leading-none text-white backdrop-blur-sm"
+                        title={`${cap.imageCount} images in this capture`}
+                      >
+                        <Images className="h-3 w-3" />
+                        {cap.imageCount}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -246,6 +257,7 @@ function ReviewSessionPage() {
                 />
               </div>
             </div>
+
 
 
             {/* Caption */}
