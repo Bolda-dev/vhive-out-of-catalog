@@ -18,7 +18,8 @@ export interface ColumnMeta {
 export const ALL_OOC_COLUMNS: ColumnMeta[] = [
   { id: "detectedOn", label: "Detected on", sortable: true, minWidth: 180 },
   { id: "status", label: "Status", sortable: true, minWidth: 120 },
-  { id: "equipmentType", label: "Equipment Type", sortable: true, minWidth: 160 },
+  { id: "equipmentType", label: "Equipment Type", sortable: true, minWidth: 220 },
+  { id: "confidence", label: "Confidence", sortable: true, minWidth: 140 },
   { id: "manufacturer", label: "Manufacturer", sortable: true, minWidth: 150 },
   { id: "model", label: "Model", sortable: true, minWidth: 140 },
   { id: "instances", label: "Instances", sortable: true, minWidth: 110 },
@@ -47,6 +48,8 @@ export function getRowSortValue(row: OocRow, colId: string): string | number {
       return row.model;
     case "instances":
       return row.instances;
+    case "confidence":
+      return row.confidence;
     case "rackUnits":
       return row.rackUnits ?? "";
     case "account":
@@ -66,14 +69,48 @@ interface Filters {
 }
 
 function StatusCell({ status }: { status: OocStatus }) {
+  const color =
+    status === "Pending"
+      ? "#F2D066"
+      : status === "Mixed"
+        ? "#3BB6E9"
+        : "rgba(255,255,255,0.6)";
+  return <span style={{ color }}>{status}</span>;
+}
+
+function ConfidenceCell({ value }: { value: number }) {
+  const { bg, fg } =
+    value < 50
+      ? { bg: "rgba(239,68,68,0.16)", fg: "#EF4444" }
+      : value <= 80
+        ? { bg: "rgba(245,158,11,0.16)", fg: "#F59E0B" }
+        : { bg: "rgba(34,197,94,0.16)", fg: "#22C55E" };
   return (
     <span
-      style={{
-        color: status === "Pending" ? "#F2D066" : "rgba(255,255,255,0.6)",
-      }}
+      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium tabular-nums"
+      style={{ backgroundColor: bg, color: fg }}
     >
-      {status}
+      {value}%
     </span>
+  );
+}
+
+function EquipmentTypeCell({ row }: { row: OocRow }) {
+  const thumb = row.captures[0]?.imageUrl;
+  return (
+    <div className="flex items-center gap-2.5">
+      {thumb ? (
+        <img
+          src={thumb}
+          alt=""
+          className="h-8 w-8 shrink-0 rounded object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <div className="h-8 w-8 shrink-0 rounded bg-white/[0.06]" />
+      )}
+      <span className="text-foreground">{row.equipmentType}</span>
+    </div>
   );
 }
 
