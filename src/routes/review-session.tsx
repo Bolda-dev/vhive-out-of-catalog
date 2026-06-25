@@ -372,19 +372,78 @@ function ReviewSessionPage() {
               gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
             }}
           >
-            <CaptureImagePanel
-              src={currentCapture?.imageUrl}
-              status={currentCapture ? statusFor(currentCapture.id) : "pending"}
-              metaBottomLeft={
-                currentCapture
-                  ? `${currentCapture.capturedAt} · ${currentCapture.location}`
-                  : undefined
-              }
-              onApprove={() => setStatus("approved")}
-              onReject={() => setStatus("rejected")}
-              canAct={!!currentCapture && !!selected}
-              captureKey={currentCapture?.id ?? ""}
-            />
+            {/* Left card: captured image + captured images rail */}
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+              <CaptureImagePanel
+                src={currentCapture?.imageUrl}
+                status={currentCapture ? statusFor(currentCapture.id) : "pending"}
+                metaBottomLeft={
+                  currentCapture
+                    ? `${currentCapture.capturedAt} · ${currentCapture.location}`
+                    : undefined
+                }
+                onApprove={() => setStatus("approved")}
+                onReject={() => setStatus("rejected")}
+                canAct={!!currentCapture && !!selected}
+                captureKey={currentCapture?.id ?? ""}
+              />
+
+              {/* Captured images rail (inside same card) */}
+              <div className="shrink-0 border-t border-border/60 px-3 pt-2 pb-2">
+                <div className="pb-1.5 text-xs text-muted-foreground">Captured images</div>
+                <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
+                  {captures.map((cap, i) => {
+                    const status = statusFor(cap.id);
+                    const active = i === safeCaptureIdx;
+                    return (
+                      <button
+                        key={cap.id}
+                        type="button"
+                        onClick={() => setCaptureIndex(i)}
+                        className={`group relative h-[64px] w-[96px] shrink-0 overflow-hidden rounded-md border-2 transition ${
+                          active
+                            ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-surface"
+                            : "opacity-90 hover:opacity-100"
+                        }`}
+                        style={{
+                          borderColor:
+                            status === "approved"
+                              ? "#8FD3A8"
+                              : status === "rejected"
+                              ? "#d97a72"
+                              : "hsl(var(--border))",
+                        }}
+                      >
+                        <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                        {status === "approved" && (
+                          <span
+                            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                            style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                          >
+                            <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                          </span>
+                        )}
+                        {status === "rejected" && (
+                          <span
+                            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                            style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                          >
+                            <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                          </span>
+                        )}
+                        {status === "pending" && (
+                          <span
+                            className="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full"
+                            style={{ background: "rgba(255,255,255,0.55)" }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
 
             {/* Combined Catalog reference + AI suggestions card */}
             <div className="flex min-h-0 overflow-hidden rounded-lg border border-border bg-surface">
@@ -494,74 +553,6 @@ function ReviewSessionPage() {
 
 
 
-          {/* Capture strip */}
-          <div className="shrink-0 border-t border-border px-6 pt-3">
-            <div className="flex items-center justify-between pb-1.5">
-              <div className="text-xs text-muted-foreground">
-                Captured images
-              </div>
-
-
-            </div>
-            <div className="ooc-scroll flex gap-2 overflow-x-auto px-1 pb-4 pt-1">
-              {captures.map((cap, i) => {
-                const status = statusFor(cap.id);
-                const active = i === safeCaptureIdx;
-                return (
-                  <button
-                    key={cap.id}
-                    type="button"
-                    onClick={() => setCaptureIndex(i)}
-                    className={`group relative h-[72px] w-[108px] shrink-0 overflow-hidden rounded-md border-2 transition ${
-                      active
-                        ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-background"
-                        : "opacity-90 hover:opacity-100"
-                    }`}
-                    style={{
-                      borderColor:
-                        status === "approved"
-                          ? "#8FD3A8"
-                          : status === "rejected"
-                          ? "#d97a72"
-                          : "hsl(var(--border))",
-                    }}
-                  >
-                    <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-
-                    {/* Approved: green circle badge top-right */}
-                    {status === "approved" && (
-                      <span
-                        className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                        style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                      >
-                        <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                      </span>
-                    )}
-
-                    {/* Rejected: red circle badge top-right */}
-                    {status === "rejected" && (
-                      <span
-                        className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                        style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                      >
-                        <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                      </span>
-                    )}
-
-                    {/* Pending dot indicator */}
-                    {status === "pending" && (
-                      <span
-                        className="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full"
-                        style={{ background: "rgba(255,255,255,0.55)" }}
-                      />
-                    )}
-                  </button>
-
-                );
-              })}
-            </div>
-
-          </div>
 
 
           {/* Shortcut bar */}
@@ -995,7 +986,8 @@ function CaptureImagePanel({
   };
 
   return (
-    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
+
       <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
         <span className="text-xs text-muted-foreground">Captured image</span>
         {status && (
