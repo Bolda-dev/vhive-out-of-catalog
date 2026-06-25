@@ -487,7 +487,7 @@ function ReviewSessionPage() {
           {/* Capture strip */}
           <div className="shrink-0 border-t border-border px-6 pt-3">
             <div className="flex items-center justify-between pb-1.5">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 Captured images
               </div>
               <div className="text-xs text-muted-foreground tabular-nums">
