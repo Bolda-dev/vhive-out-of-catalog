@@ -377,8 +377,8 @@ function ReviewSessionPage() {
 
 
                 {suggestionCount > 0 && selected ? (
-                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(360px,42%)_auto] gap-4">
-                    {/* Candidate cards (left, primary) */}
+                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(260px,320px)_minmax(0,1fr)_auto] gap-4">
+                    {/* Candidate cards (left, narrower) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
                       {suggestions.map((s, i) => {
                         const active = i === suggestionIndex;
@@ -439,40 +439,21 @@ function ReviewSessionPage() {
                       })}
                     </div>
 
-                    {/* Selected reference (right, landscape) */}
-                    <div className="flex min-h-0 flex-col gap-2">
-                      <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
+                    {/* Selected reference (right, large) */}
+                    <div className="flex min-h-0 flex-col">
+                      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
                         <img
                           key={selected.item.id}
                           src={current.captures[captureIndex]?.imageUrl}
                           alt=""
                           className="h-full w-full object-cover origin-center scale-[3.5] -translate-y-[8%]"
                         />
-                        <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[10px] font-medium text-background">
-                          {selected.score}% match
+                        <span className="absolute left-2 top-2">
+                          <MatchScoreBadge score={selected.score} />
                         </span>
                       </div>
-                      <div className="text-sm font-medium text-foreground">
-                        {selected.item.manufacturer} · {selected.item.model}
-                      </div>
-                      <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
-                        {selected.item.category} / {selected.item.classification} · {selected.item.heightU}U
-                      </div>
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
-                          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                          {stableBoundCount(selected.item.id)} bound
-                        </div>
-                        <button
-                          type="button"
-                          onClick={confirmBind}
-                          className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition hover:bg-brand/90"
-                        >
-                          <BindToExistingIcon className="h-4 w-4" />
-                          Confirm & Bind
-                        </button>
-                      </div>
                     </div>
+
                     {/* Actions (right, minimal width, no border) */}
                     <div className="flex min-h-0 w-44 flex-col gap-2 overflow-auto">
                       <button
