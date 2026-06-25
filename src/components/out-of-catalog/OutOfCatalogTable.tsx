@@ -69,7 +69,7 @@ function StatusCell({ status }: { status: OocStatus }) {
   return (
     <span
       style={{
-        color: status === "Pending" ? "#FCD34D" : "rgba(255,255,255,0.6)",
+        color: status === "Pending" ? "#F2D066" : "rgba(255,255,255,0.6)",
       }}
     >
       {status}
