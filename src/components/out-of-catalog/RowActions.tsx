@@ -58,7 +58,7 @@ export function RowActions({ row }: { row: OocRow }) {
         type="button"
         disabled={isUnrecognized}
         onClick={() => toast(`Marked as Unrecognized: ${row.equipmentType}`)}
-        className={cn(BTN, "text-foreground hover:bg-row-hover")}
+        className={BTN}
       >
         <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
         Mark as Unrecognized
