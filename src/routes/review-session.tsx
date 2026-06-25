@@ -156,7 +156,7 @@ function ReviewSessionPage() {
   const addAsNew = useCallback(() => {
     if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "added" }));
-    toast.success("Added as new equipment");
+    appToast({ variant: "success", title: "Added as new equipment" });
     goNext();
   }, [current, goNext]);
 
