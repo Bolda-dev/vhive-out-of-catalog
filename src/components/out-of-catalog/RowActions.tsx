@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 
 const BTN =
-  "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-transparent px-2.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+  "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border-0 bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40";
 
 function AddNewBindIcon({ className }: { className?: string }) {
   return (
