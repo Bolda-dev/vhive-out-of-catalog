@@ -443,7 +443,7 @@ function ReviewSessionPage() {
                     <div className="flex min-h-0 flex-col gap-2">
                       <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
                         <img
-                          key={suggestion.id}
+                          key={selected.item.id}
                           src={current.captures[captureIndex]?.imageUrl}
                           alt=""
                           className="h-full w-full object-cover origin-center scale-[3.5] -translate-y-[8%]"
@@ -453,15 +453,15 @@ function ReviewSessionPage() {
                         </span>
                       </div>
                       <div className="text-sm font-medium text-foreground">
-                        {suggestion.manufacturer} · {suggestion.model}
+                        {selected.item.manufacturer} · {selected.item.model}
                       </div>
                       <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
-                        {suggestion.category} / {suggestion.classification} · {suggestion.heightU}U
+                        {selected.item.category} / {selected.item.classification} · {selected.item.heightU}U
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
                           <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                          {stableBoundCount(suggestion.id)} bound
+                          {stableBoundCount(selected.item.id)} bound
                         </div>
                         <button
                           type="button"
