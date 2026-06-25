@@ -84,11 +84,13 @@ function ReviewSessionPage() {
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
+    setSuggestionIndex(0);
     setBanner(null);
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
   const goPrev = useCallback(() => {
     setCaptureIndex(0);
+    setSuggestionIndex(0);
     setBanner(null);
     setCurrentIndex((i) => Math.max(i - 1, 0));
   }, []);
@@ -104,18 +106,19 @@ function ReviewSessionPage() {
   );
 
   const confirmBind = useCallback(() => {
-    if (!current || !suggestion) return;
+    if (!current || !selected) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
     setBanner({
       kind: "success",
-      message: `New equipment bound successfully — ${suggestion.manufacturer} ${suggestion.model}`,
+      message: `New equipment bound successfully — ${selected.item.manufacturer} ${selected.item.model}`,
     });
     window.setTimeout(() => {
       setBanner(null);
       setCaptureIndex(0);
+      setSuggestionIndex(0);
       setCurrentIndex((i) => Math.min(i + 1, total));
     }, 900);
-  }, [current, suggestion, total]);
+  }, [current, selected, total]);
   const simulateBindError = useCallback(() => {
     setBanner({
       kind: "error",
