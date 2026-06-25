@@ -1,7 +1,21 @@
 import type { OocRow, OocCapture, OocStatus, AiSuggestion } from "./outOfCatalogTypes";
 import { mockCatalog } from "./mockCatalog";
+import rack01 from "@/assets/racks/rack-01.jpg.asset.json";
+import rack02 from "@/assets/racks/rack-02.jpg.asset.json";
+import rackGen1 from "@/assets/racks/rack-gen-1.jpg.asset.json";
+import rackGen2 from "@/assets/racks/rack-gen-2.jpg.asset.json";
+import rackGen3 from "@/assets/racks/rack-gen-3.jpg.asset.json";
+import rackGen4 from "@/assets/racks/rack-gen-4.jpg.asset.json";
 
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/400/300`;
+const rackImages = [rack01.url, rack02.url, rackGen1.url, rackGen2.url, rackGen3.url, rackGen4.url];
+
+// Deterministic pick based on seed string so captures stay stable across renders.
+function hash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+const img = (seed: string) => rackImages[hash(seed) % rackImages.length];
 
 function makeCaptures(rowSeed: string, count: number, baseLocation: string, surveyBase: string): OocCapture[] {
   return Array.from({ length: count }, (_, i) => ({
