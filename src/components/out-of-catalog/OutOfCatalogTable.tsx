@@ -340,7 +340,17 @@ export function OutOfCatalogTable({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="transition-colors hover:bg-row-hover">
+            <tr
+              key={row.id}
+              className="transition-colors hover:bg-row-hover"
+              style={{
+                color: "rgba(255, 255, 255, 0.87)",
+                fontFamily: "Roboto, sans-serif",
+                fontSize: "14px",
+                fontWeight: 400,
+                lineHeight: "21px",
+              }}
+            >
               {cols.map((col) => (
                 <td
                   key={col.id}
