@@ -137,9 +137,15 @@ function ReviewSessionPage() {
 
   const confirmBind = useCallback(() => {
     if (!current || !selected) return;
-    setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-    appToast({ variant: "success", title: "Bound to catalog item", description: `${selected.item.manufacturer} ${selected.item.model}` });
-    goNext();
+    const label = `${selected.item.manufacturer} ${selected.item.model}`;
+    playBindSound();
+    setBindAnim({ label });
+    window.setTimeout(() => {
+      setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
+      appToast({ variant: "success", title: "Bound to catalog item", description: label });
+      setBindAnim(null);
+      goNext();
+    }, 1100);
   }, [current, selected, goNext]);
 
   const skipSession = useCallback(() => {
