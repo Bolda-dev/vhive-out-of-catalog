@@ -18,21 +18,28 @@ function hash(s: string): number {
 const img = (seed: string) => rackImages[hash(seed) % rackImages.length];
 
 function makeCaptures(rowSeed: string, count: number, baseLocation: string, surveyBase: string): OocCapture[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `${rowSeed}-cap-${i + 1}`,
-    imageUrl: img(`${rowSeed}-${i + 1}`),
-    surveyId: `${surveyBase}-${String(i + 1).padStart(3, "0")}`,
-    capturedAt: `0${(i % 9) + 1}-06-2026 1${i % 6}:2${i % 6}:1${i % 6}`,
-    location: `${baseLocation} / Rack ${String.fromCharCode(65 + (i % 6))}${10 + i}`,
-    aiDescription: [
-      "Rack-mount 1U device with multiple ethernet ports and status LEDs",
-      "2U server chassis, dual PSU, front bezel removed",
-      "Vertical PDU with C13/C19 outlets along the right rail",
-      "1U patch panel populated with blue cat6 patch cords",
-      "Edge router with QSFP cages visible, blue mgmt port on left",
-    ][i % 5],
-  }));
+  return Array.from({ length: count }, (_, i) => {
+    const seriesHash = hash(`${rowSeed}-series-${i}`) % 10;
+    // ~40% of captures are a series of 2-4 images
+    const imageCount = seriesHash < 4 ? 2 + (seriesHash % 3) : 1;
+    return {
+      id: `${rowSeed}-cap-${i + 1}`,
+      imageUrl: img(`${rowSeed}-${i + 1}`),
+      surveyId: `${surveyBase}-${String(i + 1).padStart(3, "0")}`,
+      capturedAt: `0${(i % 9) + 1}-06-2026 1${i % 6}:2${i % 6}:1${i % 6}`,
+      location: `${baseLocation} / Rack ${String.fromCharCode(65 + (i % 6))}${10 + i}`,
+      aiDescription: [
+        "Rack-mount 1U device with multiple ethernet ports and status LEDs",
+        "2U server chassis, dual PSU, front bezel removed",
+        "Vertical PDU with C13/C19 outlets along the right rail",
+        "1U patch panel populated with blue cat6 patch cords",
+        "Edge router with QSFP cages visible, blue mgmt port on left",
+      ][i % 5],
+      imageCount,
+    };
+  });
 }
+
 
 interface Seed {
   id: string;
