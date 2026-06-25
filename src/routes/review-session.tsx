@@ -334,28 +334,8 @@ function ReviewSessionPage() {
         />
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
-          {/* Suggestion ID chip */}
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-6 py-3">
-            {selected ? (
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="flex min-w-0 max-w-full items-center gap-3 rounded-md border border-border bg-surface px-3 py-1.5">
-                  <MetaField label="Type" value={current.aiType || "—"} />
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <MetaField label="Manufacturer" value={current.aiManufacturer || "—"} />
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <MetaField label="Model" value={current.aiModel || "—"} />
 
 
-                  <MatchScoreBadge score={selected.score} />
-                </div>
-                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {safeSuggestionIdx + 1} / {suggestionCount}
-                </span>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">No suggestions remaining</div>
-            )}
-          </div>
 
           {/* Compare images + vertical suggestion rail */}
           <section
@@ -369,6 +349,9 @@ function ReviewSessionPage() {
               <CaptureImagePanel
                 src={currentCapture?.imageUrl}
                 status={currentCapture ? statusFor(currentCapture.id) : "pending"}
+                type={current.aiType}
+                manufacturer={current.aiManufacturer}
+                model={current.aiModel}
                 metaBottomLeft={
                   currentCapture
                     ? `${currentCapture.capturedAt} · ${currentCapture.location}`
@@ -938,6 +921,9 @@ const DEFAULT_POLY: Pt[] = [
 function CaptureImagePanel({
   src,
   status,
+  type,
+  manufacturer,
+  model,
   metaBottomLeft,
   onApprove,
   onReject,
@@ -946,6 +932,9 @@ function CaptureImagePanel({
 }: {
   src?: string;
   status?: ImgStatus;
+  type?: string;
+  manufacturer?: string;
+  model?: string;
   metaBottomLeft?: string;
   onApprove?: () => void;
   onReject?: () => void;
@@ -980,17 +969,25 @@ function CaptureImagePanel({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
 
-      <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-        <span className="text-xs text-muted-foreground">Captured image</span>
-        {status && (
+      <div className="flex items-center gap-3 border-b border-border/60 px-3 py-2">
+        <span className="shrink-0 text-xs text-muted-foreground">Captured image</span>
+        {(type || manufacturer || model) && (
+          <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
+            <span className="h-3 w-px shrink-0 bg-white/10" />
+            <MetaField label="Type" value={type || "—"} />
+            <span className="h-3 w-px shrink-0 bg-white/10" />
+            <MetaField label="Manufacturer" value={manufacturer || "—"} />
+            <span className="h-3 w-px shrink-0 bg-white/10" />
+            <MetaField label="Model" value={model || "—"} />
+          </div>
+        )}
+        {status && status !== "pending" && (
           <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
+            className="ml-auto inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
             style={
               status === "approved"
                 ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
-                : status === "rejected"
-                  ? { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
-                  : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)" }
+                : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
             }
           >
             {status}
