@@ -4,12 +4,14 @@ import {
   Check,
   CheckCircle2 as CheckCircleIcon,
   Crop,
+  HelpCircle,
   Plus,
   Search,
   SkipForward,
   Sparkles,
   X,
 } from "lucide-react";
+
 
 import { toast } from "sonner";
 import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
@@ -562,7 +564,10 @@ function ReviewSessionPage() {
             allApproved={allApproved}
             canBind={!!selected && allApproved}
             onBind={() => selected && setPendingBindId(selected.item.id)}
+            onUnrecognize={markUnrecognized}
+            onAddAsNew={addAsNew}
           />
+
         </div>
       ) : (
         <EmptyQueue onBack={() => navigate({ to: "/out-of-catalog" })} />
@@ -746,14 +751,19 @@ function ShortcutBar({
   allApproved,
   canBind,
   onBind,
+  onUnrecognize,
+  onAddAsNew,
 }: {
   allApproved: boolean;
   canBind: boolean;
   onBind: () => void;
+  onUnrecognize: () => void;
+  onAddAsNew: () => void;
 }) {
   return (
     <div className="mt-auto flex shrink-0 items-center justify-between gap-4 border-t border-border bg-surface px-6 py-2.5">
       <div className="flex flex-1 flex-wrap items-center gap-x-6 gap-y-2">
+
         <ShortcutGroup
           label="Image"
           items={[
@@ -822,20 +832,41 @@ function ShortcutBar({
           ]}
         />
       </div>
-      <button
-        type="button"
-        onClick={onBind}
-        disabled={!canBind}
-        className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
-        style={{ background: "#3BB6E9", color: "#0b1418" }}
-        title={canBind ? "Bind (Enter)" : "Approve all captured images first"}
-      >
-        <Check className="h-4 w-4" />
-        Bind
-      </button>
+      <div className="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          onClick={onUnrecognize}
+          className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-normal text-foreground/85 transition hover:bg-white/5"
+          title="Unrecognize (U)"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Unrecognize
+        </button>
+        <button
+          type="button"
+          onClick={onAddAsNew}
+          className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-normal text-foreground/85 transition hover:bg-white/5"
+          title="Add as new (Ctrl+Enter)"
+        >
+          <Plus className="h-4 w-4" />
+          New equipment
+        </button>
+        <button
+          type="button"
+          onClick={onBind}
+          disabled={!canBind}
+          className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
+          style={{ background: "#3BB6E9", color: "#0b1418" }}
+          title={canBind ? "Bind (Enter)" : "Approve all captured images first"}
+        >
+          <Check className="h-4 w-4" />
+          Bind
+        </button>
+      </div>
     </div>
   );
 }
+
 
 type Pt = { x: number; y: number };
 const DEFAULT_POLY: Pt[] = [
