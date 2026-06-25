@@ -223,7 +223,7 @@ function ReviewSessionPage() {
               />
             )}
             {/* Info card (left) + Rail + Hero */}
-            <div className="grid min-h-0 flex-1 grid-cols-[260px_auto_minmax(0,1fr)] gap-3">
+            <div className="grid min-h-0 flex-1 grid-cols-[260px_minmax(0,1fr)_auto] gap-3">
               {/* Info / AI description card */}
               <div className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-lg border border-border bg-surface p-4">
                 <div className="flex flex-col gap-2">
