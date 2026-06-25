@@ -431,7 +431,7 @@ function ReviewSessionPage() {
                 <button
                   type="button"
                   onClick={confirmBind}
-                  disabled={!suggestion}
+                  disabled={!selected}
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-brand text-sm font-medium text-background transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Check className="h-4 w-4" />
