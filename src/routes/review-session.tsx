@@ -301,8 +301,9 @@ function ReviewSessionPage() {
                     {aiEdits[current.captures[captureIndex].id] ?? current.captures[captureIndex].aiDescription}
                   </span>
                 </span>
-
+              </div>
             )}
+
           </section>
 
           {/* ===== BOTTOM (decision) ===== */}
