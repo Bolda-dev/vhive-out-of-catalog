@@ -89,9 +89,9 @@ function ReviewSessionPage() {
       .filter((x): x is { item: typeof mockCatalog[number]; score: number } => !!x);
   }, [current, dismissed]);
   const suggestionCount = suggestions.length;
-  const pastEnd = suggestionIndex >= suggestionCount;
-  const selected = !pastEnd ? suggestions[suggestionIndex] : null;
-  const suggestion = selected?.item ?? null;
+  const safeIndex = suggestionCount > 0 ? Math.min(suggestionIndex, suggestionCount - 1) : 0;
+  const selected = suggestionCount > 0 ? suggestions[safeIndex]! : null;
+  const suggestion = selected ? selected.item : null;
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
@@ -372,39 +372,11 @@ function ReviewSessionPage() {
                       <Search className="h-3.5 w-3.5" />
                       Search catalog manually
                     </button>
-                    {suggestionCount > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSuggestionIndex((i) => Math.max(0, i - 1))}
-                          disabled={suggestionIndex === 0}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                          aria-label="Previous suggestion"
-                        >
-                          <ArrowLeft className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="min-w-[56px] text-center text-xs tabular-nums text-muted-foreground">
-                          <span className="text-foreground">
-                            {Math.min(suggestionIndex + 1, suggestionCount)}
-                          </span>{" "}
-                          of {suggestionCount}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setSuggestionIndex((i) => Math.min(suggestionCount, i + 1))}
-                          disabled={pastEnd}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                          aria-label="Next suggestion"
-                        >
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
 
 
-                {suggestion && selected ? (
+                {suggestionCount > 0 && selected ? (
                   <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(360px,42%)] gap-4">
                     {/* Candidate cards (left, primary) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
@@ -471,7 +443,7 @@ function ReviewSessionPage() {
                     <div className="flex min-h-0 flex-col gap-2">
                       <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
                         <img
-                          key={suggestion.id}
+                          key={selected.item.id}
                           src={current.captures[captureIndex]?.imageUrl}
                           alt=""
                           className="h-full w-full object-cover origin-center scale-[3.5] -translate-y-[8%]"
@@ -481,15 +453,15 @@ function ReviewSessionPage() {
                         </span>
                       </div>
                       <div className="text-sm font-medium text-foreground">
-                        {suggestion.manufacturer} · {suggestion.model}
+                        {selected.item.manufacturer} · {selected.item.model}
                       </div>
                       <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
-                        {suggestion.category} / {suggestion.classification} · {suggestion.heightU}U
+                        {selected.item.category} / {selected.item.classification} · {selected.item.heightU}U
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <div className="inline-flex w-fit items-center gap-2 rounded-md bg-white/[0.04] px-2 py-0.5 text-[11px] text-muted-foreground">
                           <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                          {stableBoundCount(suggestion.id)} bound
+                          {stableBoundCount(selected.item.id)} bound
                         </div>
                         <button
                           type="button"
