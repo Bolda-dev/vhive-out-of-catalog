@@ -369,10 +369,7 @@ function ReviewSessionPage() {
           <section
             className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
             style={{
-              gridTemplateColumns:
-                suggestionCount === 0
-                  ? "minmax(0,1fr) minmax(0,2fr)"
-                  : "minmax(0,1fr) minmax(0,1fr) 280px",
+              gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
             }}
           >
             <CaptureImagePanel
@@ -389,31 +386,47 @@ function ReviewSessionPage() {
               captureKey={currentCapture?.id ?? ""}
             />
 
-            <ImagePanel
-              label="Catalog reference"
-              src={selected?.item.referenceImageUrl}
-              empty={suggestionCount === 0 ? "No suggestion" : "No suggestion"}
-            />
+            {/* Combined Catalog reference + AI suggestions card */}
+            <div className="flex min-h-0 overflow-hidden rounded-lg border border-border bg-surface">
+              {/* Left: catalog reference */}
+              <div className="flex min-w-0 flex-1 flex-col">
+                <div className="flex h-8 shrink-0 items-center border-b border-border/60 px-3">
+                  <span className="text-xs text-muted-foreground">Catalog reference</span>
+                </div>
+                <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/30">
+                  {selected?.item.referenceImageUrl ? (
+                    <img
+                      src={selected.item.referenceImageUrl}
+                      alt=""
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-sm text-muted-foreground">No suggestion</div>
+                  )}
+                </div>
+              </div>
 
-            {suggestionCount === 0 ? (
-              <NoSuggestionsEmpty
-                onAddAsNew={addAsNew}
-                onUnrecognize={markUnrecognized}
-                onSearch={searchCatalog}
-                onRecreate={recreateSuggestions}
-                canRecreate={(dismissed[current.id]?.size ?? 0) > 0}
-              />
-            ) : (
-              <>
+              {/* Divider */}
+              <div className="w-px shrink-0 bg-border/60" />
 
-                {/* Vertical suggestion rail */}
-                <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
-                  <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
+              {/* Right: suggestions / empty state */}
+              {suggestionCount === 0 ? (
+                <div className="flex w-[300px] shrink-0 min-h-0 flex-col">
+                  <NoSuggestionsEmpty
+                    onAddAsNew={addAsNew}
+                    onUnrecognize={markUnrecognized}
+                    onSearch={searchCatalog}
+                    onRecreate={recreateSuggestions}
+                    canRecreate={(dismissed[current.id]?.size ?? 0) > 0}
+                  />
+                </div>
+              ) : (
+                <div className="flex w-[280px] shrink-0 min-h-0 flex-col">
+                  <div className="flex h-8 shrink-0 items-center justify-between border-b border-border/60 px-3">
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
                       AI suggested matches
                     </span>
-
                     <span className="text-xs text-muted-foreground tabular-nums">
                       {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
                     </span>
@@ -475,9 +488,10 @@ function ReviewSessionPage() {
                     })}
                   </div>
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </section>
+
 
 
           {/* Capture strip */}
