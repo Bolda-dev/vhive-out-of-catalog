@@ -176,7 +176,7 @@ function ReviewSessionPage() {
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
       if (!current) return;
-      const item = current.aiSuggestions?.find((x) => x.item.id === catalogId)?.item;
+      const item = mockCatalog.find((c) => c.id === catalogId);
       setDismissed((prev) => {
         const next = { ...prev };
         const set = new Set(next[current.id] ?? []);
