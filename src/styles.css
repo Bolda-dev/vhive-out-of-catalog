@@ -71,8 +71,11 @@
   --accent: #4f565e;
   --accent-foreground: #ffffff;
 
-  --destructive: #ffaca7;
+  --destructive: #d97a72;
   --destructive-foreground: #1c2127;
+  --danger: #d97a72;
+  --danger-hover: #e89089;
+
 
   --border: #6c757d;
   --input: #6c757d;
