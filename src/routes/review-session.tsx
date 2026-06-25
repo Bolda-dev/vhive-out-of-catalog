@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
-  
+
   Calendar,
   Check,
+  Crop,
   Images,
 
 
@@ -62,6 +63,16 @@ function ReviewSessionPage() {
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
   const [dismissed, setDismissed] = useState<Record<string, Set<string>>>({});
+  const DEFAULT_POLY: Array<{ x: number; y: number }> = [
+    { x: 18, y: 30 },
+    { x: 82, y: 30 },
+    { x: 82, y: 44 },
+    { x: 18, y: 44 },
+  ];
+  const [polygons, setPolygons] = useState<Record<string, Array<{ x: number; y: number }>>>({});
+  const [polyEditing, setPolyEditing] = useState(false);
+  const heroRef = useRef<HTMLDivElement | null>(null);
+  const dragIdxRef = useRef<number | null>(null);
 
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
@@ -291,13 +302,87 @@ function ReviewSessionPage() {
                 )}
               </div>
 
-              <div className="relative flex min-h-0 items-center justify-center rounded-lg border border-border bg-surface">
+              <div
+                ref={heroRef}
+                className="relative flex min-h-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-surface"
+                onPointerMove={(e) => {
+                  if (dragIdxRef.current === null || !heroRef.current) return;
+                  const rect = heroRef.current.getBoundingClientRect();
+                  const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                  const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+                  const capId = current.captures[captureIndex]?.id;
+                  if (!capId) return;
+                  setPolygons((prev) => {
+                    const poly = [...(prev[capId] ?? DEFAULT_POLY)];
+                    poly[dragIdxRef.current!] = { x, y };
+                    return { ...prev, [capId]: poly };
+                  });
+                }}
+                onPointerUp={() => {
+                  dragIdxRef.current = null;
+                }}
+              >
                 <img
                   key={current.captures[captureIndex]?.id}
                   src={current.captures[captureIndex]?.imageUrl}
                   alt=""
-                  className="max-h-full max-w-full object-contain p-2"
+                  className="h-full w-full object-cover"
+                  style={{ transform: "scale(1.6)", transformOrigin: "50% 32%" }}
                 />
+                {current.captures[captureIndex] && (() => {
+                  const capId = current.captures[captureIndex].id;
+                  const poly = polygons[capId] ?? DEFAULT_POLY;
+                  const points = poly.map((p) => `${p.x},${p.y}`).join(" ");
+                  return (
+                    <>
+                      <svg
+                        className="pointer-events-none absolute inset-0 h-full w-full"
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="none"
+                      >
+                        <polygon
+                          points={points}
+                          fill="#3BB6E9"
+                          fillOpacity="0.18"
+                          stroke="#3BB6E9"
+                          strokeWidth="0.35"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </svg>
+                      {polyEditing && (
+                        <>
+                          {poly.map((p, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              aria-label={`Polygon point ${i + 1}`}
+                              onPointerDown={(e) => {
+                                e.preventDefault();
+                                (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                                dragIdxRef.current = i;
+                              }}
+                              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-white bg-[#3BB6E9] shadow-md active:cursor-grabbing"
+                              style={{ left: `${p.x}%`, top: `${p.y}%`, touchAction: "none" }}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+
+                <button
+                  type="button"
+                  onClick={() => setPolyEditing((v) => !v)}
+                  aria-label={polyEditing ? "Finish editing region" : "Edit region"}
+                  title={polyEditing ? "Finish editing region" : "Edit region"}
+                  className={`absolute bottom-12 left-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-black/80 text-white shadow-md backdrop-blur-sm transition hover:bg-black ${
+                    polyEditing ? "ring-2 ring-[#3BB6E9]" : ""
+                  }`}
+                >
+                  <Crop className="h-4 w-4" />
+                </button>
+
                 {current.captures[captureIndex] && (
                   <div
                     className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-wrap items-center gap-x-2 gap-y-1 bg-black/60 px-3 py-2 text-xs backdrop-blur-md"
