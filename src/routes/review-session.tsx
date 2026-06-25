@@ -168,6 +168,17 @@ function ReviewSessionPage() {
 
   const searchCatalog = useCallback(() => appToast({ title: "Catalog search — coming soon" }), []);
 
+  const recreateSuggestions = useCallback(() => {
+    if (!current) return;
+    setDismissed((prev) => {
+      const next = { ...prev };
+      delete next[current.id];
+      return next;
+    });
+    setSuggestionIndex(0);
+    appToast({ variant: "success", title: "AI suggestions restored" });
+  }, [current]);
+
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
       if (!current) return;
