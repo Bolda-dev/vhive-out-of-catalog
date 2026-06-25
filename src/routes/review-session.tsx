@@ -223,7 +223,7 @@ function ReviewSessionPage() {
               />
             )}
             {/* Info card (left) + Rail + Hero */}
-            <div className="grid min-h-0 flex-1 grid-cols-[260px_auto_minmax(0,1fr)] gap-3">
+            <div className="grid min-h-0 flex-1 grid-cols-[260px_minmax(0,1fr)_auto] gap-3">
               {/* Info / AI description card */}
               <div className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-lg border border-border bg-surface p-4">
                 <div className="flex flex-col gap-2">
@@ -291,6 +291,32 @@ function ReviewSessionPage() {
                 )}
               </div>
 
+              <div className="relative flex min-h-0 items-center justify-center rounded-lg border border-border bg-surface">
+                <img
+                  key={current.captures[captureIndex]?.id}
+                  src={current.captures[captureIndex]?.imageUrl}
+                  alt=""
+                  className="max-h-full max-w-full object-contain p-2"
+                />
+                {current.captures[captureIndex] && (
+                  <div
+                    className="pointer-events-none absolute bottom-3 left-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-black/60 px-2.5 py-1.5 text-xs backdrop-blur-md"
+                    style={{ color: "rgba(255,255,255,0.85)" }}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {current.captures[captureIndex].capturedAt}
+                    </span>
+                    <span className="text-white/30">·</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {current.captures[captureIndex].location} · survey{" "}
+                      {current.captures[captureIndex].surveyId}
+                    </span>
+                  </div>
+                )}
+              </div>
+
               <div className="custom-scrollbar flex w-[112px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto px-1 py-1">
                 {current.captures.map((cap, i) => {
                   const selected = i === captureIndex;
@@ -320,32 +346,6 @@ function ReviewSessionPage() {
                     </button>
                   );
                 })}
-              </div>
-
-              <div className="relative flex min-h-0 items-center justify-center rounded-lg border border-border bg-surface">
-                <img
-                  key={current.captures[captureIndex]?.id}
-                  src={current.captures[captureIndex]?.imageUrl}
-                  alt=""
-                  className="max-h-full max-w-full object-contain p-2"
-                />
-                {current.captures[captureIndex] && (
-                  <div
-                    className="pointer-events-none absolute bottom-3 left-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-black/60 px-2.5 py-1.5 text-xs backdrop-blur-md"
-                    style={{ color: "rgba(255,255,255,0.85)" }}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {current.captures[captureIndex].capturedAt}
-                    </span>
-                    <span className="text-white/30">·</span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {current.captures[captureIndex].location} · survey{" "}
-                      {current.captures[captureIndex].surveyId}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
 
