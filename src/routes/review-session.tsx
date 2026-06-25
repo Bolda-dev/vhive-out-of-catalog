@@ -670,7 +670,39 @@ function ReviewSessionPage() {
         <EmptyQueue onBack={() => navigate({ to: "/out-of-catalog" })} />
       )}
 
+      <AlertDialog
+        open={pendingBindId !== null}
+        onOpenChange={(o) => !o && setPendingBindId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm bind to catalog item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {(() => {
+                const it = mockCatalog.find((c) => c.id === pendingBindId);
+                return it
+                  ? `This will bind ${current?.instances ?? 0} instance(s) to ${it.manufacturer} · ${it.model}.`
+                  : "This will bind the current object to the selected catalog item.";
+              })()}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setPendingBindId(null);
+                confirmBind();
+              }}
+              className="bg-brand text-background hover:bg-brand/90"
+            >
+              Confirm &amp; Bind
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Toaster />
+
     </div>
   );
 }
