@@ -832,18 +832,38 @@ function ShortcutBar({
           ]}
         />
       </div>
-      <button
-        type="button"
-        onClick={onBind}
-        disabled={!canBind}
-        className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
-        style={{ background: "#3BB6E9", color: "#0b1418" }}
-        title={canBind ? "Bind (Enter)" : "Approve all captured images first"}
-      >
-        <Check className="h-4 w-4" />
-        Bind
-      </button>
-    </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          onClick={onUnrecognize}
+          className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-normal text-foreground/85 transition hover:bg-white/5"
+          title="Unrecognize (U)"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Unrecognize
+        </button>
+        <button
+          type="button"
+          onClick={onAddAsNew}
+          className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-transparent px-3 text-sm font-normal text-foreground/85 transition hover:bg-white/5"
+          title="Add as new (Ctrl+Enter)"
+        >
+          <Plus className="h-4 w-4" />
+          New equipment
+        </button>
+        <button
+          type="button"
+          onClick={onBind}
+          disabled={!canBind}
+          className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
+          style={{ background: "#3BB6E9", color: "#0b1418" }}
+          title={canBind ? "Bind (Enter)" : "Approve all captured images first"}
+        >
+          <Check className="h-4 w-4" />
+          Bind
+        </button>
+      </div>
+
   );
 }
 
