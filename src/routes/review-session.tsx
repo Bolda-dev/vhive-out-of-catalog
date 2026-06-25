@@ -452,7 +452,7 @@ function ReviewSessionPage() {
                           <div className="flex flex-col gap-1 px-2.5 py-2">
                             <div className="flex items-center justify-between gap-2">
                               <span
-                                className="truncate font-mono text-[10px] text-muted-foreground"
+                                className="font-mono text-[10px] text-muted-foreground"
                                 title={s.item.id}
                               >
                                 #{s.item.id}
