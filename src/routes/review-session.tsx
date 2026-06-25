@@ -863,9 +863,10 @@ function ShortcutBar({
           Bind
         </button>
       </div>
-
+    </div>
   );
 }
+
 
 type Pt = { x: number; y: number };
 const DEFAULT_POLY: Pt[] = [
