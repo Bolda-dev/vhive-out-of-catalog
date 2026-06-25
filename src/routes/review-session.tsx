@@ -969,17 +969,25 @@ function CaptureImagePanel({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
 
-      <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
-        <span className="text-xs text-muted-foreground">Captured image</span>
-        {status && (
+      <div className="flex items-center gap-3 border-b border-border/60 px-3 py-2">
+        <span className="shrink-0 text-xs text-muted-foreground">Captured image</span>
+        {(type || manufacturer || model) && (
+          <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
+            <span className="h-3 w-px shrink-0 bg-white/10" />
+            <MetaField label="Type" value={type || "—"} />
+            <span className="h-3 w-px shrink-0 bg-white/10" />
+            <MetaField label="Manufacturer" value={manufacturer || "—"} />
+            <span className="h-3 w-px shrink-0 bg-white/10" />
+            <MetaField label="Model" value={model || "—"} />
+          </div>
+        )}
+        {status && status !== "pending" && (
           <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
+            className="ml-auto inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
             style={
               status === "approved"
                 ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
-                : status === "rejected"
-                  ? { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
-                  : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)" }
+                : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
             }
           >
             {status}
