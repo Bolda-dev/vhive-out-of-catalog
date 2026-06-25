@@ -496,46 +496,40 @@ function ReviewSessionPage() {
                     key={cap.id}
                     type="button"
                     onClick={() => setCaptureIndex(i)}
-                    className={`group relative h-[72px] w-[108px] shrink-0 overflow-hidden rounded-md border border-border transition ${
+                    className={`group relative h-[72px] w-[108px] shrink-0 overflow-hidden rounded-md border-2 transition ${
                       active
                         ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-background"
-                        : "opacity-75 hover:opacity-100"
+                        : "opacity-90 hover:opacity-100"
                     }`}
+                    style={{
+                      borderColor:
+                        status === "approved"
+                          ? "#8FD3A8"
+                          : status === "rejected"
+                          ? "#d97a72"
+                          : "hsl(var(--border))",
+                    }}
                   >
                     <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
 
-                    {/* Approved: strong green overlay + big check */}
+                    {/* Approved: green circle badge top-right */}
                     {status === "approved" && (
-                      <>
-                        <div
-                          className="pointer-events-none absolute inset-0"
-                          style={{ background: "rgba(143,211,168,0.55)" }}
-                        />
-                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                          <Check
-                            className="h-9 w-9"
-                            strokeWidth={4}
-                            style={{ color: "#ffffff", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }}
-                          />
-                        </div>
-                      </>
+                      <span
+                        className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                        style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                      >
+                        <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                      </span>
                     )}
 
-                    {/* Rejected: red overlay */}
+                    {/* Rejected: red circle badge top-right */}
                     {status === "rejected" && (
-                      <>
-                        <div
-                          className="pointer-events-none absolute inset-0"
-                          style={{ background: "rgba(217,122,114,0.45)" }}
-                        />
-                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                          <X
-                            className="h-8 w-8"
-                            strokeWidth={4}
-                            style={{ color: "#ffffff", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }}
-                          />
-                        </div>
-                      </>
+                      <span
+                        className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                        style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                      >
+                        <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                      </span>
                     )}
 
                     {/* Pending dot indicator */}
@@ -546,6 +540,7 @@ function ReviewSessionPage() {
                       />
                     )}
                   </button>
+
                 );
               })}
             </div>
