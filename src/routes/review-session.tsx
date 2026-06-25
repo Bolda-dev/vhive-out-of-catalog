@@ -492,15 +492,15 @@ function ReviewSessionPage() {
 
 
                 {suggestionCount > 0 && selected ? (
-                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(260px,320px)_minmax(0,1fr)_auto] gap-4">
-                    {/* Candidate cards (left, narrower) */}
+                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(340px,400px)_minmax(0,1fr)_auto] gap-4">
+                    {/* Candidate cards (left) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
                       {suggestions.map((s, i) => {
                         const active = i === suggestionIndex;
                         return (
                           <div
                             key={s.item.id}
-                            className={`group relative rounded-md border transition ${
+                            className={`relative flex items-stretch rounded-md border transition ${
                               active
                                 ? "border-brand bg-brand/10"
                                 : "border-border bg-white/[0.02] hover:bg-white/[0.05]"
@@ -509,7 +509,7 @@ function ReviewSessionPage() {
                             <button
                               type="button"
                               onClick={() => setSuggestionIndex(i)}
-                              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left"
+                              className="flex min-w-0 flex-1 items-center gap-3 rounded-l-md px-3 py-2 text-left"
                             >
                               <img
                                 src={s.item.referenceImageUrl}
@@ -536,23 +536,38 @@ function ReviewSessionPage() {
                               </div>
                               <MatchScoreBadge score={s.score} />
                             </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                dismissSuggestion(s.item.id);
-                              }}
-                              title="Dismiss suggestion"
-                              aria-label="Dismiss suggestion"
-                              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 items-center gap-1 rounded-md bg-background/80 px-2 text-[11px] text-muted-foreground opacity-0 backdrop-blur-sm transition hover:bg-white/[0.08] hover:text-foreground group-hover:opacity-100 focus:opacity-100"
-                            >
-                              <X className="h-3.5 w-3.5" />
-                              Dismiss
-                            </button>
+                            <div className="flex shrink-0 items-center gap-1 border-l border-border/60 px-2">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSuggestionIndex(i);
+                                  setPendingBindId(s.item.id);
+                                }}
+                                title="Confirm & Bind"
+                                aria-label="Confirm and bind"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-brand transition hover:bg-brand/15"
+                              >
+                                <BindToExistingIcon className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dismissSuggestion(s.item.id);
+                                }}
+                                title="Dismiss suggestion"
+                                aria-label="Dismiss suggestion"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.08] hover:text-foreground"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                         );
                       })}
                     </div>
+
 
                     {/* Selected reference (right, large) */}
                     <div className="flex min-h-0 flex-col">
