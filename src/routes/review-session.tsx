@@ -444,10 +444,11 @@ function ReviewSessionPage() {
                       <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border border-brand/60 bg-surface ring-1 ring-brand/30">
                         <img
                           key={selected.item.id}
-                          src={current.captures[captureIndex]?.imageUrl}
-                          alt=""
-                          className="h-full w-full object-cover origin-center scale-[3.5] -translate-y-[8%]"
+                          src={selected.item.referenceImageUrl}
+                          alt={`${selected.item.manufacturer} ${selected.item.model}`}
+                          className="h-full w-full object-cover"
                         />
+
                         <span className="absolute left-2 top-2">
                           <MatchScoreBadge score={selected.score} />
                         </span>
