@@ -205,19 +205,19 @@ function ReviewSessionPage() {
                 >
                   {current.aiType}
                 </span>
-                <span className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                <span className="text-sm flex items-center flex-wrap" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {current.aiType}
+                  <span className="mx-1.5 text-white/30">›</span>
                   {current.aiManufacturer}
                   <span className="mx-1.5 text-white/30">›</span>
                   {current.aiModel}
+                  <span className="mx-1.5 text-white/30">›</span>
+                  <span className="mr-2">Confidence</span>
+                  <ConfidenceBadge value={current.confidence} size="sm" />
                 </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Confidence
-                </span>
-                <ConfidenceBadge value={current.confidence} size="md" />
               </div>
             </div>
+
 
             {/* Rail (left) + Hero */}
             <div className="grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3">
