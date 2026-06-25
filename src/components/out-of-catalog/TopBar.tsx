@@ -1,6 +1,8 @@
 import { Menu } from "lucide-react";
-import logoUrl from "@/assets/vhive-logo.png";
+import logoAsset from "@/assets/vhive-logo.png.asset.json";
 import { cn } from "@/lib/utils";
+
+const logoUrl = logoAsset.url;
 
 type TabId = "equipment" | "out-of-catalog" | "civil-survey";
 
