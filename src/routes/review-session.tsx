@@ -84,6 +84,8 @@ function ReviewSessionPage() {
   const [polyEditing, setPolyEditing] = useState(false);
   const heroRef = useRef<HTMLDivElement | null>(null);
   const dragIdxRef = useRef<number | null>(null);
+  const [pendingBindId, setPendingBindId] = useState<string | null>(null);
+
 
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
