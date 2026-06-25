@@ -375,7 +375,7 @@ function ReviewSessionPage() {
                         key={cap.id}
                         type="button"
                         onClick={() => setCaptureIndex(i)}
-                        className={`group relative h-[64px] w-[96px] shrink-0 overflow-hidden rounded-md border-2 transition ${
+                        className={`group relative h-[120px] w-[180px] shrink-0 overflow-hidden rounded-md border-2 transition ${
                           active
                             ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-surface"
                             : "opacity-90 hover:opacity-100"
