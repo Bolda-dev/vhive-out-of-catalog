@@ -41,7 +41,7 @@ export function RowActions({ row }: { row: OocRow }) {
       <button
         type="button"
         onClick={() => toast.success(`Added new & bound: ${row.equipmentType}`)}
-        className={cn(BTN, "text-foreground hover:bg-row-hover")}
+        className={BTN}
       >
         <AddNewBindIcon className="h-4 w-4 shrink-0" />
         Add New &amp; Bind
