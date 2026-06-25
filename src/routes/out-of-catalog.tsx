@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Play, Wand2 } from "lucide-react";
 import { toast } from "sonner";
@@ -57,6 +57,7 @@ const EMPTY_FILTERS: Filters = {
 };
 
 function OutOfCatalogPage() {
+  const navigate = useNavigate();
   const [rows] = useState<OocRow[]>(mockOutOfCatalog);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -140,7 +141,7 @@ function OutOfCatalogPage() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => toast.success("Session started")}
+              onClick={() => navigate({ to: "/review-session" })}
               className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
             >
               <Play className="h-4 w-4" />
