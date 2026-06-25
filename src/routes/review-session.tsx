@@ -1335,7 +1335,7 @@ function NoSuggestionsEmpty({
         </p>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2 mx-auto w-full max-w-[360px]">
         <EmptyAction
           onClick={onAddAsNew}
           icon={<AddNewBindIcon className="h-6 w-6" />}
