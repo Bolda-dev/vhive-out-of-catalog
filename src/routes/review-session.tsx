@@ -575,6 +575,29 @@ function ReviewSessionPage() {
   );
 }
 
+function MetaField({
+  label,
+  value,
+  truncate,
+}: {
+  label: string;
+  value: string;
+  truncate?: boolean;
+}) {
+  return (
+    <span
+      className={`flex min-w-0 items-baseline gap-1.5 ${truncate ? "min-w-0" : "shrink-0"}`}
+      title={value}
+    >
+      <span className="shrink-0 text-[11px] text-muted-foreground">{label}</span>
+      <span
+        className={`text-sm font-medium text-foreground ${truncate ? "max-w-[280px] truncate" : "shrink-0"}`}
+      >
+        {value}
+      </span>
+    </span>
+  );
+
 function ImagePanel({
   label,
   src,
