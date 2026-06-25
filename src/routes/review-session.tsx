@@ -160,7 +160,7 @@ function ReviewSessionPage() {
     goNext();
   }, [current, goNext]);
 
-  const searchCatalog = useCallback(() => toast.message("Catalog search — coming soon"), []);
+  const searchCatalog = useCallback(() => appToast({ title: "Catalog search — coming soon" }), []);
 
   const dismissSuggestion = useCallback(
     (catalogId: string) => {
