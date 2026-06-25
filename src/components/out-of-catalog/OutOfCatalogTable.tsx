@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { cn } from "@/lib/utils";
 import { RowActions } from "./RowActions";
+import { ConfidenceBadge } from "./ConfidenceBadge";
 
 export type SortDir = "asc" | "desc";
 export type SortState = { colId: string; dir: SortDir } | null;
@@ -77,8 +78,6 @@ function StatusCell({ status }: { status: OocStatus }) {
         : "rgba(255,255,255,0.6)";
   return <span style={{ color }}>{status}</span>;
 }
-
-import { ConfidenceBadge } from "./ConfidenceBadge";
 
 function ConfidenceCell({ value }: { value: number }) {
   return <ConfidenceBadge value={value} />;
