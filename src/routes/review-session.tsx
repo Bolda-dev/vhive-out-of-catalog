@@ -60,6 +60,8 @@ function ReviewSessionPage() {
   const [captureIndex, setCaptureIndex] = useState(0);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
+  const [aiEdits, setAiEdits] = useState<Record<string, string>>({});
+
   const [banner, setBanner] = useState<
     | { kind: "success"; message: string }
     | { kind: "error"; message: string }
