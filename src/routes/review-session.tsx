@@ -222,26 +222,75 @@ function ReviewSessionPage() {
                 onSimulateError={simulateBindError}
               />
             )}
-            {/* Header: hierarchical info + confidence */}
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="flex flex-col leading-tight">
-
-                <span className="text-sm flex items-center flex-wrap" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  {current.aiType}
-                  <span className="mx-1.5 text-white/30">›</span>
-                  {current.aiManufacturer}
-                  <span className="mx-1.5 text-white/30">›</span>
-                  {current.aiModel}
-                  <span className="mx-1.5 text-white/30">›</span>
-                  <span className="mr-2">Confidence</span>
-                  <ConfidenceBadge value={current.confidence} size="sm" />
-                </span>
+            {/* Info card (left) + Rail + Hero */}
+            <div className="grid min-h-0 flex-1 grid-cols-[260px_auto_minmax(0,1fr)] gap-3">
+              {/* Info / AI description card */}
+              <div className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-lg border border-border bg-surface p-4">
+                <div className="flex flex-col gap-2">
+                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                    Type
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
+                    {current.aiType}
+                  </div>
+                </div>
+                <div className="h-px bg-white/[0.06]" />
+                <div className="flex flex-col gap-2">
+                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                    Manufacturer
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
+                    {current.aiManufacturer}
+                  </div>
+                </div>
+                <div className="h-px bg-white/[0.06]" />
+                <div className="flex flex-col gap-2">
+                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                    Model
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
+                    {current.aiModel}
+                  </div>
+                </div>
+                <div className="h-px bg-white/[0.06]" />
+                <div className="flex flex-col gap-2">
+                  <div className="text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                    Confidence
+                  </div>
+                  <div>
+                    <ConfidenceBadge value={current.confidence} size="sm" />
+                  </div>
+                </div>
+                {current.captures[captureIndex] && (
+                  <>
+                    <div className="h-px bg-white/[0.06]" />
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.5)" }}>
+                        <Sparkles className="h-3 w-3" style={{ color: "#3BB6E9" }} />
+                        AI description
+                      </div>
+                      <span
+                        role="textbox"
+                        aria-label="AI description (editable)"
+                        contentEditable
+                        suppressContentEditableWarning
+                        spellCheck={false}
+                        onBlur={(e) => {
+                          const cap = current.captures[captureIndex];
+                          if (!cap) return;
+                          setAiEdits((prev) => ({ ...prev, [cap.id]: e.currentTarget.textContent ?? "" }));
+                        }}
+                        title="AI-generated description from the LLM. Click to edit."
+                        className="rounded px-1 py-0.5 text-sm italic outline-none cursor-text transition-colors hover:bg-white/[0.06] hover:ring-1 hover:ring-white/15 focus:ring-1 focus:ring-[#3BB6E9]/60"
+                        style={{ color: "rgba(255,255,255,0.75)" }}
+                      >
+                        {aiEdits[current.captures[captureIndex].id] ?? current.captures[captureIndex].aiDescription}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
 
-
-            {/* Rail (left) + Hero */}
-            <div className="grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3">
               <div className="custom-scrollbar flex w-[112px] flex-col items-center gap-2 overflow-x-hidden overflow-y-auto px-1 py-1">
                 {current.captures.map((cap, i) => {
                   const selected = i === captureIndex;
@@ -300,32 +349,7 @@ function ReviewSessionPage() {
               </div>
             </div>
 
-            {/* AI caption (per image) */}
-            {current.captures[captureIndex] && (
-              <div className="flex text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
-                <span
-                  className="group inline-flex items-start gap-1.5 rounded px-1.5 py-0.5 -mx-1.5 transition-colors hover:bg-white/[0.06]"
-                  title="AI-generated description from the LLM. Hover and click to edit."
-                >
-                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "#3BB6E9" }} />
-                  <span
-                    role="textbox"
-                    aria-label="AI description (editable)"
-                    contentEditable
-                    suppressContentEditableWarning
-                    spellCheck={false}
-                    onBlur={(e) => {
-                      const cap = current.captures[captureIndex];
-                      if (!cap) return;
-                      setAiEdits((prev) => ({ ...prev, [cap.id]: e.currentTarget.textContent ?? "" }));
-                    }}
-                    className="italic outline-none cursor-text rounded group-hover:ring-1 group-hover:ring-white/15 focus:ring-1 focus:ring-[#3BB6E9]/60 px-0.5"
-                  >
-                    {aiEdits[current.captures[captureIndex].id] ?? current.captures[captureIndex].aiDescription}
-                  </span>
-                </span>
-              </div>
-            )}
+
 
 
           </section>
