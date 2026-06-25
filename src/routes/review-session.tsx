@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   ArrowUpDown,
@@ -52,6 +53,11 @@ function ReviewSessionPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
+  const [banner, setBanner] = useState<
+    | { kind: "success"; message: string }
+    | { kind: "error"; message: string }
+    | null
+  >(null);
 
   const queue = useMemo<OocRow[]>(() => {
     const sorted = [...pending].sort((a, b) => a.confidence - b.confidence);
@@ -67,10 +73,12 @@ function ReviewSessionPage() {
 
   const goNext = useCallback(() => {
     setCaptureIndex(0);
+    setBanner(null);
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
   const goPrev = useCallback(() => {
     setCaptureIndex(0);
+    setBanner(null);
     setCurrentIndex((i) => Math.max(i - 1, 0));
   }, []);
 
@@ -86,8 +94,23 @@ function ReviewSessionPage() {
 
   const confirmBind = useCallback(() => {
     if (!current || !suggestion) return;
-    record("bound", `Bound to ${suggestion.manufacturer} ${suggestion.model}`);
-  }, [current, suggestion, record]);
+    setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
+    setBanner({
+      kind: "success",
+      message: `New equipment bound successfully — ${suggestion.manufacturer} ${suggestion.model}`,
+    });
+    window.setTimeout(() => {
+      setBanner(null);
+      setCaptureIndex(0);
+      setCurrentIndex((i) => Math.min(i + 1, total));
+    }, 900);
+  }, [current, suggestion, total]);
+  const simulateBindError = useCallback(() => {
+    setBanner({
+      kind: "error",
+      message: "Failed to bind equipment — please try again",
+    });
+  }, []);
   const skip = useCallback(() => record("skipped", "Skipped"), [record]);
   const markUnrecognized = useCallback(
     () => record("unrecognized", "Marked as Unrecognized"),
