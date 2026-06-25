@@ -1326,7 +1326,7 @@ function NoSuggestionsEmpty({
   canRecreate: boolean;
 }) {
   return (
-    <div className="col-span-2 flex min-h-0 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface/60 p-8">
+    <div className="flex min-h-0 flex-col items-center justify-center overflow-y-auto rounded-lg border border-dashed border-border bg-surface/60 p-4">
       <div className="relative mb-5 flex h-20 w-20 items-center justify-center">
         <div
           className="absolute inset-0 rounded-full"
