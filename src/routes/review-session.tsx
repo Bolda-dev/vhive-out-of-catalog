@@ -18,6 +18,7 @@ import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
 import { Toaster } from "@/components/ui/sonner";
+import { AddNewBindIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
 import {
   AlertDialog,
   AlertDialogAction,
