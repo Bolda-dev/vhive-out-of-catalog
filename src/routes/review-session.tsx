@@ -364,23 +364,6 @@ function ReviewSessionPage() {
                     </>
                   )}
                   <MatchScoreBadge score={selected.score} />
-
-                  <MetaField label="Type" value={current.aiType || "—"} />
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <MetaField label="Manufacturer" value={current.aiManufacturer || "—"} />
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <MetaField label="Model" value={current.aiModel || "—"} />
-                  {currentCapture?.aiDescription && (
-                    <>
-                      <span className="h-3 w-px shrink-0 bg-white/10" />
-                      <MetaField
-                        label="Panel description"
-                        value={currentCapture.aiDescription}
-                        truncate
-                      />
-                    </>
-                  )}
-                  <MatchScoreBadge score={selected.score} />
                 </div>
                 <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                   {safeSuggestionIdx + 1} / {suggestionCount}
