@@ -32,6 +32,9 @@
 
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+
 
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
