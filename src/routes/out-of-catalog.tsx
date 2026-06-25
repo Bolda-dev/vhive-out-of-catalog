@@ -141,20 +141,20 @@ function OutOfCatalogPage() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => navigate({ to: "/review-session" })}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
-            >
-              <Play className="h-4 w-4" />
-              Start Session
-            </button>
-            <button
-              type="button"
               onClick={() => toast.success("Auto-Bind run started")}
               className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
               style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
             >
               <Wand2 className="h-4 w-4" style={{ color: "#E0E0E0" }} />
               Auto-Bind Attempt
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/review-session" })}
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
+            >
+              <Play className="h-4 w-4" />
+              Start Session
             </button>
           </div>
         </div>
