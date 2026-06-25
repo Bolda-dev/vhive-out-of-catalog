@@ -265,7 +265,7 @@ export function OutOfCatalogTable({
                   onDrop={(e) => handleHeaderDrop(e, col.id)}
                   style={{ width, minWidth: width }}
                   className={cn(
-                    "group relative cursor-grab select-none border-b border-border px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground active:cursor-grabbing",
+                    "group relative cursor-grab select-none border-b border-border px-4 py-3 text-left text-sm font-medium text-muted-foreground active:cursor-grabbing",
                     isDragging && "opacity-40",
                   )}
                 >
