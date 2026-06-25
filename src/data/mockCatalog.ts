@@ -1,6 +1,21 @@
 import type { CatalogItem } from "./outOfCatalogTypes";
+import rackServer from "@/assets/catalog-rack-server.jpg";
+import rackSwitch from "@/assets/catalog-switch.jpg";
+import rackRouter from "@/assets/catalog-router.jpg";
+import rackStorage from "@/assets/catalog-storage.jpg";
 
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/200/200`;
+const pick = (category: string) => {
+  switch (category) {
+    case "Networking":
+      return rackSwitch;
+    case "Storage":
+      return rackStorage;
+    case "Compute":
+      return rackServer;
+    default:
+      return rackRouter;
+  }
+};
 
 export const mockCatalog: CatalogItem[] = [
   {
