@@ -7,6 +7,7 @@ import {
 
   Calendar,
   Check,
+  CheckCircle2 as CheckCircleIcon,
   Crop,
   Images,
 
@@ -19,6 +20,7 @@ import {
   X,
 
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
 
