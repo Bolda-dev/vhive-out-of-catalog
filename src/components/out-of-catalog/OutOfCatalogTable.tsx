@@ -317,7 +317,7 @@ export function OutOfCatalogTable({
                 </th>
               );
             })}
-            <th className="border-b border-border px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <th className="border-b border-border px-4 py-3 text-right text-sm font-medium text-muted-foreground">
               Actions
             </th>
           </tr>
