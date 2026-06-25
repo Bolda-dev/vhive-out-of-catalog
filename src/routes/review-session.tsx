@@ -389,6 +389,12 @@ function ReviewSessionPage() {
               captureKey={currentCapture?.id ?? ""}
             />
 
+            <ImagePanel
+              label="Catalog reference"
+              src={selected?.item.referenceImageUrl}
+              empty={suggestionCount === 0 ? "No suggestion" : "No suggestion"}
+            />
+
             {suggestionCount === 0 ? (
               <NoSuggestionsEmpty
                 onAddAsNew={addAsNew}
@@ -399,11 +405,7 @@ function ReviewSessionPage() {
               />
             ) : (
               <>
-                <ImagePanel
-                  label="Catalog reference"
-                  src={selected?.item.referenceImageUrl}
-                  empty="No suggestion"
-                />
+
                 {/* Vertical suggestion rail */}
                 <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
                   <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
