@@ -55,10 +55,10 @@
   --background: #121212;
   --foreground: #ffffff;
 
-  --card: #1e1e1e;
+  --card: #2b2b2b;
   --card-foreground: #ffffff;
 
-  --popover: #1e1e1e;
+  --popover: #2b2b2b;
   --popover-foreground: #ffffff;
 
   /* vHive brand cyan */
@@ -80,17 +80,18 @@
   --danger-hover: #e89089;
 
 
-  --border: #6c757d;
-  --input: #6c757d;
+  --border: rgba(108, 117, 125, 0.25);
+  --input: rgba(108, 117, 125, 0.25);
   --ring: #93c5fd;
 
   --brand: #3bb6e9;
   --brand-foreground: #1c2127;
 
-  /* Surfaces (panels / header strip) */
-  --surface: #1e1e1e;
-  --surface-2: #262626;
-  --row-hover: #1c1c1c;
+  /* Surfaces (panels / header strip) — +5% brightness over background */
+  --surface: #2b2b2b;
+  --surface-2: #333333;
+  --row-hover: #242424;
+
 
   /* Status colors */
   --status-pending: #F2D066;
