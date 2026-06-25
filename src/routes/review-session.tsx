@@ -4,7 +4,7 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
-  ArrowUpDown,
+  
   Calendar,
   Check,
   Flag,
@@ -196,58 +196,47 @@ function ReviewSessionPage() {
                 onSimulateError={simulateBindError}
               />
             )}
-            {/* Header bar */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex flex-wrap items-center gap-1.5">
-                <Chip label="AI Type" value={current.aiType} />
-                <Chip label="Manufacturer" value={current.aiManufacturer} />
-                <Chip label="Model" value={current.aiModel} />
-              </div>
-              <ConfidenceBadge value={current.confidence} size="md" />
-
-              <div className="ml-auto flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs text-muted-foreground transition hover:bg-white/[0.04] hover:text-foreground"
-                  title="Toggle sort by confidence"
+            {/* Header: hierarchical info + confidence */}
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="flex flex-col leading-tight">
+                <span
+                  className="text-lg font-medium"
+                  style={{ color: "rgba(255,255,255,0.87)" }}
                 >
-                  <ArrowUpDown className="h-3.5 w-3.5" />
-                  Confidence {sortDir === "asc" ? "↑ low→high" : "↓ high→low"}
-                </button>
-                <button
-                  type="button"
-                  onClick={goPrev}
-                  disabled={currentIndex === 0}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Previous"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </button>
-                <span className="min-w-[64px] text-center text-sm tabular-nums text-muted-foreground">
-                  <span className="text-foreground">{currentIndex + 1}</span> of {total}
+                  {current.aiType}
                 </span>
-                <button
-                  type="button"
-                  onClick={goNext}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-white/[0.04]"
-                  aria-label="Next"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate({ to: "/out-of-catalog" })}
-                  className="ml-2 inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.04] hover:text-foreground"
-                  aria-label="Close session"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                <span className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  {current.aiManufacturer}
+                  <span className="mx-1.5 text-white/30">›</span>
+                  {current.aiModel}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Confidence
+                </span>
+                <ConfidenceBadge value={current.confidence} size="md" />
               </div>
             </div>
 
-            {/* Hero + rail */}
-            <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_auto] gap-3">
+            {/* Rail (left) + Hero */}
+            <div className="grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-3">
+              <div className="custom-scrollbar flex w-[88px] flex-col gap-2 overflow-y-auto pr-1">
+                {current.captures.map((cap, i) => (
+                  <button
+                    key={cap.id}
+                    type="button"
+                    onClick={() => setCaptureIndex(i)}
+                    className={`h-16 w-16 shrink-0 overflow-hidden rounded border transition ${
+                      i === captureIndex
+                        ? "border-brand ring-2 ring-brand"
+                        : "border-border hover:border-white/40"
+                    }`}
+                  >
+                    <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
               <div className="flex min-h-0 items-center justify-center rounded-lg border border-border bg-surface">
                 <img
                   key={current.captures[captureIndex]?.id}
@@ -256,28 +245,8 @@ function ReviewSessionPage() {
                   className="max-h-full max-w-full object-contain p-2"
                 />
               </div>
-              <div className="flex w-[88px] flex-col gap-2">
-                <div className="text-center text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {current.captures.length} captures
-                </div>
-                <div className="custom-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto pr-1">
-                  {current.captures.map((cap, i) => (
-                    <button
-                      key={cap.id}
-                      type="button"
-                      onClick={() => setCaptureIndex(i)}
-                      className={`h-16 w-16 shrink-0 overflow-hidden rounded border transition ${
-                        i === captureIndex
-                          ? "border-brand ring-2 ring-brand"
-                          : "border-border hover:border-white/40"
-                      }`}
-                    >
-                      <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
+
 
             {/* Caption */}
             {current.captures[captureIndex] && (
