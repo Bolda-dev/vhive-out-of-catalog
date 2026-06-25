@@ -1074,6 +1074,19 @@ function CaptureImagePanel({
           </div>
         )}
 
+        {/* Crop button — overlay above metadata */}
+        {src && (
+          <button
+            type="button"
+            onClick={() => (editing ? confirmCrop() : setEditing(true))}
+            className="absolute bottom-9 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
+            style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
+            title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
+          >
+            {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
+          </button>
+        )}
+
         {/* Metadata — flush bottom-left of image, above the strip */}
         {metaBottomLeft && !editing && (
           <div className="absolute bottom-0 left-0 bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
@@ -1082,56 +1095,36 @@ function CaptureImagePanel({
         )}
       </div>
 
-      {/* Bottom black strip: crop (left) + reject/approve (right) */}
-      {src && (
-        <div className="flex items-center justify-between gap-2 border-t border-border/60 bg-black px-2 py-1.5">
+      {/* Bottom black strip: reject/approve */}
+      {src && onApprove && onReject && (
+        <div className="flex items-center justify-end gap-1.5 border-t border-border/60 bg-black px-2 py-1.5">
           <button
             type="button"
-            onClick={() => (editing ? confirmCrop() : setEditing(true))}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5"
-            style={{ color: editing ? "#8FBFA3" : "#ffffff" }}
-            title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
+            onClick={onReject}
+            disabled={!canAct}
+            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
+            style={{ color: "#d97a72", border: "1px solid #d97a72" }}
+            title="Reject (Backspace)"
           >
-            {editing ? (
-              <>
-                <Check className="h-3.5 w-3.5" /> Done
-              </>
-            ) : (
-              <Crop className="h-3.5 w-3.5" />
-            )}
+            <X className="h-3.5 w-3.5" /> Reject
           </button>
 
-          {onApprove && onReject && (
-            <div className="flex gap-1.5">
-              <button
-                type="button"
-                onClick={onReject}
-                disabled={!canAct}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
-                style={{ color: "#d97a72", border: "1px solid #d97a72" }}
-                title="Reject (Backspace)"
-              >
-                <X className="h-3.5 w-3.5" /> Reject
-              </button>
-
-              <button
-                type="button"
-                onClick={onApprove}
-                disabled={!canAct}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
-                style={{
-                  background: "#8FD3A8",
-                  color: "#0F2A1C",
-                }}
-                title="Approve (Enter)"
-              >
-                <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
-              </button>
-
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={onApprove}
+            disabled={!canAct}
+            className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
+            style={{
+              background: "#8FD3A8",
+              color: "#0F2A1C",
+            }}
+            title="Approve (Enter)"
+          >
+            <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
+          </button>
         </div>
       )}
+
     </div>
   );
 }
