@@ -902,7 +902,6 @@ function CaptureImagePanel({
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
-            {/* Outer dark outline for contrast */}
             <polygon
               points={points}
               fill="none"
@@ -911,7 +910,6 @@ function CaptureImagePanel({
               vectorEffect="non-scaling-stroke"
               style={{ strokeWidth: 4 } as React.CSSProperties}
             />
-            {/* Inner bright outline */}
             <polygon
               points={points}
               fill="rgba(59,182,233,0.08)"
@@ -940,12 +938,21 @@ function CaptureImagePanel({
           </div>
         )}
 
-        {/* Crop toggle button — bottom-left */}
-        {src && (
+        {/* Metadata — flush bottom-left of image, above the strip */}
+        {metaBottomLeft && !editing && (
+          <div className="absolute bottom-0 left-0 bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
+            {metaBottomLeft}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom black strip: crop (left) + reject/approve (right) */}
+      {src && (
+        <div className="flex items-center justify-between gap-2 border-t border-border/60 bg-black px-2 py-1.5">
           <button
             type="button"
             onClick={() => (editing ? confirmCrop() : setEditing(true))}
-            className="absolute bottom-2 left-2 inline-flex h-8 items-center gap-1.5 rounded-md bg-black/80 px-2.5 text-xs backdrop-blur transition hover:bg-black"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5"
             style={{ color: editing ? "#8FBFA3" : "#ffffff" }}
             title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
           >
@@ -957,46 +964,41 @@ function CaptureImagePanel({
               <Crop className="h-3.5 w-3.5" />
             )}
           </button>
-        )}
 
-        {metaBottomLeft && !editing && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
-            {metaBottomLeft}
-          </div>
-        )}
-
-        {onApprove && onReject && (
-          <div className="absolute bottom-2 right-2 flex gap-1.5">
-            <button
-              type="button"
-              onClick={onReject}
-              disabled={!canAct}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-black/55 px-2.5 text-xs backdrop-blur transition hover:bg-black/70 disabled:opacity-40"
-              style={{ color: "#d97a72" }}
-              title="Reject (Backspace)"
-            >
-              <X className="h-3.5 w-3.5" /> Reject
-            </button>
-            <button
-              type="button"
-              onClick={onApprove}
-              disabled={!canAct}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs backdrop-blur transition disabled:opacity-40"
-              style={{
-                background: "rgba(59,182,233,0.15)",
-                borderColor: "rgba(59,182,233,0.5)",
-                color: "#3BB6E9",
-              }}
-              title="Approve (Enter)"
-            >
-              <Check className="h-3.5 w-3.5" /> Approve
-            </button>
-          </div>
-        )}
-      </div>
+          {onApprove && onReject && (
+            <div className="flex gap-1.5">
+              <button
+                type="button"
+                onClick={onReject}
+                disabled={!canAct}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
+                style={{ color: "#d97a72" }}
+                title="Reject (Backspace)"
+              >
+                <X className="h-3.5 w-3.5" /> Reject
+              </button>
+              <button
+                type="button"
+                onClick={onApprove}
+                disabled={!canAct}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs transition disabled:opacity-40"
+                style={{
+                  background: "rgba(59,182,233,0.15)",
+                  borderColor: "rgba(59,182,233,0.5)",
+                  color: "#3BB6E9",
+                }}
+                title="Approve (Enter)"
+              >
+                <Check className="h-3.5 w-3.5" /> Approve
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
+
 
 function MatchScoreBadge({ score }: { score: number }) {
   const tone =
