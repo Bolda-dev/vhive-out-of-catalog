@@ -1405,18 +1405,21 @@ function EmptyAction({
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-[200px] flex-col items-start gap-2 rounded-lg border bg-background/40 px-4 py-3 text-left transition hover:-translate-y-0.5 hover:bg-background/70"
+      className="group flex w-full items-center gap-3 rounded-lg border bg-background/40 px-3 py-2.5 text-left transition hover:bg-background/70"
       style={{
         borderColor: primary ? "#3BB6E9" : "rgba(255,255,255,0.12)",
         boxShadow: primary ? "0 0 0 1px rgba(59,182,233,0.25)" : undefined,
       }}
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-md bg-white/[0.04]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white/[0.04]">
         {icon}
       </div>
-      <div className="text-sm font-medium text-foreground">{title}</div>
-      <div className="text-xs text-muted-foreground">{subtitle}</div>
-      <div className="mt-1 flex items-center gap-1">{shortcut}</div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="truncate text-sm font-medium text-foreground">{title}</div>
+        <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">{shortcut}</div>
     </button>
   );
 }
+
