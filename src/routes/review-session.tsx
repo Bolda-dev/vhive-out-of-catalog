@@ -356,7 +356,7 @@ function ReviewSessionPage() {
 
           {/* ===== BOTTOM (decision) ===== */}
           <section className="flex flex-[2] min-h-0 flex-col">
-            <div className="grid flex-1 grid-cols-[1.4fr_1fr] divide-x divide-border">
+            <div className="flex flex-1 min-h-0">
               {/* LEFT: AI Suggested Matches */}
               <div className="flex min-h-0 flex-col overflow-hidden p-5">
                 <div className="mb-3 flex items-center justify-between gap-3">
@@ -377,7 +377,7 @@ function ReviewSessionPage() {
 
 
                 {suggestionCount > 0 && selected ? (
-                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(360px,42%)] gap-4">
+                  <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(360px,42%)_auto] gap-4">
                     {/* Candidate cards (left, primary) */}
                     <div className="custom-scrollbar flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
                       {suggestions.map((s, i) => {
@@ -473,6 +473,43 @@ function ReviewSessionPage() {
                         </button>
                       </div>
                     </div>
+                    {/* Actions (right, minimal width, no border) */}
+                    <div className="flex min-h-0 w-44 flex-col gap-2 overflow-auto">
+                      <button
+                        type="button"
+                        onClick={confirmBind}
+                        disabled={!selected}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <BindToExistingIcon className="h-4 w-4 shrink-0" />
+                        Confirm &amp; Bind ({current.instances})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={addAsNew}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
+                      >
+                        <AddNewBindIcon className="h-4 w-4 shrink-0" />
+                        Add as new
+                      </button>
+                      <div className="my-1 h-px bg-border" />
+                      <button
+                        type="button"
+                        onClick={skip}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
+                      >
+                        <SkipForward className="h-4 w-4" />
+                        Skip
+                      </button>
+                      <button
+                        type="button"
+                        onClick={markUnrecognized}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] px-3 text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
+                      >
+                        <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
+                        Mark Unrecognized
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-white/[0.02] p-6 text-center">
@@ -502,48 +539,6 @@ function ReviewSessionPage() {
                     </div>
                   </div>
                 )}
-              </div>
-
-              {/* RIGHT: Actions */}
-              <div className="flex min-h-0 flex-col gap-2 overflow-auto p-5">
-                <button
-                  type="button"
-                  onClick={confirmBind}
-                  disabled={!selected}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <BindToExistingIcon className="h-4 w-4 shrink-0" />
-                  Confirm &amp; Bind ({current.instances})
-                </button>
-                <button
-                  type="button"
-                  onClick={addAsNew}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                >
-                  <AddNewBindIcon className="h-4 w-4 shrink-0" />
-                  Add as new equipment
-                </button>
-
-                <div className="my-1 h-px bg-border" />
-
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={skip}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                  >
-                    <SkipForward className="h-4 w-4" />
-                    Skip
-                  </button>
-                  <button
-                    type="button"
-                    onClick={markUnrecognized}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white/[0.04] text-sm font-medium text-foreground transition-colors hover:bg-white/[0.08]"
-                  >
-                    <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
-                    Mark Unrecognized
-                  </button>
-                </div>
               </div>
 
             </div>
