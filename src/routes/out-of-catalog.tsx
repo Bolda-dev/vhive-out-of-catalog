@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Play, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { TopBar } from "@/components/out-of-catalog/TopBar";
@@ -77,7 +77,7 @@ function OutOfCatalogPage() {
     setTimeout(() => navigate({ to: "/review-session" }), 1400);
   };
 
-  const startSession = () => setLoaderStep(0);
+
 
   const equipmentTypeOptions = useMemo(
     () => Array.from(new Set(rows.map((r) => r.equipmentType))).sort(),
