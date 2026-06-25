@@ -394,6 +394,8 @@ function ReviewSessionPage() {
                 onAddAsNew={addAsNew}
                 onUnrecognize={markUnrecognized}
                 onSearch={searchCatalog}
+                onRecreate={recreateSuggestions}
+                canRecreate={(dismissed[current.id]?.size ?? 0) > 0}
               />
             ) : (
               <>
