@@ -334,28 +334,8 @@ function ReviewSessionPage() {
         />
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
-          {/* Suggestion ID chip */}
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-6 py-3">
-            {selected ? (
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="flex min-w-0 max-w-full items-center gap-3 rounded-md border border-border bg-surface px-3 py-1.5">
-                  <MetaField label="Type" value={current.aiType || "—"} />
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <MetaField label="Manufacturer" value={current.aiManufacturer || "—"} />
-                  <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <MetaField label="Model" value={current.aiModel || "—"} />
 
 
-                  <MatchScoreBadge score={selected.score} />
-                </div>
-                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {safeSuggestionIdx + 1} / {suggestionCount}
-                </span>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">No suggestions remaining</div>
-            )}
-          </div>
 
           {/* Compare images + vertical suggestion rail */}
           <section
