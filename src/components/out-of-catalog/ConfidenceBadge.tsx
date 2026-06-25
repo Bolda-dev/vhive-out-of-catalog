@@ -1,10 +1,10 @@
 export function ConfidenceBadge({ value, size = "sm" }: { value: number; size?: "sm" | "md" }) {
   const { bg, fg } =
     value < 50
-      ? { bg: "rgba(239,68,68,0.16)", fg: "#EF4444" }
+      ? { bg: "rgba(220,150,150,0.10)", fg: "#C98A8A" }
       : value <= 80
-        ? { bg: "rgba(245,158,11,0.16)", fg: "#F59E0B" }
-        : { bg: "rgba(34,197,94,0.16)", fg: "#22C55E" };
+        ? { bg: "rgba(220,190,140,0.10)", fg: "#C9B07A" }
+        : { bg: "rgba(150,200,170,0.10)", fg: "#8FBFA3" };
   const sizing =
     size === "md"
       ? "px-3 py-1 text-sm"
