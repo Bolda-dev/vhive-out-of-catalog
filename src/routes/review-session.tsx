@@ -363,9 +363,9 @@ function ReviewSessionPage() {
                   </span>
                   <span
                     className="shrink-0 font-mono text-xs text-foreground/80"
-                    title={selected.item.id}
+                    title={currentCapture?.id ?? ""}
                   >
-                    #{selected.item.id}
+                    #{currentCapture?.id ?? "—"}
                   </span>
                   <span className="h-3 w-px shrink-0 bg-white/10" />
                   <span
