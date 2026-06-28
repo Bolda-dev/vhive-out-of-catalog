@@ -409,9 +409,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   <button
                     type="button"
                     onClick={searchCatalog}
-                    className="flex h-full w-full items-center gap-2 px-3 text-sm font-normal"
+                    disabled={phase !== "reviewing"}
+                    className="group flex h-full w-full items-center gap-2 px-3 text-sm font-normal opacity-50 transition-opacity hover:opacity-100 disabled:cursor-not-allowed disabled:hover:opacity-50"
                     style={{ color: "#E0E0E0" }}
-                    title="Search from catalog (F)"
+                    title={phase !== "reviewing" ? "Approve or reject every captured image first" : "Search from catalog (F)"}
                   >
                     <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
                     Search from catalog
@@ -419,45 +420,56 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 )}
               </div>
 
-              <button
-                type="button"
-                onClick={markUnrecognized}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Unrecognize (U)"
-              >
-                <MarkUnrecognizedIcon className="h-4 w-4" />
-                Unrecognize
-              </button>
-              <button
-                type="button"
-                onClick={addAsNew}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Add as new (Ctrl+Enter)"
-              >
-                <AddNewBindIcon className="h-4 w-4" />
-                New equipment
-              </button>
-              <button
-                type="button"
-                onClick={() => selected && setPendingBindId(selected.item.id)}
-                disabled={!selected || phase !== "reviewing"}
-                className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ background: "#3BB6E9", color: "#0b1418" }}
-                title={
-                  phase !== "reviewing"
-                    ? "Approve or reject every captured image first"
-                    : selected
-                    ? "Bind (Enter)"
-                    : "No suggestion selected"
-                }
-              >
-                <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M11.1818 0C8.16121 0 5.59353 1.97466 4.70067 4.70067C1.97466 5.59353 0 8.16121 0 11.1818C0 14.9414 3.05863 18 6.81817 18C9.83879 18 12.4065 16.0253 13.2993 13.2993C16.0253 12.4065 18 9.83879 18 6.81817C18 3.05863 14.9414 0 11.1818 0ZM6.81817 16.3637C3.96091 16.3637 1.63635 14.0391 1.63635 11.1818C1.63635 9.21076 2.74264 7.49341 4.36679 6.61757C4.36489 6.68422 4.36363 6.75109 4.36363 6.81817C4.36363 10.5777 7.42226 13.6363 11.1818 13.6363C11.2489 13.6363 11.3157 13.6351 11.3824 13.6332C10.5066 15.2574 8.78924 16.3637 6.81817 16.3637ZM13.6332 11.3824C13.6351 11.3158 13.6364 11.2489 13.6364 11.1818C13.6364 7.42229 10.5777 4.36366 6.8182 4.36366C6.75112 4.36366 6.68426 4.36493 6.6176 4.36683C7.49345 2.74268 9.2108 1.63638 11.1819 1.63638C14.0391 1.63638 16.3637 3.96095 16.3637 6.8182C16.3637 8.78924 15.2574 10.5066 13.6332 11.3824Z" fill="currentColor" />
-                </svg>
-                Bind
-              </button>
+              {/* Bind split-button */}
+              <div className="inline-flex h-9 items-stretch">
+                <button
+                  type="button"
+                  onClick={() => selected && setPendingBindId(selected.item.id)}
+                  disabled={!selected || phase !== "reviewing"}
+                  className="inline-flex items-center gap-2 rounded-l-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
+                  style={{ background: "#3BB6E9", color: "#0b1418" }}
+                  title={
+                    phase !== "reviewing"
+                      ? "Approve or reject every captured image first"
+                      : selected
+                      ? "Bind (Enter)"
+                      : "No suggestion selected"
+                  }
+                >
+                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M11.1818 0C8.16121 0 5.59353 1.97466 4.70067 4.70067C1.97466 5.59353 0 8.16121 0 11.1818C0 14.9414 3.05863 18 6.81817 18C9.83879 18 12.4065 16.0253 13.2993 13.2993C16.0253 12.4065 18 9.83879 18 6.81817C18 3.05863 14.9414 0 11.1818 0ZM6.81817 16.3637C3.96091 16.3637 1.63635 14.0391 1.63635 11.1818C1.63635 9.21076 2.74264 7.49341 4.36679 6.61757C4.36489 6.68422 4.36363 6.75109 4.36363 6.81817C4.36363 10.5777 7.42226 13.6363 11.1818 13.6363C11.2489 13.6363 11.3157 13.6351 11.3824 13.6332C10.5066 15.2574 8.78924 16.3637 6.81817 16.3637ZM13.6332 11.3824C13.6351 11.3158 13.6364 11.2489 13.6364 11.1818C13.6364 7.42229 10.5777 4.36366 6.8182 4.36366C6.75112 4.36366 6.68426 4.36493 6.6176 4.36683C7.49345 2.74268 9.2108 1.63638 11.1819 1.63638C14.0391 1.63638 16.3637 3.96095 16.3637 6.8182C16.3637 8.78924 15.2574 10.5066 13.6332 11.3824Z" fill="currentColor" />
+                  </svg>
+                  Bind
+                </button>
+                <div className="w-px bg-black/20" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      disabled={phase !== "reviewing"}
+                      className="inline-flex items-center justify-center rounded-r-md px-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-40"
+                      style={{ background: "#3BB6E9", color: "#0b1418" }}
+                      title={phase !== "reviewing" ? "Approve or reject every captured image first" : "More bind options"}
+                      aria-label="More bind options"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={addAsNew}>
+                      <AddNewBindIcon className="mr-2 h-4 w-4" />
+                      <span className="flex-1">New equipment</span>
+                      <span className="ml-2 text-xs text-muted-foreground">Ctrl+Enter</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={markUnrecognized}>
+                      <MarkUnrecognizedIcon className="mr-2 h-4 w-4" />
+                      <span className="flex-1">Unrecognize</span>
+                      <span className="ml-2 text-xs text-muted-foreground">U</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
               <span className="mx-1 h-6 w-px bg-white/10" />
               <button
                 type="button"
