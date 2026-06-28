@@ -1048,6 +1048,12 @@ function CaptureImagePanel({
   onReject,
   canAct,
   captureKey,
+  gridMode,
+  captures,
+  statusFor,
+  onCaptureSetStatus,
+  onCaptureClearStatus,
+  onResetAllApprovals,
 }: {
   src?: string;
   status?: ImgStatus;
@@ -1061,6 +1067,12 @@ function CaptureImagePanel({
   onReject?: () => void;
   canAct?: boolean;
   captureKey: string;
+  gridMode?: boolean;
+  captures?: CaptureImage[];
+  statusFor?: (capId: string) => ImgStatus;
+  onCaptureSetStatus?: (s: ImgStatus, capId: string) => void;
+  onCaptureClearStatus?: (capId: string) => void;
+  onResetAllApprovals?: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [rect, setRect] = useState<Rect>(DEFAULT_RECT);
