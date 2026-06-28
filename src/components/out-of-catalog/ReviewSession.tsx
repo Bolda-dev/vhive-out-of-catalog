@@ -526,7 +526,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   <div className="flex h-8 shrink-0 items-center px-3">
                     <span className="text-xs text-muted-foreground">Captured images</span>
                   </div>
-                  <ThumbRail itemWidth={236} className="flex-1">
+                  <ThumbRail itemWidth={236} className="flex-1" activeIndex={safeCaptureIdx}>
                     {captures.map((cap, i) => {
                       const status = statusFor(cap.id);
                       const active = i === safeCaptureIdx;
