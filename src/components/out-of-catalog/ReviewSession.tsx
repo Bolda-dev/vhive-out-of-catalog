@@ -49,6 +49,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   const [approvals, setApprovals] = useState<ApprovalMap>({});
   const [pendingBindId, setPendingBindId] = useState<string | null>(null);
   const [bindAnim, setBindAnim] = useState<{ label: string } | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const queue = useMemo<OocRow[]>(
     () => [...pending].sort((a, b) => a.confidence - b.confidence),
@@ -120,18 +122,27 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
 
-  const confirmBind = useCallback(() => {
-    if (!current || !selected) return;
-    const label = `${selected.item.manufacturer} ${selected.item.model}`;
-    playBindSound();
-    setBindAnim({ label });
-    window.setTimeout(() => {
-      setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-      appToast({ variant: "success", title: "Bound to catalog item", description: label });
-      setBindAnim(null);
-      goNext();
-    }, 1100);
-  }, [current, selected, goNext]);
+  const confirmBind = useCallback(
+    (overrideCatalogId?: string) => {
+      if (!current) return;
+      const item = overrideCatalogId
+        ? mockCatalog.find((c) => c.id === overrideCatalogId)
+        : selected?.item;
+      if (!item) return;
+      const label = `${item.manufacturer} ${item.model}`;
+      playBindSound();
+      setBindAnim({ label });
+      window.setTimeout(() => {
+        setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
+        appToast({ variant: "success", title: "Bound to catalog item", description: label });
+        setBindAnim(null);
+        setSearchOpen(false);
+        setSearchQuery("");
+        goNext();
+      }, 1100);
+    },
+    [current, selected, goNext],
+  );
 
   const skipSession = useCallback(() => {
     onExit();
@@ -152,7 +163,13 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     goNext();
   }, [current, goNext]);
 
-  const searchCatalog = useCallback(() => appToast({ title: "Catalog search — coming soon" }), []);
+  const searchCatalog = useCallback(() => {
+    setSearchOpen(true);
+  }, []);
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }, []);
 
   const recreateSuggestions = useCallback(() => {
     if (!current) return;
@@ -307,16 +324,46 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-2 pb-2">
             <h1 className="text-base font-medium text-foreground">Review Session</h1>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={searchCatalog}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Search from catalog (F)"
-              >
-                <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                Search from catalog
-              </button>
+              {searchOpen ? (
+                <div
+                  className="flex h-9 items-center gap-2 rounded-md border bg-background/40 px-3"
+                  style={{ borderColor: "#3BB6E9" }}
+                >
+                  <Search className="h-4 w-4" style={{ color: "#3BB6E9" }} />
+                  <input
+                    autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") {
+                        e.preventDefault();
+                        closeSearch();
+                      }
+                    }}
+                    placeholder="Type, manufacturer, model…"
+                    className="w-64 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                  />
+                  <button
+                    type="button"
+                    onClick={closeSearch}
+                    aria-label="Close search"
+                    className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={searchCatalog}
+                  className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                  title="Search from catalog (F)"
+                >
+                  <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
+                  Search from catalog
+                </button>
+              )}
               <button
                 type="button"
                 onClick={markUnrecognized}
@@ -453,7 +500,15 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
 
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
-            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+            {searchOpen ? (
+              <CatalogSearchPanel
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                onClose={closeSearch}
+                onBind={(id) => setPendingBindId(id)}
+              />
+            ) : (
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">{/* legacy card */}
               {/* Top: catalog reference — hidden when no suggestions so empty state can fill */}
               {suggestionCount > 0 && (
                 <>
@@ -551,6 +606,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 </div>
               )}
             </div>
+            )}
           </section>
 
 
@@ -591,8 +647,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
+                const id = pendingBindId;
                 setPendingBindId(null);
-                confirmBind();
+                confirmBind(id ?? undefined);
               }}
               className="bg-brand text-background hover:bg-brand/90"
             >
@@ -1481,3 +1538,134 @@ function EmptyAction({
   );
 }
 
+
+// ---------- Catalog Search Panel ----------
+function CatalogSearchPanel({
+  query,
+  onQueryChange,
+  onClose,
+  onBind,
+}: {
+  query: string;
+  onQueryChange: (v: string) => void;
+  onClose: () => void;
+  onBind: (catalogId: string) => void;
+}) {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return mockCatalog;
+    return mockCatalog.filter((c) =>
+      [c.type, c.manufacturer, c.model, c.category, c.classification]
+        .join(" ")
+        .toLowerCase()
+        .includes(q),
+    );
+  }, [query]);
+
+  return (
+    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="flex h-9 shrink-0 items-center justify-between border-b border-border/60 px-3">
+        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Search className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
+          Catalog search
+        </span>
+        <span className="text-xs text-muted-foreground tabular-nums">
+          {results.length} result{results.length === 1 ? "" : "s"}
+        </span>
+      </div>
+
+      <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border/60 px-3">
+        <Search className="h-3.5 w-3.5 text-muted-foreground" />
+        <input
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              onClose();
+            }
+          }}
+          placeholder="Filter by type, manufacturer, model…"
+          className="h-full w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+        />
+      </div>
+
+      <div className="grid h-8 shrink-0 grid-cols-[64px_88px_1fr_1.4fr_88px_92px] items-center gap-2 border-b border-border/60 bg-background/30 px-3 text-[11px] uppercase tracking-wide text-muted-foreground">
+        <span>Image</span>
+        <span>Type</span>
+        <span>Manufacturer</span>
+        <span>Model</span>
+        <span className="text-right">ID</span>
+        <span className="text-right">Action</span>
+      </div>
+
+      <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto">
+        {results.length === 0 ? (
+          <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+            No catalog items match "{query}"
+          </div>
+        ) : (
+          results.map((item) => (
+            <div
+              key={item.id}
+              className="grid grid-cols-[64px_88px_1fr_1.4fr_88px_92px] items-center gap-2 border-b border-border/40 px-3 py-2 text-sm transition-colors hover:bg-white/[0.03]"
+            >
+              <button
+                type="button"
+                onClick={() => setPreview(item.referenceImageUrl)}
+                className="h-12 w-12 overflow-hidden rounded border border-border bg-black/30 transition hover:ring-2 hover:ring-[#3BB6E9]"
+                title="Click to enlarge"
+              >
+                <img
+                  src={item.referenceImageUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </button>
+              <span className="truncate text-foreground">{item.type}</span>
+              <span className="truncate text-foreground">{item.manufacturer}</span>
+              <div className="min-w-0">
+                <div className="truncate text-foreground">{item.model}</div>
+                <div className="truncate text-[11px] text-muted-foreground">
+                  {item.classification}
+                </div>
+              </div>
+              <span className="text-right font-mono text-[11px] text-muted-foreground">
+                #{item.id.replace("cat-", "")}
+              </span>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => onBind(item.id)}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand px-3 text-xs font-medium text-background transition-colors hover:bg-brand/90"
+                >
+                  Bind
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {preview && (
+        <button
+          type="button"
+          onClick={() => setPreview(null)}
+          className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 p-8"
+          aria-label="Close preview"
+        >
+          <img
+            src={preview}
+            alt=""
+            className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
+          />
+          <span className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white">
+            <X className="h-4 w-4" />
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
