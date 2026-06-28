@@ -1731,6 +1731,19 @@ function CatalogSearchPanel({
 }) {
   const [preview, setPreview] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setPreview(null);
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [preview]);
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return mockCatalog;
