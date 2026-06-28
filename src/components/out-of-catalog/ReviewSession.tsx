@@ -991,73 +991,97 @@ function CaptureImagePanel({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
 
-      <div className="flex flex-col gap-1.5 border-b border-border/60 px-3 py-2">
-        {/* Row 1 — identity */}
-        <div className="flex items-center gap-3">
-          <span className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-foreground">
+      <div className="flex items-stretch gap-3 border-b border-border/60 px-3 py-2">
+        {/* Title block — spans both rows */}
+        <div className="flex shrink-0 items-center gap-2 border-r border-white/10 pr-3">
+          <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#3BB6E9]/12 text-[#3BB6E9]">
             <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M5.79858 1.5V2.78655V6.6462V15.7807V19.6404V23.5H8.47752L10.0303 20.9269H14.0894L15.6421 23.5H18.321V1.5H5.79858ZM7.08513 2.78655H17.0345V19.6404H7.08513V2.78655ZM7.75122 22.2134H7.08513V20.9269H8.52761L7.75122 22.2134ZM17.0345 22.2134H16.3684L15.592 20.9269H17.0345V22.2134Z" fill="currentColor"/>
               <path d="M9.24048 4.37341H15.759V5.65996H9.24048V4.37341Z" fill="currentColor"/>
               <path d="M9.24048 6.94641H15.759V8.23296H9.24048V6.94641Z" fill="currentColor"/>
               <path d="M14.4722 10.4633H15.7587V13.8512H14.4722V10.4633Z" fill="currentColor"/>
             </svg>
-            Rack Suggestion
+            <Sparkles className="absolute -right-1 -top-1 h-3 w-3 text-[#3BB6E9]" strokeWidth={2.5} />
           </span>
-
-          <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
-
-            <span className="h-3 w-px shrink-0 bg-white/10" />
-            <MetaField label="Type" value={type || "—"} />
-            <span className="h-3 w-px shrink-0 bg-white/10" />
-            <MetaField label="Manufacturer" value={manufacturer || "—"} />
-            <span className="h-3 w-px shrink-0 bg-white/10" />
-            <MetaField label="Model" value={model || "—"} truncate />
+          <div className="flex flex-col leading-tight">
+            <span className="text-sm font-medium text-foreground">Rack Suggestion</span>
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">AI generated</span>
           </div>
-          {status && status !== "pending" && (
-            <span
-              className="ml-auto inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
-              style={
-                status === "approved"
-                  ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
-                  : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
-              }
-            >
-              {status}
-            </span>
+        </div>
+
+        {/* Right side — two rows */}
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
+          {/* Row 1 — identity */}
+          <div className="flex items-center gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
+              <MetaField label="Type" value={type || "—"} />
+              <span className="h-3 w-px shrink-0 bg-white/10" />
+              <MetaField label="Manufacturer" value={manufacturer || "—"} />
+              <span className="h-3 w-px shrink-0 bg-white/10" />
+              <MetaField label="Model" value={model || "—"} truncate />
+            </div>
+            {(() => {
+              // Deterministic 80–95% score per capture
+              let h = 0;
+              for (let i = 0; i < captureKey.length; i++) h = (h * 31 + captureKey.charCodeAt(i)) | 0;
+              const score = 80 + (Math.abs(h) % 16);
+              return (
+                <span
+                  className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-semibold"
+                  style={{ background: "rgba(143,211,168,0.15)", color: "#8FD3A8" }}
+                  title="AI match confidence"
+                >
+                  {score}%
+                </span>
+              );
+            })()}
+            {status && status !== "pending" && (
+              <span
+                className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
+                style={
+                  status === "approved"
+                    ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
+                    : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
+                }
+              >
+                {status}
+              </span>
+            )}
+          </div>
+          {/* Row 2 — capture context */}
+          {(capturedAt || account || rack) && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+              {capturedAt && <span className="shrink-0">{capturedAt}</span>}
+              {account && (
+                <>
+                  <span className="h-3 w-px shrink-0 bg-white/10" />
+                  <span
+                    className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
+                    style={{ background: "rgba(59,182,233,0.12)", color: "#3BB6E9" }}
+                  >
+                    {account}
+                  </span>
+                </>
+              )}
+              {rack && (
+                <>
+                  <span className="h-3 w-px shrink-0 bg-white/10" />
+                  <button
+                    type="button"
+                    onClick={() => appToast({ title: `Opening ${rack}` })}
+                    className="inline-flex shrink-0 items-center gap-1 text-[11px] text-[#3BB6E9] hover:underline"
+                    title="Open rack"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    <span className="max-w-[280px] truncate">{rack}</span>
+                  </button>
+                </>
+              )}
+            </div>
           )}
         </div>
-        {/* Row 2 — capture context */}
-        {(capturedAt || account || rack) && (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-            {capturedAt && <span className="shrink-0">{capturedAt}</span>}
-            {account && (
-              <>
-                <span className="h-3 w-px shrink-0 bg-white/10" />
-                <span
-                  className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
-                  style={{ background: "rgba(59,182,233,0.12)", color: "#3BB6E9" }}
-                >
-                  {account}
-                </span>
-              </>
-            )}
-            {rack && (
-              <>
-                <span className="h-3 w-px shrink-0 bg-white/10" />
-                <button
-                  type="button"
-                  onClick={() => appToast({ title: `Opening ${rack}` })}
-                  className="inline-flex shrink-0 items-center gap-1 text-[11px] text-[#3BB6E9] hover:underline"
-                  title="Open rack"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  <span className="max-w-[280px] truncate">{rack}</span>
-                </button>
-              </>
-            )}
-          </div>
-        )}
       </div>
+
       <div
         className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
         onPointerMove={onPointerMove}
