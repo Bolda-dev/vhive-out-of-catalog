@@ -1116,19 +1116,12 @@ function CaptureImagePanel({
           <button
             type="button"
             onClick={() => (editing ? confirmCrop() : setEditing(true))}
-            className="absolute bottom-9 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
+            className="absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
             style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
             title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
           >
             {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
           </button>
-        )}
-
-        {/* Metadata — flush bottom-left of image, above the strip */}
-        {metaBottomLeft && !editing && (
-          <div className="absolute bottom-0 left-0 bg-black/55 px-2 py-1 text-[11px] text-white/85 backdrop-blur">
-            {metaBottomLeft}
-          </div>
         )}
       </div>
 
