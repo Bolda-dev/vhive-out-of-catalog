@@ -43,6 +43,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { OocRow } from "@/data/outOfCatalogTypes";
+import { CreateEquipmentSheet } from "./CreateEquipmentSheet";
 
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
 type ImgStatus = "pending" | "approved" | "rejected";
@@ -63,6 +64,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   const [bindAnim, setBindAnim] = useState<{ label: string } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
 
   const queue = useMemo<OocRow[]>(
     () => [...pending].sort((a, b) => a.confidence - b.confidence),
@@ -210,10 +212,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const addAsNew = useCallback(() => {
     if (!current || phase !== "reviewing") return;
+    setCreateOpen(true);
+  }, [current, phase]);
+
+  const submitNewEquipment = useCallback(() => {
+    if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "added" }));
     appToast({ variant: "success", title: "Added as new equipment" });
+    setCreateOpen(false);
     goNext();
-  }, [current, goNext, phase]);
+  }, [current, goNext]);
 
   const searchCatalog = useCallback(() => {
     if (phase !== "reviewing") return;
@@ -769,6 +777,19 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CreateEquipmentSheet
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        approvedCount={captures.filter((c) => statusFor(c.id) === "approved").length}
+        hasRejected={captures.some((c) => statusFor(c.id) === "rejected")}
+        defaultImage={
+          captures.find((c) => statusFor(c.id) === "approved")?.imageUrl ??
+          currentCapture?.imageUrl ??
+          null
+        }
+        onSubmit={submitNewEquipment}
+      />
 
       {bindAnim && <BindBurst label={bindAnim.label} />}
 
