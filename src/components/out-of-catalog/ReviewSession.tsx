@@ -456,16 +456,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       <ChevronDown className="h-4 w-4" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={addAsNew}>
-                      <AddNewBindIcon className="mr-2 h-4 w-4" />
-                      <span className="flex-1">New equipment</span>
-                      <span className="ml-2 text-xs text-muted-foreground">Ctrl+Enter</span>
+                  <DropdownMenuContent align="end" className="w-auto min-w-[240px]">
+                    <DropdownMenuItem onClick={addAsNew} className="whitespace-nowrap">
+                      <AddNewBindIcon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="flex-1 whitespace-nowrap">New equipment</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">Ctrl+Enter</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={markUnrecognized}>
-                      <MarkUnrecognizedIcon className="mr-2 h-4 w-4" />
-                      <span className="flex-1">Unrecognize</span>
-                      <span className="ml-2 text-xs text-muted-foreground">U</span>
+                    <DropdownMenuItem onClick={markUnrecognized} className="whitespace-nowrap">
+                      <MarkUnrecognizedIcon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="flex-1 whitespace-nowrap">Unrecognize</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">U</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -1239,7 +1239,7 @@ function CaptureImagePanel({
                     />
                     {s === "approved" && (
                       <span
-                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
+                        className="absolute left-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
                         style={{ background: "#8FD3A8", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
                       >
                         <Check className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
@@ -1247,7 +1247,7 @@ function CaptureImagePanel({
                     )}
                     {s === "rejected" && (
                       <span
-                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
+                        className="absolute left-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
                         style={{ background: "#d97a72", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
                       >
                         <X className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
@@ -1257,14 +1257,14 @@ function CaptureImagePanel({
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
-                          className="absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur transition hover:bg-black/75"
+                          className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur transition hover:bg-black/75"
                           title="More actions"
                           aria-label="More actions"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="min-w-[180px]">
+                      <DropdownMenuContent align="end" className="min-w-[180px]">
                         <DropdownMenuItem onClick={() => onCaptureClearStatus?.(cap.id)}>
                           Re-review this image
                         </DropdownMenuItem>
