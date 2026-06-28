@@ -1208,109 +1208,201 @@ function CaptureImagePanel({
         </div>
       </div>
 
-      <div
-        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
-        onPointerMove={onPointerMove}
-        onPointerUp={() => setDragCorner(null)}
-        onPointerLeave={() => setDragCorner(null)}
-      >
-        {src ? (
-          <img
-            src={src}
-            alt=""
-            className="h-full w-full object-cover"
-            style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
-            draggable={false}
-          />
-        ) : (
-          <div className="text-sm text-muted-foreground">No capture</div>
-        )}
-
-        {/* Rectangle overlay */}
-        {src && (
-          <svg
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
-            <rect
-              x={rect.x} y={rect.y} width={rect.w} height={rect.h}
-              fill="none"
-              stroke="rgba(0,0,0,0.85)"
-              vectorEffect="non-scaling-stroke"
-              style={{ strokeWidth: 4 } as React.CSSProperties}
-            />
-            <rect
-              x={rect.x} y={rect.y} width={rect.w} height={rect.h}
-              fill="rgba(59,182,233,0.08)"
-              stroke="#3BB6E9"
-              vectorEffect="non-scaling-stroke"
-              style={{ strokeWidth: 2 } as React.CSSProperties}
-            />
-          </svg>
-        )}
-
-        {/* Corner handles (editable) */}
-        {src && editing && (
-          <div className="absolute inset-0">
-            {corners.map((c) => (
-              <div
-                key={c.id}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  (e.target as HTMLElement).setPointerCapture(e.pointerId);
-                  setDragCorner(c.id);
-                }}
-                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-sm border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
-                style={{ left: `${c.x}%`, top: `${c.y}%` }}
-              />
-            ))}
+      {gridMode && captures && statusFor ? (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex h-9 shrink-0 items-center justify-between border-b border-border/60 px-3">
+            <span className="text-xs text-muted-foreground">
+              Reviewed captures — {captures.length} of {captures.length}
+            </span>
+            {onResetAllApprovals && (
+              <button
+                type="button"
+                onClick={onResetAllApprovals}
+                className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-[11px] text-foreground transition hover:bg-white/5"
+                title="Restart approval flow"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" /> Re-review all
+              </button>
+            )}
           </div>
-        )}
-
-
-        {/* Crop button — overlay above metadata */}
-        {src && (
-          <button
-            type="button"
-            onClick={() => (editing ? confirmCrop() : setEditing(true))}
-            className="absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
-            style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
-            title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
-          >
-            {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
-          </button>
-        )}
-      </div>
-
-      {/* Bottom black strip: reject/approve */}
-      {src && onApprove && onReject && (
-        <div className="flex items-center justify-end gap-1.5 border-t border-border/60 bg-black px-2 py-1.5">
-          <button
-            type="button"
-            onClick={onReject}
-            disabled={!canAct}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
-            style={{ color: "#d97a72", border: "1px solid #d97a72" }}
-            title="Reject (Backspace)"
-          >
-            <X className="h-3.5 w-3.5" /> Reject
-          </button>
-
-          <button
-            type="button"
-            onClick={onApprove}
-            disabled={!canAct}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
-            style={{
-              background: "#8FD3A8",
-              color: "#0F2A1C",
-            }}
-            title="Approve (Enter)"
-          >
-            <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
-          </button>
+          <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto p-3">
+            <div className="grid grid-cols-2 gap-3">
+              {captures.map((cap) => {
+                const s = statusFor(cap.id);
+                const borderColor =
+                  s === "approved" ? "#8FD3A8" : s === "rejected" ? "#d97a72" : "transparent";
+                return (
+                  <div
+                    key={cap.id}
+                    className="relative overflow-hidden rounded-lg border-2"
+                    style={{ borderColor, opacity: 0.85 }}
+                  >
+                    <img
+                      src={cap.imageUrl}
+                      alt=""
+                      className="aspect-[4/3] w-full object-cover"
+                      style={{ filter: "saturate(0.85) brightness(0.9)" }}
+                    />
+                    {s === "approved" && (
+                      <span
+                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
+                        style={{ background: "#8FD3A8", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+                      >
+                        <Check className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
+                      </span>
+                    )}
+                    {s === "rejected" && (
+                      <span
+                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
+                        style={{ background: "#d97a72", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+                      >
+                        <X className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
+                      </span>
+                    )}
+                    {/* Per-card actions */}
+                    <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => onCaptureClearStatus?.(cap.id)}
+                        className="inline-flex h-7 items-center gap-1 rounded-md border border-white/30 bg-black/60 px-2 text-[11px] text-white backdrop-blur transition hover:bg-black/80"
+                        title="Re-review this capture"
+                      >
+                        Re-review
+                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => onCaptureSetStatus?.("rejected", cap.id)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/20 bg-black/60 text-white backdrop-blur transition hover:bg-black/80"
+                          title="Set rejected"
+                          style={s === "rejected" ? { borderColor: "#d97a72", color: "#d97a72" } : undefined}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onCaptureSetStatus?.("approved", cap.id)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/20 bg-black/60 text-white backdrop-blur transition hover:bg-black/80"
+                          title="Set approved"
+                          style={s === "approved" ? { borderColor: "#8FD3A8", color: "#8FD3A8" } : undefined}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
+      ) : (
+        <>
+          <div
+            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
+            onPointerMove={onPointerMove}
+            onPointerUp={() => setDragCorner(null)}
+            onPointerLeave={() => setDragCorner(null)}
+          >
+            {src ? (
+              <img
+                src={src}
+                alt=""
+                className="h-full w-full object-cover"
+                style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
+                draggable={false}
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">No capture</div>
+            )}
+
+            {/* Rectangle overlay */}
+            {src && (
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <rect
+                  x={rect.x} y={rect.y} width={rect.w} height={rect.h}
+                  fill="none"
+                  stroke="rgba(0,0,0,0.85)"
+                  vectorEffect="non-scaling-stroke"
+                  style={{ strokeWidth: 4 } as React.CSSProperties}
+                />
+                <rect
+                  x={rect.x} y={rect.y} width={rect.w} height={rect.h}
+                  fill="rgba(59,182,233,0.08)"
+                  stroke="#3BB6E9"
+                  vectorEffect="non-scaling-stroke"
+                  style={{ strokeWidth: 2 } as React.CSSProperties}
+                />
+              </svg>
+            )}
+
+            {/* Corner handles (editable) */}
+            {src && editing && (
+              <div className="absolute inset-0">
+                {corners.map((c) => (
+                  <div
+                    key={c.id}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                      setDragCorner(c.id);
+                    }}
+                    className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-sm border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
+                    style={{ left: `${c.x}%`, top: `${c.y}%` }}
+                  />
+                ))}
+              </div>
+            )}
+
+
+            {/* Crop button — overlay above metadata */}
+            {src && (
+              <button
+                type="button"
+                onClick={() => (editing ? confirmCrop() : setEditing(true))}
+                className="absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
+                style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
+                title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
+              >
+                {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
+              </button>
+            )}
+          </div>
+
+          {/* Bottom black strip: reject/approve */}
+          {src && onApprove && onReject && (
+            <div className="flex items-center justify-end gap-1.5 border-t border-border/60 bg-black px-2 py-1.5">
+              <button
+                type="button"
+                onClick={onReject}
+                disabled={!canAct}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
+                style={{ color: "#d97a72", border: "1px solid #d97a72" }}
+                title="Reject (Backspace)"
+              >
+                <X className="h-3.5 w-3.5" /> Reject
+              </button>
+
+              <button
+                type="button"
+                onClick={onApprove}
+                disabled={!canAct}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
+                style={{
+                  background: "#8FD3A8",
+                  color: "#0F2A1C",
+                }}
+                title="Approve (Enter)"
+              >
+                <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
+              </button>
+            </div>
+          )}
+        </>
       )}
 
     </div>
