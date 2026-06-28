@@ -303,20 +303,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
           {/* Exit session bar */}
-          <div className="flex shrink-0 items-center justify-between px-6 pt-1 pb-2">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="inline-flex h-1.5 w-1.5 rounded-full" style={{ background: "#3BB6E9" }} />
-              <span>Review session in progress</span>
-              <span className="text-muted-foreground/60">·</span>
-              <span className="tabular-nums">{currentIndex + 1} / {total}</span>
-            </div>
+          <div className="flex shrink-0 items-center justify-between px-6 pt-2 pb-2">
+            <h1 className="text-base font-medium text-foreground">Review Session</h1>
             <button
               type="button"
               onClick={onExit}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-transparent px-2.5 text-xs text-foreground/85 transition hover:bg-white/5"
+              className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+              style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
               title="Exit session"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" style={{ color: "#E0E0E0" }} />
               Exit session
             </button>
           </div>
