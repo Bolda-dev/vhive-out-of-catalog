@@ -43,6 +43,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { OocRow } from "@/data/outOfCatalogTypes";
+import { CreateEquipmentSheet } from "./CreateEquipmentSheet";
 
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
 type ImgStatus = "pending" | "approved" | "rejected";
