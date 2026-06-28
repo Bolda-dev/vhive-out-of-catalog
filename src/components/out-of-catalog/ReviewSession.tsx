@@ -133,8 +133,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   }, [current, selected, goNext]);
 
   const skipSession = useCallback(() => {
-    navigate({ to: "/out-of-catalog" });
-  }, [navigate]);
+    onExit();
+  }, [onExit]);
+
 
   const markUnrecognized = useCallback(() => {
     if (!current) return;
@@ -292,31 +293,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   ]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background text-foreground">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-6">
-        <div className="flex items-center gap-3">
-          <h1 className="text-base font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
-            Session Review
-          </h1>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/out-of-catalog" })}
-          aria-label="Close review session"
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.04] hover:text-foreground"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </header>
-
+    <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground">
       {done ? (
         <SessionComplete
           decisions={decisions}
           total={total}
-          onBack={() => navigate({ to: "/out-of-catalog" })}
+          onBack={onExit}
         />
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
+
 
 
 
