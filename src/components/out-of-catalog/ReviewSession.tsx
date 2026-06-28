@@ -200,22 +200,23 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
 
   const markUnrecognized = useCallback(() => {
-    if (!current) return;
+    if (!current || phase !== "reviewing") return;
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
     appToast({ title: "Marked as Unrecognized" });
     goNext();
-  }, [current, goNext]);
+  }, [current, goNext, phase]);
 
   const addAsNew = useCallback(() => {
-    if (!current) return;
+    if (!current || phase !== "reviewing") return;
     setDecisions((prev) => ({ ...prev, [current.id]: "added" }));
     appToast({ variant: "success", title: "Added as new equipment" });
     goNext();
-  }, [current, goNext]);
+  }, [current, goNext, phase]);
 
   const searchCatalog = useCallback(() => {
+    if (phase !== "reviewing") return;
     setSearchOpen(true);
-  }, []);
+  }, [phase]);
   const closeSearch = useCallback(() => {
     setSearchOpen(false);
     setSearchQuery("");
