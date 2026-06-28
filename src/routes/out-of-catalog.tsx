@@ -12,7 +12,7 @@ import {
   type SortState,
   type ColumnMeta,
 } from "@/components/out-of-catalog/OutOfCatalogTable";
-import { SessionLoader } from "@/components/out-of-catalog/SessionLoader";
+import { SessionSkeleton } from "@/components/out-of-catalog/SessionSkeleton";
 import { ReviewSession } from "@/components/out-of-catalog/ReviewSession";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
@@ -145,12 +145,16 @@ function OutOfCatalogPage() {
     });
   };
 
+  const showSkeleton = loaderStep !== null && !inSession;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopBar activeTab="out-of-catalog" />
       <main className="w-full px-6 py-6">
         {inSession ? (
           <ReviewSession onExit={() => setInSession(false)} />
+        ) : showSkeleton ? (
+          <SessionSkeleton step={loaderStep ?? 0} />
         ) : (
           <>
             {/* Toolbar */}
@@ -209,8 +213,8 @@ function OutOfCatalogPage() {
         )}
       </main>
       <Toaster />
-      {loaderStep !== null && <SessionLoader step={loaderStep} />}
     </div>
   );
 }
+
 

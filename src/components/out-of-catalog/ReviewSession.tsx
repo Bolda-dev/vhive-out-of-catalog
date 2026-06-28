@@ -293,7 +293,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   ]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground">
+    <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground pb-[120px]">
       {done ? (
         <SessionComplete
           decisions={decisions}
@@ -302,6 +302,25 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         />
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
+          {/* Exit session bar */}
+          <div className="flex shrink-0 items-center justify-between px-6 pt-1 pb-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex h-1.5 w-1.5 rounded-full" style={{ background: "#3BB6E9" }} />
+              <span>Review session in progress</span>
+              <span className="text-muted-foreground/60">·</span>
+              <span className="tabular-nums">{currentIndex + 1} / {total}</span>
+            </div>
+            <button
+              type="button"
+              onClick={onExit}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-transparent px-2.5 text-xs text-foreground/85 transition hover:bg-white/5"
+              title="Exit session"
+            >
+              <X className="h-3.5 w-3.5" />
+              Exit session
+            </button>
+          </div>
+
 
 
 
@@ -709,7 +728,7 @@ function ShortcutBar({
   onAddAsNew: () => void;
 }) {
   return (
-    <div className="mt-auto flex shrink-0 flex-col gap-2 border-t border-border bg-surface px-6 py-2.5">
+    <div className="fixed bottom-0 left-0 right-0 z-40 flex shrink-0 flex-col gap-2 border-t border-border bg-surface px-6 py-2.5">
       <div className="flex shrink-0 items-center justify-end gap-2">
         <button
           type="button"
