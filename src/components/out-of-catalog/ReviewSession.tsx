@@ -1,11 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   ChevronLeft,
   ChevronRight,
   Crop,
-  HelpCircle,
   Plus,
   RotateCcw,
   Search,
@@ -17,7 +15,6 @@ import {
 
 
 import { appToast } from "@/components/ui/app-toast";
-import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
 import { Toaster } from "@/components/ui/sonner";
@@ -34,20 +31,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { OocRow } from "@/data/outOfCatalogTypes";
 
-export const Route = createFileRoute("/review-session")({
-  head: () => ({
-    meta: [
-      { title: "Review Session — Out-of-Catalog — vHive" },
-      {
-        name: "description",
-        content:
-          "Compare captured images against AI-suggested catalog items and bind once all images are approved.",
-      },
-    ],
-  }),
-  component: ReviewSessionPage,
-});
-
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
 type ImgStatus = "pending" | "approved" | "rejected";
 // key = `${rowId}|${suggestionCatalogId}|${captureId}`
@@ -55,8 +38,8 @@ type ApprovalMap = Record<string, ImgStatus>;
 
 const pending = mockOutOfCatalog.filter((r) => r.status === "Pending");
 
-function ReviewSessionPage() {
-  const navigate = useNavigate();
+export function ReviewSession({ onExit }: { onExit: () => void }) {
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
