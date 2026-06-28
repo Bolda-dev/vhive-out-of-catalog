@@ -143,7 +143,7 @@ function OutOfCatalogPage() {
     });
   };
 
-  const showSkeleton = loaderStep !== null && !inSession;
+  const showSkeleton = loading && !inSession;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -152,7 +152,7 @@ function OutOfCatalogPage() {
         {inSession ? (
           <ReviewSession onExit={() => setInSession(false)} />
         ) : showSkeleton ? (
-          <SessionSkeleton step={loaderStep ?? 0} />
+          <SessionSkeleton />
         ) : (
           <>
             {/* Toolbar */}
