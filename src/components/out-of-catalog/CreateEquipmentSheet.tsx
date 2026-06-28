@@ -172,30 +172,47 @@ export function CreateEquipmentSheet({
             </div>
           ) : null}
 
-          {/* Reference image */}
+          {/* Reference image + description (read-only) */}
           <div className="mb-4">
             <div style={labelStyle} className="mb-1.5">
               Reference image
             </div>
+            <div className="flex gap-3">
+              <div
+                className="relative flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10"
+                style={{ background: "#121212" }}
+              >
+                {referenceImage ? (
+                  <img
+                    src={referenceImage}
+                    alt="reference"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <ImageIcon className="h-6 w-6 text-white/30" />
+                )}
+              </div>
+              <div
+                className="flex-1 overflow-y-auto rounded-md border border-white/10 p-2.5 text-xs leading-relaxed"
+                style={{
+                  background: "#121212",
+                  color: referenceDescription
+                    ? "rgba(255,255,255,0.78)"
+                    : "rgba(255,255,255,0.35)",
+                  maxHeight: 128,
+                }}
+              >
+                {referenceDescription || "No description yet. Click below to add one."}
+              </div>
+            </div>
             <button
               type="button"
               onClick={() => setImageDialogOpen(true)}
-              className="group relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-md border border-white/10 transition hover:border-[#3BB6E9]"
-              style={{ background: "#121212" }}
+              className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs transition hover:bg-white/[0.04]"
+              style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
             >
-              {referenceImage ? (
-                <img
-                  src={referenceImage}
-                  alt="reference"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <ImageIcon className="h-6 w-6 text-white/30" />
-              )}
-              <span className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/55 text-xs text-white opacity-0 transition group-hover:opacity-100">
-                <Pencil className="h-3.5 w-3.5" />
-                Edit
-              </span>
+              <Pencil className="h-3.5 w-3.5" />
+              Edit image &amp; description
             </button>
           </div>
 
