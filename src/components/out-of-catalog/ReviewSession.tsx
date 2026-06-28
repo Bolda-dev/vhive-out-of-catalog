@@ -325,46 +325,51 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-2 pb-2">
             <h1 className="text-base font-medium text-foreground">Review Session</h1>
             <div className="flex items-center gap-2">
-              {searchOpen ? (
-                <div
-                  className="flex h-9 items-center gap-2 rounded-md border bg-background/40 px-3"
-                  style={{ borderColor: "#3BB6E9" }}
-                >
-                  <Search className="h-4 w-4" style={{ color: "#3BB6E9" }} />
-                  <input
-                    autoFocus
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Escape") {
-                        e.preventDefault();
-                        closeSearch();
-                      }
-                    }}
-                    placeholder="Type, manufacturer, model…"
-                    className="w-64 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
+              <div
+                className={`flex h-9 items-center overflow-hidden rounded-md border transition-[width,border-color,background-color] duration-300 ease-out ${
+                  searchOpen ? "w-[320px] bg-background/40" : "w-[180px] bg-transparent hover:bg-white/[0.04]"
+                }`}
+                style={{ borderColor: searchOpen ? "#3BB6E9" : "#E0E0E0" }}
+              >
+                {searchOpen ? (
+                  <div className="flex h-full w-full items-center gap-2 px-3">
+                    <Search className="h-4 w-4 shrink-0" style={{ color: "#3BB6E9" }} />
+                    <input
+                      autoFocus
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") {
+                          e.preventDefault();
+                          closeSearch();
+                        }
+                      }}
+                      placeholder="Type, manufacturer, model…"
+                      className="h-full w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                    />
+                    <button
+                      type="button"
+                      onClick={closeSearch}
+                      aria-label="Close search"
+                      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
                   <button
                     type="button"
-                    onClick={closeSearch}
-                    aria-label="Close search"
-                    className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                    onClick={searchCatalog}
+                    className="flex h-full w-full items-center gap-2 px-3 text-sm font-normal"
+                    style={{ color: "#E0E0E0" }}
+                    title="Search from catalog (F)"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
+                    Search from catalog
                   </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={searchCatalog}
-                  className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                  title="Search from catalog (F)"
-                >
-                  <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                  Search from catalog
-                </button>
-              )}
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={markUnrecognized}
