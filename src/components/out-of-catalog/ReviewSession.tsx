@@ -360,7 +360,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   ]);
 
   return (
-    <div className="flex min-h-[calc(100vh-104px)] flex-1 flex-col bg-background text-foreground pb-[76px]">
+    <div className="flex h-[calc(100vh-104px-76px)] flex-col bg-background text-foreground">
       {done ? (
         <SessionComplete
           decisions={decisions}
