@@ -509,7 +509,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
           {/* Compare images + vertical suggestion rail */}
           <section
-            className="grid min-h-0 flex-1 gap-3 px-6 pt-3 pb-3"
+            className="grid min-h-0 flex-1 gap-3 px-6 pt-2 pb-2"
             style={{
               gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
             }}
