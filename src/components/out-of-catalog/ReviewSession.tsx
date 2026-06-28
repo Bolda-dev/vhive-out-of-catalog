@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Crop,
   ExternalLink,
+  MoreVertical,
   Plus,
   RotateCcw,
   Search,
@@ -14,6 +15,12 @@ import {
   X,
   ZoomIn,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 
