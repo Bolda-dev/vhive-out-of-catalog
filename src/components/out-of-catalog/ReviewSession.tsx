@@ -49,6 +49,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   const [approvals, setApprovals] = useState<ApprovalMap>({});
   const [pendingBindId, setPendingBindId] = useState<string | null>(null);
   const [bindAnim, setBindAnim] = useState<{ label: string } | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const queue = useMemo<OocRow[]>(
     () => [...pending].sort((a, b) => a.confidence - b.confidence),
