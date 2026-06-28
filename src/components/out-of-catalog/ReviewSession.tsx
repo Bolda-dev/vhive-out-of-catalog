@@ -84,29 +84,69 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const statusFor = useCallback(
     (capId: string): ImgStatus => {
-      if (!current || !selected) return "pending";
-      return approvals[`${current.id}|${selected.item.id}|${capId}`] ?? "pending";
+      if (!current) return "pending";
+      return approvals[`${current.id}|${capId}`] ?? "pending";
     },
-    [approvals, current, selected],
+    [approvals, current],
   );
 
+  const allDecided = useMemo(() => {
+    if (!current || captureCount === 0) return false;
+    return captures.every((c) => statusFor(c.id) !== "pending");
+  }, [captures, captureCount, current, statusFor]);
+
   const allApproved = useMemo(() => {
-    if (!current || !selected || captureCount === 0) return false;
+    if (!current || captureCount === 0) return false;
     return captures.every((c) => statusFor(c.id) === "approved");
-  }, [captures, captureCount, current, selected, statusFor]);
+  }, [captures, captureCount, current, statusFor]);
+
+  const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
+
+  const setStatusFor = useCallback(
+    (s: ImgStatus, capId: string) => {
+      if (!current) return;
+      const key = `${current.id}|${capId}`;
+      setApprovals((prev) => ({ ...prev, [key]: s }));
+    },
+    [current],
+  );
+
+  const clearCaptureStatus = useCallback(
+    (capId: string) => {
+      if (!current) return;
+      const key = `${current.id}|${capId}`;
+      setApprovals((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+      const idx = captures.findIndex((c) => c.id === capId);
+      if (idx >= 0) setCaptureIndex(idx);
+    },
+    [captures, current],
+  );
+
+  const resetAllApprovals = useCallback(() => {
+    if (!current) return;
+    setApprovals((prev) => {
+      const next = { ...prev };
+      captures.forEach((c) => delete next[`${current.id}|${c.id}`]);
+      return next;
+    });
+    setCaptureIndex(0);
+  }, [captures, current]);
 
   const setStatus = useCallback(
     (s: ImgStatus) => {
-      if (!current || !selected || !currentCapture) return;
-      const key = `${current.id}|${selected.item.id}|${currentCapture.id}`;
-      setApprovals((prev) => ({ ...prev, [key]: s }));
+      if (!current || !currentCapture) return;
+      setStatusFor(s, currentCapture.id);
       // advance to next pending image if any
       const nextPendingIdx = (() => {
         for (let step = 1; step <= captureCount; step++) {
           const idx = (safeCaptureIdx + step) % captureCount;
           const cap = captures[idx];
           if (!cap) continue;
-          const k = `${current.id}|${selected.item.id}|${cap.id}`;
+          const k = `${current.id}|${cap.id}`;
           const status = idx === safeCaptureIdx ? s : (approvals[k] ?? "pending");
           if (status === "pending") return idx;
         }
@@ -114,7 +154,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       })();
       if (nextPendingIdx >= 0) setCaptureIndex(nextPendingIdx);
     },
-    [approvals, captureCount, captures, current, currentCapture, safeCaptureIdx, selected],
+    [approvals, captureCount, captures, current, currentCapture, safeCaptureIdx, setStatusFor],
   );
 
   const goNext = useCallback(() => {
