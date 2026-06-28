@@ -605,7 +605,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 />
               </div>
             ) : (
-            <div key="reference" className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface animate-fade-in">{/* legacy card */}
+            <div key="reference" className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-surface animate-fade-in">{/* legacy card */}
               {/* Top: catalog reference — hidden when no suggestions so empty state can fill */}
               {suggestionCount > 0 && (
                 <>
