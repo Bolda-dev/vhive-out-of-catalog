@@ -545,7 +545,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 </div>
               ) : (
                 <div className="flex h-[196px] shrink-0 flex-col">
-                  <div className="flex h-8 shrink-0 items-center justify-between border-b border-border/60 px-3">
+                  <div className="flex h-8 shrink-0 items-center justify-between px-3">
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
                       AI suggested matches
@@ -554,32 +554,32 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
                     </span>
                   </div>
-                  <div className="custom-scrollbar flex gap-2 overflow-x-auto p-2">
+                  <ThumbRail itemWidth={196} className="flex-1">
                     {suggestions.map((s, i) => {
                       const active = i === safeSuggestionIdx;
                       const label = `${s.item.manufacturer} ${s.item.model}`;
                       return (
                         <div
                           key={s.item.id}
-                          className={`relative w-[180px] shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
-                            active
-                              ? "border-transparent ring-2 ring-[#3BB6E9]"
-                              : "border-border opacity-80 hover:opacity-100"
-                          }`}
+                          className="relative h-full w-[180px] shrink-0 overflow-hidden rounded-lg border-2 bg-background/40 transition"
+                          style={{
+                            borderColor: active ? "#3BB6E9" : "transparent",
+                            opacity: active ? 1 : 0.85,
+                          }}
                         >
                           <button
                             type="button"
                             onClick={() => setSuggestionIndex(i)}
-                            className="block w-full text-left"
+                            className="flex h-full w-full flex-col text-left"
                           >
-                            <div className="h-[88px] w-full overflow-hidden bg-black/30">
+                            <div className="h-[88px] w-full shrink-0 overflow-hidden bg-black/30">
                               <img
                                 src={s.item.referenceImageUrl}
                                 alt=""
                                 className="h-full w-full object-cover"
                               />
                             </div>
-                            <div className="flex flex-col gap-1 px-2.5 py-2">
+                            <div className="flex flex-1 flex-col gap-1 px-2.5 py-2">
                               <div className="flex items-center justify-between gap-2">
                                 <span
                                   className="font-mono text-[10px] text-muted-foreground"
@@ -600,7 +600,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                         </div>
                       );
                     })}
-                  </div>
+                  </ThumbRail>
                 </div>
               )}
             </div>
