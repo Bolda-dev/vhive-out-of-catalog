@@ -1068,7 +1068,7 @@ function CaptureImagePanel({
   canAct?: boolean;
   captureKey: string;
   gridMode?: boolean;
-  captures?: CaptureImage[];
+  captures?: import("@/data/outOfCatalogTypes").OocCapture[];
   statusFor?: (capId: string) => ImgStatus;
   onCaptureSetStatus?: (s: ImgStatus, capId: string) => void;
   onCaptureClearStatus?: (capId: string) => void;
