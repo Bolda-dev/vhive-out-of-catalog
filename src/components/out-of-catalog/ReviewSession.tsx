@@ -1756,32 +1756,31 @@ function CatalogSearchPanel({
           </tr>
           <tr>
             <th
-              style={{ width: 84, minWidth: 84 }}
-              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 72, minWidth: 72 }}
+              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
             >
               Image
             </th>
             <th
-              style={{ width: 140, minWidth: 140 }}
-              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 96, minWidth: 96 }}
+              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
             >
               Type
             </th>
             <th
-              style={{ minWidth: 160 }}
-              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 110, minWidth: 110 }}
+              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
             >
               Manufacturer
             </th>
             <th
-              style={{ minWidth: 200 }}
-              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
             >
               Model
             </th>
             <th
-              style={{ width: 120, minWidth: 120 }}
-              className="border-b border-border bg-[#121212] px-3 py-3 text-right text-sm font-semibold text-white"
+              style={{ width: 88, minWidth: 88 }}
+              className="border-b border-border bg-[#121212] px-2 py-3 text-right text-sm font-semibold text-white"
             >
               Actions
             </th>
@@ -1807,11 +1806,11 @@ function CatalogSearchPanel({
                   lineHeight: "21px",
                 }}
               >
-                <td className="border-b border-border/60 px-3 py-2 align-middle">
+                <td className="border-b border-border/60 px-2 py-2 align-middle">
                   <button
                     type="button"
                     onClick={() => setPreview(item.referenceImageUrl)}
-                    className="group relative h-16 w-16 overflow-hidden rounded-md border border-border bg-background transition hover:border-[#3BB6E9]"
+                    className="group relative h-14 w-14 overflow-hidden rounded-md border border-border bg-background transition hover:border-[#3BB6E9]"
                     title="Click to enlarge"
                   >
                     <img
@@ -1820,24 +1819,17 @@ function CatalogSearchPanel({
                       className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
                     />
                     <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                      <span className="relative inline-flex h-7 w-7 items-center justify-center">
-                        <ZoomIn className="h-6 w-6" style={{ color: "#ffffff" }} />
-                        <Plus
-                          className="absolute -right-1 -bottom-1 h-3.5 w-3.5"
-                          strokeWidth={3}
-                          style={{ color: "#ffffff" }}
-                        />
-                      </span>
+                      <ZoomIn className="h-5 w-5" style={{ color: "#ffffff" }} />
                     </span>
                   </button>
                 </td>
-                <td className="truncate border-b border-border/60 px-4 py-3.5 align-middle">
+                <td className="truncate border-b border-border/60 px-2 py-3 align-middle text-[13px]">
                   {item.type}
                 </td>
-                <td className="truncate border-b border-border/60 px-4 py-3.5 align-middle">
+                <td className="truncate border-b border-border/60 px-2 py-3 align-middle">
                   {item.manufacturer}
                 </td>
-                <td className="border-b border-border/60 px-4 py-3.5 align-middle">
+                <td className="border-b border-border/60 px-2 py-3 align-middle">
                   <div className="min-w-0">
                     <div className="truncate">{item.model}</div>
                     <div className="truncate text-[12px] text-muted-foreground">
@@ -1845,11 +1837,11 @@ function CatalogSearchPanel({
                     </div>
                   </div>
                 </td>
-                <td className="border-b border-border/60 px-3 py-2 text-right align-middle">
+                <td className="border-b border-border/60 px-2 py-2 text-right align-middle">
                   <button
                     type="button"
                     onClick={() => onBind(item.id)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition hover:opacity-90"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition hover:opacity-90"
                     style={{ background: "#3BB6E9", color: "#0b1418" }}
                     title="Bind to this catalog item"
                   >
@@ -1869,7 +1861,7 @@ function CatalogSearchPanel({
         <button
           type="button"
           onClick={() => setPreview(null)}
-          className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 p-8 animate-fade-in"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-8 animate-fade-in"
           aria-label="Close preview"
         >
           <img
