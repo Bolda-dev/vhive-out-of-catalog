@@ -925,7 +925,9 @@ function CaptureImagePanel({
   type,
   manufacturer,
   model,
-  metaBottomLeft,
+  capturedAt,
+  account,
+  rack,
   onApprove,
   onReject,
   canAct,
@@ -936,7 +938,9 @@ function CaptureImagePanel({
   type?: string;
   manufacturer?: string;
   model?: string;
-  metaBottomLeft?: string;
+  capturedAt?: string;
+  account?: string;
+  rack?: string;
   onApprove?: () => void;
   onReject?: () => void;
   canAct?: boolean;
