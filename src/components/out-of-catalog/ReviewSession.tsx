@@ -544,15 +544,6 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                               </div>
                             </div>
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => dismissSuggestion(s.item.id)}
-                            aria-label="Dismiss suggestion"
-                            title="Dismiss"
-                            className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/50 text-[color:var(--color-danger,#d97a72)] backdrop-blur transition hover:bg-black/70"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
                         </div>
                       );
                     })}
