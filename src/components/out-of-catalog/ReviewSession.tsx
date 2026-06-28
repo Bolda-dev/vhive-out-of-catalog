@@ -384,11 +384,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 type={current.aiType}
                 manufacturer={current.aiManufacturer}
                 model={current.aiModel}
-                metaBottomLeft={
-                  currentCapture
-                    ? `${currentCapture.capturedAt} · ${currentCapture.location}`
-                    : undefined
-                }
+                capturedAt={currentCapture?.capturedAt}
+                account={current.account}
+                rack={currentCapture?.location}
                 onApprove={() => setStatus("approved")}
                 onReject={() => setStatus("rejected")}
                 canAct={!!currentCapture && !!selected}
