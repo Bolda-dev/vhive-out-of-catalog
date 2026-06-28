@@ -488,56 +488,64 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 rack={currentCapture?.location}
                 onApprove={() => setStatus("approved")}
                 onReject={() => setStatus("rejected")}
-                canAct={!!currentCapture && !!selected}
+                canAct={!!currentCapture}
                 captureKey={currentCapture?.id ?? ""}
+                gridMode={phase === "reviewing"}
+                captures={captures}
+                statusFor={statusFor}
+                onCaptureSetStatus={setStatusFor}
+                onCaptureClearStatus={clearCaptureStatus}
+                onResetAllApprovals={resetAllApprovals}
               />
 
-              {/* Captured images rail (inside same card) — height matches right-card suggestions rail */}
-              <div className="flex h-[196px] shrink-0 flex-col">
-                <div className="flex h-8 shrink-0 items-center px-3">
-                  <span className="text-xs text-muted-foreground">Captured images</span>
+              {/* Captured images rail — only during approving phase */}
+              {phase === "approving" && (
+                <div className="flex h-[196px] shrink-0 flex-col">
+                  <div className="flex h-8 shrink-0 items-center px-3">
+                    <span className="text-xs text-muted-foreground">Captured images</span>
+                  </div>
+                  <ThumbRail itemWidth={236} className="flex-1">
+                    {captures.map((cap, i) => {
+                      const status = statusFor(cap.id);
+                      const active = i === safeCaptureIdx;
+                      const borderColor = active
+                        ? "#3BB6E9"
+                        : status === "approved"
+                        ? "#8FD3A8"
+                        : status === "rejected"
+                        ? "#d97a72"
+                        : "transparent";
+                      return (
+                        <button
+                          key={cap.id}
+                          type="button"
+                          onClick={() => setCaptureIndex(i)}
+                          className="group relative h-full w-[220px] shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-100"
+                          style={{ borderColor, opacity: active ? 1 : 0.92 }}
+                        >
+                          <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                          {status === "approved" && (
+                            <span
+                              className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                              style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                            >
+                              <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                            </span>
+                          )}
+                          {status === "rejected" && (
+                            <span
+                              className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                              style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                            >
+                              <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </ThumbRail>
                 </div>
-                <ThumbRail itemWidth={236} className="flex-1">
-                  {captures.map((cap, i) => {
-                    const status = statusFor(cap.id);
-                    const active = i === safeCaptureIdx;
-                    const borderColor = active
-                      ? "#3BB6E9"
-                      : status === "approved"
-                      ? "#8FD3A8"
-                      : status === "rejected"
-                      ? "#d97a72"
-                      : "transparent";
-                    return (
-                      <button
-                        key={cap.id}
-                        type="button"
-                        onClick={() => setCaptureIndex(i)}
-                        className="group relative h-full w-[220px] shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-100"
-                        style={{ borderColor, opacity: active ? 1 : 0.92 }}
-                      >
-                        <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                        {status === "approved" && (
-                          <span
-                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                            style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                          >
-                            <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                          </span>
-                        )}
-                        {status === "rejected" && (
-                          <span
-                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                            style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                          >
-                            <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </ThumbRail>
-              </div>
+              )}
             </div>
 
 
