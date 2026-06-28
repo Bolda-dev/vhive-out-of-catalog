@@ -11,6 +11,7 @@ import {
   SkipForward,
   Sparkles,
   X,
+  ZoomIn,
 } from "lucide-react";
 
 
