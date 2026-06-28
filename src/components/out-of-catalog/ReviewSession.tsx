@@ -1,11 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   ChevronLeft,
   ChevronRight,
   Crop,
-  HelpCircle,
   Plus,
   RotateCcw,
   Search,
@@ -17,7 +15,6 @@ import {
 
 
 import { appToast } from "@/components/ui/app-toast";
-import { ConfidenceBadge } from "@/components/out-of-catalog/ConfidenceBadge";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
 import { Toaster } from "@/components/ui/sonner";
@@ -34,20 +31,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { OocRow } from "@/data/outOfCatalogTypes";
 
-export const Route = createFileRoute("/review-session")({
-  head: () => ({
-    meta: [
-      { title: "Review Session — Out-of-Catalog — vHive" },
-      {
-        name: "description",
-        content:
-          "Compare captured images against AI-suggested catalog items and bind once all images are approved.",
-      },
-    ],
-  }),
-  component: ReviewSessionPage,
-});
-
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
 type ImgStatus = "pending" | "approved" | "rejected";
 // key = `${rowId}|${suggestionCatalogId}|${captureId}`
@@ -55,8 +38,8 @@ type ApprovalMap = Record<string, ImgStatus>;
 
 const pending = mockOutOfCatalog.filter((r) => r.status === "Pending");
 
-function ReviewSessionPage() {
-  const navigate = useNavigate();
+export function ReviewSession({ onExit }: { onExit: () => void }) {
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [captureIndex, setCaptureIndex] = useState(0);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -150,8 +133,9 @@ function ReviewSessionPage() {
   }, [current, selected, goNext]);
 
   const skipSession = useCallback(() => {
-    navigate({ to: "/out-of-catalog" });
-  }, [navigate]);
+    onExit();
+  }, [onExit]);
+
 
   const markUnrecognized = useCallback(() => {
     if (!current) return;
@@ -309,31 +293,16 @@ function ReviewSessionPage() {
   ]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background text-foreground">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-6">
-        <div className="flex items-center gap-3">
-          <h1 className="text-base font-medium" style={{ color: "rgba(255,255,255,0.87)" }}>
-            Session Review
-          </h1>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/out-of-catalog" })}
-          aria-label="Close review session"
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-white/[0.04] hover:text-foreground"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </header>
-
+    <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground">
       {done ? (
         <SessionComplete
           decisions={decisions}
           total={total}
-          onBack={() => navigate({ to: "/out-of-catalog" })}
+          onBack={onExit}
         />
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
+
 
 
 
@@ -547,7 +516,7 @@ function ReviewSessionPage() {
 
         </div>
       ) : (
-        <EmptyQueue onBack={() => navigate({ to: "/out-of-catalog" })} />
+        <EmptyQueue onBack={onExit} />
       )}
 
       <AlertDialog
