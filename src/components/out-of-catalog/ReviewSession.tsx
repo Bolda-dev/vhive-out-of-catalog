@@ -706,8 +706,12 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               </div>
               {phase === "approving" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-[2px]">
-                  <div className="flex flex-col items-center gap-2 text-center text-sm text-foreground">
-                    <ArrowLeft className="h-6 w-6" style={{ color: "#3BB6E9" }} />
+                  <div className="flex flex-col items-center gap-3 text-center text-sm text-foreground">
+                    <ListChecks
+                      className="h-8 w-8 animate-pulse"
+                      style={{ color: "#3BB6E9" }}
+                      strokeWidth={1.75}
+                    />
                     <span>Approve or reject every captured image first</span>
                   </div>
                 </div>
