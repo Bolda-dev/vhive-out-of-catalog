@@ -163,7 +163,13 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     goNext();
   }, [current, goNext]);
 
-  const searchCatalog = useCallback(() => appToast({ title: "Catalog search — coming soon" }), []);
+  const searchCatalog = useCallback(() => {
+    setSearchOpen(true);
+  }, []);
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }, []);
 
   const recreateSuggestions = useCallback(() => {
     if (!current) return;
