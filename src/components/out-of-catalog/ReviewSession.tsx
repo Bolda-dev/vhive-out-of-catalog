@@ -447,37 +447,33 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               />
 
               {/* Captured images rail (inside same card) — height matches right-card suggestions rail */}
-              <div className="flex h-[196px] shrink-0 flex-col border-t border-border/60">
+              <div className="flex h-[196px] shrink-0 flex-col">
                 <div className="flex h-8 shrink-0 items-center px-3">
                   <span className="text-xs text-muted-foreground">Captured images</span>
                 </div>
-                <div className="custom-scrollbar flex flex-1 gap-2 overflow-x-auto px-2 pb-2 pt-1">
+                <ThumbRail itemWidth={236} className="flex-1">
                   {captures.map((cap, i) => {
                     const status = statusFor(cap.id);
                     const active = i === safeCaptureIdx;
+                    const borderColor = active
+                      ? "#3BB6E9"
+                      : status === "approved"
+                      ? "#8FD3A8"
+                      : status === "rejected"
+                      ? "#d97a72"
+                      : "transparent";
                     return (
                       <button
                         key={cap.id}
                         type="button"
                         onClick={() => setCaptureIndex(i)}
-                        className={`group relative h-full w-[220px] shrink-0 overflow-hidden rounded-md border-2 transition ${
-                          active
-                            ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-surface"
-                            : "opacity-90 hover:opacity-100"
-                        }`}
-                        style={{
-                          borderColor:
-                            status === "approved"
-                              ? "#8FD3A8"
-                              : status === "rejected"
-                              ? "#d97a72"
-                              : "hsl(var(--border))",
-                        }}
+                        className="group relative h-full w-[220px] shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-100"
+                        style={{ borderColor, opacity: active ? 1 : 0.92 }}
                       >
                         <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
                         {status === "approved" && (
                           <span
-                            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
                             style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
                           >
                             <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
@@ -485,22 +481,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                         )}
                         {status === "rejected" && (
                           <span
-                            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
                             style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
                           >
                             <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
                           </span>
                         )}
-                        {status === "pending" && (
-                          <span
-                            className="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full"
-                            style={{ background: "rgba(255,255,255,0.55)" }}
-                          />
-                        )}
                       </button>
                     );
                   })}
-                </div>
+                </ThumbRail>
               </div>
             </div>
 
@@ -555,7 +545,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 </div>
               ) : (
                 <div className="flex h-[196px] shrink-0 flex-col">
-                  <div className="flex h-8 shrink-0 items-center justify-between border-b border-border/60 px-3">
+                  <div className="flex h-8 shrink-0 items-center justify-between px-3">
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
                       AI suggested matches
@@ -564,32 +554,32 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       {`${safeSuggestionIdx + 1} / ${suggestionCount}`}
                     </span>
                   </div>
-                  <div className="custom-scrollbar flex gap-2 overflow-x-auto p-2">
+                  <ThumbRail itemWidth={196} className="flex-1">
                     {suggestions.map((s, i) => {
                       const active = i === safeSuggestionIdx;
                       const label = `${s.item.manufacturer} ${s.item.model}`;
                       return (
                         <div
                           key={s.item.id}
-                          className={`relative w-[180px] shrink-0 overflow-hidden rounded-md border bg-background/40 transition ${
-                            active
-                              ? "border-transparent ring-2 ring-[#3BB6E9]"
-                              : "border-border opacity-80 hover:opacity-100"
-                          }`}
+                          className="relative h-full w-[180px] shrink-0 overflow-hidden rounded-lg border-2 bg-background/40 transition"
+                          style={{
+                            borderColor: active ? "#3BB6E9" : "transparent",
+                            opacity: active ? 1 : 0.85,
+                          }}
                         >
                           <button
                             type="button"
                             onClick={() => setSuggestionIndex(i)}
-                            className="block w-full text-left"
+                            className="flex h-full w-full flex-col text-left"
                           >
-                            <div className="h-[88px] w-full overflow-hidden bg-black/30">
+                            <div className="h-[88px] w-full shrink-0 overflow-hidden bg-black/30">
                               <img
                                 src={s.item.referenceImageUrl}
                                 alt=""
                                 className="h-full w-full object-cover"
                               />
                             </div>
-                            <div className="flex flex-col gap-1 px-2.5 py-2">
+                            <div className="flex flex-1 flex-col gap-1 px-2.5 py-2">
                               <div className="flex items-center justify-between gap-2">
                                 <span
                                   className="font-mono text-[10px] text-muted-foreground"
@@ -610,7 +600,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                         </div>
                       );
                     })}
-                  </div>
+                  </ThumbRail>
                 </div>
               )}
             </div>
@@ -1723,5 +1713,73 @@ function CatalogSearchPanel({
     </div>
 
 
+  );
+}
+
+// ---------- Shared horizontal rail with edge chevrons ----------
+function ThumbRail({
+  children,
+  itemWidth = 200,
+  className = "",
+}: {
+  children: React.ReactNode;
+  itemWidth?: number;
+  className?: string;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const updateEdges = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 1);
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    updateEdges();
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateEdges, { passive: true });
+    const ro = new ResizeObserver(updateEdges);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateEdges);
+      ro.disconnect();
+    };
+  }, [updateEdges, children]);
+
+  const scrollBy = (dir: -1 | 1) => {
+    scrollerRef.current?.scrollBy({ left: dir * itemWidth, behavior: "smooth" });
+  };
+
+  return (
+    <div className={`flex min-h-0 items-center ${className}`}>
+      <button
+        type="button"
+        onClick={() => scrollBy(-1)}
+        disabled={!canLeft}
+        aria-label="Scroll left"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-[#E0E0E0] transition hover:bg-white/[0.06] disabled:opacity-25"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <div
+        ref={scrollerRef}
+        className="custom-scrollbar flex h-full min-w-0 flex-1 items-stretch gap-4 overflow-x-auto px-1 py-2 scroll-smooth"
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        onClick={() => scrollBy(1)}
+        disabled={!canRight}
+        aria-label="Scroll right"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-[#E0E0E0] transition hover:bg-white/[0.06] disabled:opacity-25"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+    </div>
   );
 }

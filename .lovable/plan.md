@@ -1,39 +1,42 @@
 ## Goal
-Turn the top strip of the Captured Image card into a proper "ID card" for the AI suggestion, and remove the on-image metadata overlay.
+Align both horizontal rails — **Captured images** (left card) and **AI suggested matches** (right card) — to the design language in the reference: chevron paginators on the outer edges, generous consistent spacing between thumbnails, rounded thumbnails with a clean cyan ring on the active item.
 
-## Changes — `src/components/out-of-catalog/ReviewSession.tsx`
+## Reference design tokens (from upload)
+- Outer chevrons: left + right, vertically centered, no background, white/E0E0E0 stroke, simple `<` `>`.
+- Rail padding: ~16px horizontal so first/last thumbnail clears the chevrons.
+- Gap between thumbnails: ~16px (vs current 8px).
+- Thumbnail: rounded `rounded-lg` (~10px), 2px border, dark background. Active = 2px solid `#3BB6E9` (no double ring/offset). Inactive = transparent/neutral border.
+- Status badges (approved ✓ / rejected ✕) stay top-right; in inactive state they remain visible.
+- Container has no inner divider — clean dark surface.
 
-### 1. `CaptureImagePanel` header → ID card
-Replace the current single-row strip (label "Captured image" + Type/Manufacturer/Model + status pill) with a denser ID card containing:
+## Changes
 
-- **Suggestion identity** (from the top AI suggestion, same source as today):
-  - Type
-  - Manufacturer
-  - Model
-- **Capture context**:
-  - Timestamp + date (`capturedAt`)
-  - Account (e.g. Verizon) — small chip
-  - Rack — shown as a link-styled control (icon + rack label parsed from `location`), no real navigation; on click fire an `appToast` "Opening rack …" placeholder.
+### 1. Shared `ThumbRail` wrapper (inline within `ReviewSession.tsx`)
+A small helper used by both rails:
+- Flex row: `[Chevron] [scroll viewport flex-1] [Chevron]`
+- Chevron buttons: 32×32, `text-[#E0E0E0]`, hover `bg-white/[0.04]`, disabled at scroll edges.
+- Scroll viewport: `overflow-x-auto custom-scrollbar`, `gap-4 px-4 py-2`, `scroll-smooth`.
+- Click chevron scrolls viewport by ~1 thumbnail width.
 
-Layout: two rows inside the same bordered header area.
-- Row 1: `Type · Manufacturer · Model` as the prominent line (same `MetaField` style, slightly larger value text).
-- Row 2: muted line — timestamp/date · account chip · rack link, right-aligned approval status pill kept where it is today.
+### 2. Captured images rail (lines ~450–504)
+- Replace the current `<div className="flex flex-1 gap-2 overflow-x-auto …">` with `ThumbRail`.
+- Each capture thumb: keep current 220px width, switch to `rounded-lg`, drop `ring-offset`, use a single 2px border (cyan when active, status color when approved/rejected, transparent otherwise).
+- Keep status badges as-is.
 
-Header background stays `bg-surface`; bottom border preserved. No height jump that breaks the existing `h-full` image area (use `shrink-0`).
+### 3. AI suggested matches rail (lines ~556–615)
+- Replace the suggestion list wrapper with `ThumbRail`.
+- Suggestion card: same `rounded-lg`, single 2px border (cyan when active), no `ring-2`. Keep internal layout (image + label + score).
+- Increase card spacing via the rail's `gap-4`.
+- Keep the `1 / N` pager in the section header.
 
-### 2. Remove on-image metadata overlay
-Delete the `metaBottomLeft` overlay block (the `absolute bottom-0 left-0 …` chip) and the `metaBottomLeft` prop wiring. The Crop button moves back to `bottom-2 left-2` since there is no longer a metadata chip to sit above.
-
-### 3. Props / call site
-- `CaptureImagePanel` props: drop `metaBottomLeft`; add `capturedAt`, `account`, `rack`.
-- In the parent (line ~380), pass:
-  - `capturedAt={currentCapture?.capturedAt}`
-  - `account={current.account}`
-  - `rack={currentCapture?.location}` (already contains the rack segment)
-
-No data-model or business-logic changes; mock data already supplies all fields.
+### 4. Header polish (both rails)
+- Keep the existing 32px header strip with label + counter.
+- Remove the `border-b border-border/60` under the header so the rail reads as one piece, matching the reference's open black surface.
 
 ## Out of scope
-- No changes to the right-side catalog/suggestions card.
-- No changes to the thumbnail rail, shortcut bar, or table view.
-- No real rack navigation — link is a visual + toast only.
+- No changes to behavior (selection, keyboard nav, status semantics).
+- No changes to the catalog search table or empty-state grid.
+- No changes to layout grid / card heights.
+
+## Files touched
+- `src/components/out-of-catalog/ReviewSession.tsx` — only the two rail blocks + one small inline `ThumbRail` helper.
