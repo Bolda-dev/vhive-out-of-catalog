@@ -1322,7 +1322,7 @@ function CaptureImagePanel({
                       (e.target as HTMLElement).setPointerCapture(e.pointerId);
                       setDragCorner(c.id);
                     }}
-                    className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-sm border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
+                    className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-white bg-white shadow active:cursor-grabbing"
                     style={{ left: `${c.x}%`, top: `${c.y}%` }}
                   />
                 ))}
