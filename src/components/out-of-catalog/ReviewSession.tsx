@@ -574,7 +574,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     <div className="flex h-8 shrink-0 items-center border-b border-border/60 px-3">
                       <span className="text-xs text-muted-foreground">Catalog reference</span>
                     </div>
-                    <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/30">
+                    <div className="relative flex min-h-0 flex-1 items-center justify-center bg-background">
                       {selected?.item.referenceImageUrl ? (
                         <img
                           src={selected.item.referenceImageUrl}
@@ -632,7 +632,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                             onClick={() => setSuggestionIndex(i)}
                             className="flex h-full w-full flex-col text-left"
                           >
-                            <div className="h-[88px] w-full shrink-0 overflow-hidden bg-black/30">
+                            <div className="h-[88px] w-full shrink-0 overflow-hidden bg-background">
                               <img
                                 src={s.item.referenceImageUrl}
                                 alt=""
@@ -798,7 +798,7 @@ function ImagePanel({
           </span>
         )}
       </div>
-      <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/30">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center bg-background">
         {src ? (
           <img src={src} alt="" className="h-full w-full object-contain" />
         ) : (
@@ -1299,7 +1299,7 @@ function CaptureImagePanel({
       ) : (
         <>
           <div
-            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
+            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-background"
             onPointerMove={onPointerMove}
             onPointerUp={() => setDragCorner(null)}
             onPointerLeave={() => setDragCorner(null)}
@@ -1813,7 +1813,7 @@ function CatalogSearchPanel({
                   <button
                     type="button"
                     onClick={() => setPreview(item.referenceImageUrl)}
-                    className="group relative h-16 w-16 overflow-hidden rounded-md border border-border bg-black/30 transition hover:border-[#3BB6E9]"
+                    className="group relative h-16 w-16 overflow-hidden rounded-md border border-border bg-background transition hover:border-[#3BB6E9]"
                     title="Click to enlarge"
                   >
                     <img
