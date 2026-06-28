@@ -516,7 +516,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
         </div>
       ) : (
-        <EmptyQueue onBack={() => navigate({ to: "/out-of-catalog" })} />
+        <EmptyQueue onBack={onExit} />
       )}
 
       <AlertDialog
