@@ -447,37 +447,33 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               />
 
               {/* Captured images rail (inside same card) — height matches right-card suggestions rail */}
-              <div className="flex h-[196px] shrink-0 flex-col border-t border-border/60">
+              <div className="flex h-[196px] shrink-0 flex-col">
                 <div className="flex h-8 shrink-0 items-center px-3">
                   <span className="text-xs text-muted-foreground">Captured images</span>
                 </div>
-                <div className="custom-scrollbar flex flex-1 gap-2 overflow-x-auto px-2 pb-2 pt-1">
+                <ThumbRail itemWidth={236} className="flex-1">
                   {captures.map((cap, i) => {
                     const status = statusFor(cap.id);
                     const active = i === safeCaptureIdx;
+                    const borderColor = active
+                      ? "#3BB6E9"
+                      : status === "approved"
+                      ? "#8FD3A8"
+                      : status === "rejected"
+                      ? "#d97a72"
+                      : "transparent";
                     return (
                       <button
                         key={cap.id}
                         type="button"
                         onClick={() => setCaptureIndex(i)}
-                        className={`group relative h-full w-[220px] shrink-0 overflow-hidden rounded-md border-2 transition ${
-                          active
-                            ? "ring-2 ring-[#3BB6E9] ring-offset-2 ring-offset-surface"
-                            : "opacity-90 hover:opacity-100"
-                        }`}
-                        style={{
-                          borderColor:
-                            status === "approved"
-                              ? "#8FD3A8"
-                              : status === "rejected"
-                              ? "#d97a72"
-                              : "hsl(var(--border))",
-                        }}
+                        className="group relative h-full w-[220px] shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-100"
+                        style={{ borderColor, opacity: active ? 1 : 0.92 }}
                       >
                         <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
                         {status === "approved" && (
                           <span
-                            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
                             style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
                           >
                             <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
@@ -485,22 +481,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                         )}
                         {status === "rejected" && (
                           <span
-                            className="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
                             style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
                           >
                             <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
                           </span>
                         )}
-                        {status === "pending" && (
-                          <span
-                            className="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full"
-                            style={{ background: "rgba(255,255,255,0.55)" }}
-                          />
-                        )}
                       </button>
                     );
                   })}
-                </div>
+                </ThumbRail>
               </div>
             </div>
 
