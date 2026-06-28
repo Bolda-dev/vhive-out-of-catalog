@@ -374,7 +374,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       ) : current ? (
         <div className="flex min-h-0 flex-1 flex-col">
           {/* Exit session bar */}
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-2 pb-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-0 pb-1">
             <h1 className="text-base font-medium text-foreground">Review Session</h1>
             <div className="flex items-center gap-2">
               <div
