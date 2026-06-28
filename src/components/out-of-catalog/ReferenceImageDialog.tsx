@@ -110,8 +110,8 @@ export function ReferenceImageDialog({
                 type="button"
                 onClick={handleRemove}
                 disabled={!image}
-                className="inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                className="inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm transition hover:bg-[#d97a72]/10 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ borderColor: "#d97a72", color: "#d97a72" }}
               >
                 <Trash2 className="h-4 w-4" />
                 Remove
