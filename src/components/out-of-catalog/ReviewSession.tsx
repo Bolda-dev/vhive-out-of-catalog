@@ -1715,3 +1715,71 @@ function CatalogSearchPanel({
 
   );
 }
+
+// ---------- Shared horizontal rail with edge chevrons ----------
+function ThumbRail({
+  children,
+  itemWidth = 200,
+  className = "",
+}: {
+  children: React.ReactNode;
+  itemWidth?: number;
+  className?: string;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const updateEdges = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 1);
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    updateEdges();
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateEdges, { passive: true });
+    const ro = new ResizeObserver(updateEdges);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateEdges);
+      ro.disconnect();
+    };
+  }, [updateEdges, children]);
+
+  const scrollBy = (dir: -1 | 1) => {
+    scrollerRef.current?.scrollBy({ left: dir * itemWidth, behavior: "smooth" });
+  };
+
+  return (
+    <div className={`flex min-h-0 items-center ${className}`}>
+      <button
+        type="button"
+        onClick={() => scrollBy(-1)}
+        disabled={!canLeft}
+        aria-label="Scroll left"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-[#E0E0E0] transition hover:bg-white/[0.06] disabled:opacity-25"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <div
+        ref={scrollerRef}
+        className="custom-scrollbar flex h-full min-w-0 flex-1 items-stretch gap-4 overflow-x-auto px-1 py-2 scroll-smooth"
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        onClick={() => scrollBy(1)}
+        disabled={!canRight}
+        aria-label="Scroll right"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-[#E0E0E0] transition hover:bg-white/[0.06] disabled:opacity-25"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+    </div>
+  );
+}
