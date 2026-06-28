@@ -20,7 +20,7 @@ import { appToast } from "@/components/ui/app-toast";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
 import { Toaster } from "@/components/ui/sonner";
-import { AddNewBindIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
+import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
 import {
   AlertDialog,
   AlertDialogAction,
