@@ -1133,7 +1133,7 @@ function CaptureImagePanel({
           </span>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-medium text-foreground">Rack Suggestion</span>
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">AI generated</span>
+            <span className="text-[11px] text-muted-foreground">AI generated</span>
           </div>
         </div>
 
