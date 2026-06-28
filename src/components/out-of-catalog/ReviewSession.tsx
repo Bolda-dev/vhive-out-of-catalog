@@ -456,16 +456,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       <ChevronDown className="h-4 w-4" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={addAsNew}>
-                      <AddNewBindIcon className="mr-2 h-4 w-4" />
-                      <span className="flex-1">New equipment</span>
-                      <span className="ml-2 text-xs text-muted-foreground">Ctrl+Enter</span>
+                  <DropdownMenuContent align="end" className="w-auto min-w-[240px]">
+                    <DropdownMenuItem onClick={addAsNew} className="whitespace-nowrap">
+                      <AddNewBindIcon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="flex-1 whitespace-nowrap">New equipment</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">Ctrl+Enter</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={markUnrecognized}>
-                      <MarkUnrecognizedIcon className="mr-2 h-4 w-4" />
-                      <span className="flex-1">Unrecognize</span>
-                      <span className="ml-2 text-xs text-muted-foreground">U</span>
+                    <DropdownMenuItem onClick={markUnrecognized} className="whitespace-nowrap">
+                      <MarkUnrecognizedIcon className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="flex-1 whitespace-nowrap">Unrecognize</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">U</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
