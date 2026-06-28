@@ -606,6 +606,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 </div>
               )}
             </div>
+            )}
           </section>
 
 
