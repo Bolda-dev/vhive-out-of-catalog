@@ -526,7 +526,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   <div className="flex h-8 shrink-0 items-center px-3">
                     <span className="text-xs text-muted-foreground">Captured images</span>
                   </div>
-                  <ThumbRail itemWidth={236} className="flex-1">
+                  <ThumbRail itemWidth={236} className="flex-1" activeIndex={safeCaptureIdx}>
                     {captures.map((cap, i) => {
                       const status = statusFor(cap.id);
                       const active = i === safeCaptureIdx;
@@ -1880,10 +1880,12 @@ function ThumbRail({
   children,
   itemWidth = 200,
   className = "",
+  activeIndex,
 }: {
   children: React.ReactNode;
   itemWidth?: number;
   className?: string;
+  activeIndex?: number;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
@@ -1908,6 +1910,23 @@ function ThumbRail({
       ro.disconnect();
     };
   }, [updateEdges, children]);
+
+  // Keep the active thumbnail visible: if it falls off either edge, scroll it
+  // back into view aligned to the left (so the current is always seen).
+  useEffect(() => {
+    if (activeIndex == null) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    const child = el.children[activeIndex] as HTMLElement | undefined;
+    if (!child) return;
+    const childLeft = child.offsetLeft;
+    const childRight = childLeft + child.offsetWidth;
+    const viewLeft = el.scrollLeft;
+    const viewRight = viewLeft + el.clientWidth;
+    if (childLeft < viewLeft || childRight > viewRight) {
+      el.scrollTo({ left: Math.max(0, childLeft - 8), behavior: "smooth" });
+    }
+  }, [activeIndex, children]);
 
   const scrollBy = (dir: -1 | 1) => {
     scrollerRef.current?.scrollBy({ left: dir * itemWidth, behavior: "smooth" });
