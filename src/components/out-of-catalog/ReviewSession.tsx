@@ -1171,18 +1171,6 @@ function CaptureImagePanel({
                 </span>
               );
             })()}
-            {status && status !== "pending" && (
-              <span
-                className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
-                style={
-                  status === "approved"
-                    ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
-                    : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
-                }
-              >
-                {status}
-              </span>
-            )}
           </div>
           {/* Row 2 — capture context */}
           {(capturedAt || account || rack) && (
