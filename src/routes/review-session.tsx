@@ -916,13 +916,10 @@ function ShortcutsScroller({ children }: { children: React.ReactNode }) {
 }
 
 
-type Pt = { x: number; y: number };
-const DEFAULT_POLY: Pt[] = [
-  { x: 28, y: 36 },
-  { x: 72, y: 36 },
-  { x: 74, y: 66 },
-  { x: 26, y: 66 },
-];
+type Rect = { x: number; y: number; w: number; h: number };
+const DEFAULT_RECT: Rect = { x: 26, y: 34, w: 48, h: 34 };
+const MIN_SIZE = 8;
+
 
 function CaptureImagePanel({
   src,
