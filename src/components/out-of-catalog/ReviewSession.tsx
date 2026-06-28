@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowLeft,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -667,9 +668,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             )}
               </div>
               {phase === "approving" && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="pointer-events-auto flex items-center gap-3 rounded-lg border border-border bg-surface/95 px-4 py-3 text-sm text-foreground shadow-lg backdrop-blur-sm">
-                    <ChevronLeft className="h-4 w-4" style={{ color: "#3BB6E9" }} />
+                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-[2px]">
+                  <div className="flex flex-col items-center gap-2 text-center text-sm text-foreground">
+                    <ArrowLeft className="h-6 w-6" style={{ color: "#3BB6E9" }} />
                     <span>Approve or reject every captured image first</span>
                   </div>
                 </div>
