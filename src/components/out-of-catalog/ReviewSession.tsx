@@ -991,29 +991,63 @@ function CaptureImagePanel({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
 
-      <div className="flex items-center gap-3 border-b border-border/60 px-3 py-2">
-        <span className="shrink-0 text-xs text-muted-foreground">Captured image</span>
-        {(type || manufacturer || model) && (
+      <div className="flex flex-col gap-1.5 border-b border-border/60 px-3 py-2">
+        {/* Row 1 — identity */}
+        <div className="flex items-center gap-3">
+          <span className="shrink-0 text-[11px] uppercase tracking-wide text-muted-foreground">
+            AI suggestion
+          </span>
           <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
             <span className="h-3 w-px shrink-0 bg-white/10" />
             <MetaField label="Type" value={type || "—"} />
             <span className="h-3 w-px shrink-0 bg-white/10" />
             <MetaField label="Manufacturer" value={manufacturer || "—"} />
             <span className="h-3 w-px shrink-0 bg-white/10" />
-            <MetaField label="Model" value={model || "—"} />
+            <MetaField label="Model" value={model || "—"} truncate />
           </div>
-        )}
-        {status && status !== "pending" && (
-          <span
-            className="ml-auto inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
-            style={
-              status === "approved"
-                ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
-                : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
-            }
-          >
-            {status}
-          </span>
+          {status && status !== "pending" && (
+            <span
+              className="ml-auto inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
+              style={
+                status === "approved"
+                  ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
+                  : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
+              }
+            >
+              {status}
+            </span>
+          )}
+        </div>
+        {/* Row 2 — capture context */}
+        {(capturedAt || account || rack) && (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+            {capturedAt && <span className="shrink-0">{capturedAt}</span>}
+            {account && (
+              <>
+                <span className="h-3 w-px shrink-0 bg-white/10" />
+                <span
+                  className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
+                  style={{ background: "rgba(59,182,233,0.12)", color: "#3BB6E9" }}
+                >
+                  {account}
+                </span>
+              </>
+            )}
+            {rack && (
+              <>
+                <span className="h-3 w-px shrink-0 bg-white/10" />
+                <button
+                  type="button"
+                  onClick={() => appToast({ title: `Opening ${rack}` })}
+                  className="inline-flex shrink-0 items-center gap-1 text-[11px] text-[#3BB6E9] hover:underline"
+                  title="Open rack"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  <span className="max-w-[280px] truncate">{rack}</span>
+                </button>
+              </>
+            )}
+          </div>
         )}
       </div>
       <div
