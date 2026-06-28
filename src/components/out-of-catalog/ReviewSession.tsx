@@ -339,11 +339,11 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [
     addAsNew,
-    allApproved,
     captureCount,
     dismissSuggestion,
     done,
     markUnrecognized,
+    phase,
     searchCatalog,
     selected,
     setStatus,
