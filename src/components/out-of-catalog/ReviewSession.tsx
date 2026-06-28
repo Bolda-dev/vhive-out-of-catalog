@@ -4,6 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Crop,
+  ExternalLink,
   Plus,
   RotateCcw,
   Search,
