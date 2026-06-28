@@ -434,7 +434,7 @@ function SelectFilter({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full appearance-none bg-transparent pr-4 text-xs text-foreground outline-none"
+        className="w-full appearance-none bg-transparent pr-4 text-xs font-normal text-foreground outline-none"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
