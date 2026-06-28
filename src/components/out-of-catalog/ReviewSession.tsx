@@ -507,7 +507,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
             {searchOpen ? (
-              <div key="search" className="flex min-h-0 flex-col animate-fade-in">
+              <div key="search" className="flex h-full min-h-0 flex-col animate-fade-in">
                 <CatalogSearchPanel
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
