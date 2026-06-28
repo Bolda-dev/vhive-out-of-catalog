@@ -1573,87 +1573,133 @@ function CatalogSearchPanel({
   }, [query]);
 
   return (
-    <div className="relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
-      <div className="flex h-9 shrink-0 items-center justify-between border-b border-border/60 px-3">
-        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Search className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
-          Catalog search
-        </span>
-        <span className="text-xs text-muted-foreground tabular-nums">
-          {results.length} result{results.length === 1 ? "" : "s"}
-        </span>
-      </div>
-
-      <div className="grid h-9 shrink-0 grid-cols-[64px_88px_1fr_1.4fr_88px_104px] items-center gap-2 border-b border-border/60 bg-background/30 px-3 text-[12px] text-muted-foreground">
-        <span>Image</span>
-        <span>Type</span>
-        <span>Manufacturer</span>
-        <span>Model</span>
-        <span className="text-right">ID</span>
-        <span className="text-right">Action</span>
-      </div>
-
-      <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto">
-        {results.length === 0 ? (
-          <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-            No catalog items match "{query}"
-          </div>
-        ) : (
-          results.map((item) => (
-            <div
-              key={item.id}
-              className="grid grid-cols-[64px_88px_1fr_1.4fr_88px_104px] items-center gap-2 border-b border-border/40 px-3 py-2 text-sm transition-colors animate-fade-in hover:bg-white/[0.03]"
-              style={{ color: "rgba(255,255,255,0.87)" }}
+    <div className="custom-scrollbar relative flex h-full min-h-0 flex-1 flex-col overflow-auto rounded-lg border border-border bg-background">
+      <table className="w-full border-separate border-spacing-0 text-sm">
+        <thead className="sticky top-0 z-20 bg-[#121212]">
+          <tr>
+            <th
+              colSpan={5}
+              className="border-b border-border px-3 py-3 text-left text-sm font-semibold text-white"
             >
-              <button
-                type="button"
-                onClick={() => setPreview(item.referenceImageUrl)}
-                className="group relative h-12 w-12 overflow-hidden rounded border border-border bg-black/30 transition hover:border-[#3BB6E9]"
-                title="Click to enlarge"
-              >
-                <img
-                  src={item.referenceImageUrl}
-                  alt=""
-                  className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
-                />
-                <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                  <span className="relative inline-flex h-6 w-6 items-center justify-center">
-                    <ZoomIn className="h-5 w-5" style={{ color: "#ffffff" }} />
-                    <Plus
-                      className="absolute -right-1 -bottom-1 h-3 w-3"
-                      strokeWidth={3}
-                      style={{ color: "#ffffff" }}
-                    />
-                  </span>
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2">
+                  <Search className="h-4 w-4" style={{ color: "#3BB6E9" }} />
+                  Catalog search
                 </span>
-              </button>
-              <span className="truncate">{item.type}</span>
-              <span className="truncate">{item.manufacturer}</span>
-              <div className="min-w-0">
-                <div className="truncate">{item.model}</div>
-                <div className="truncate text-[12px] text-muted-foreground">
-                  {item.classification}
-                </div>
+                <span className="text-xs font-normal text-white/60 tabular-nums">
+                  {results.length} result{results.length === 1 ? "" : "s"}
+                </span>
               </div>
-              <span className="text-right font-mono text-[12px] text-muted-foreground">
-                #{item.id.replace("cat-", "")}
-              </span>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => onBind(item.id)}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition hover:opacity-90"
-                  style={{ background: "#3BB6E9", color: "#0b1418" }}
-                  title="Bind to this catalog item"
-                >
-                  <BindToExistingIcon className="h-3.5 w-3.5" />
-                  Bind
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+            </th>
+          </tr>
+          <tr>
+            <th
+              style={{ width: 84, minWidth: 84 }}
+              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+            >
+              Image
+            </th>
+            <th
+              style={{ width: 140, minWidth: 140 }}
+              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+            >
+              Type
+            </th>
+            <th
+              style={{ minWidth: 160 }}
+              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+            >
+              Manufacturer
+            </th>
+            <th
+              style={{ minWidth: 200 }}
+              className="border-b border-border bg-[#121212] px-3 py-3 text-left text-sm font-semibold text-white"
+            >
+              Model
+            </th>
+            <th
+              style={{ width: 120, minWidth: 120 }}
+              className="border-b border-border bg-[#121212] px-3 py-3 text-right text-sm font-semibold text-white"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {results.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="px-4 py-12 text-center text-sm text-muted-foreground">
+                No catalog items match "{query}"
+              </td>
+            </tr>
+          ) : (
+            results.map((item) => (
+              <tr
+                key={item.id}
+                className="transition-colors animate-fade-in hover:bg-row-hover"
+                style={{
+                  color: "rgba(255, 255, 255, 0.87)",
+                  fontFamily: "Roboto, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  lineHeight: "21px",
+                }}
+              >
+                <td className="border-b border-border/60 px-3 py-2 align-middle">
+                  <button
+                    type="button"
+                    onClick={() => setPreview(item.referenceImageUrl)}
+                    className="group relative h-16 w-16 overflow-hidden rounded-md border border-border bg-black/30 transition hover:border-[#3BB6E9]"
+                    title="Click to enlarge"
+                  >
+                    <img
+                      src={item.referenceImageUrl}
+                      alt=""
+                      className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
+                    />
+                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                      <span className="relative inline-flex h-7 w-7 items-center justify-center">
+                        <ZoomIn className="h-6 w-6" style={{ color: "#ffffff" }} />
+                        <Plus
+                          className="absolute -right-1 -bottom-1 h-3.5 w-3.5"
+                          strokeWidth={3}
+                          style={{ color: "#ffffff" }}
+                        />
+                      </span>
+                    </span>
+                  </button>
+                </td>
+                <td className="truncate border-b border-border/60 px-4 py-3.5 align-middle">
+                  {item.type}
+                </td>
+                <td className="truncate border-b border-border/60 px-4 py-3.5 align-middle">
+                  {item.manufacturer}
+                </td>
+                <td className="border-b border-border/60 px-4 py-3.5 align-middle">
+                  <div className="min-w-0">
+                    <div className="truncate">{item.model}</div>
+                    <div className="truncate text-[12px] text-muted-foreground">
+                      {item.classification}
+                    </div>
+                  </div>
+                </td>
+                <td className="border-b border-border/60 px-3 py-2 text-right align-middle">
+                  <button
+                    type="button"
+                    onClick={() => onBind(item.id)}
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition hover:opacity-90"
+                    style={{ background: "#3BB6E9", color: "#0b1418" }}
+                    title="Bind to this catalog item"
+                  >
+                    <BindToExistingIcon className="h-3.5 w-3.5" />
+                    <span style={{ color: "#0b1418" }}>Bind</span>
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
 
       {preview && (
         <button
@@ -1673,6 +1719,7 @@ function CatalogSearchPanel({
         </button>
       )}
     </div>
+
 
   );
 }
