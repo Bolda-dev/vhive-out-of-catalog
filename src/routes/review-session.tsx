@@ -945,29 +945,46 @@ function CaptureImagePanel({
   captureKey: string;
 }) {
   const [editing, setEditing] = useState(false);
-  const [poly, setPoly] = useState<Pt[]>(DEFAULT_POLY);
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [rect, setRect] = useState<Rect>(DEFAULT_RECT);
+  const [dragCorner, setDragCorner] = useState<0 | 1 | 2 | 3 | null>(null);
 
-  // Reset polygon when capture changes
+  // Reset rectangle when capture changes
   useEffect(() => {
-    setPoly(DEFAULT_POLY);
+    setRect(DEFAULT_RECT);
     setEditing(false);
   }, [captureKey]);
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (dragIdx === null) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(2, Math.min(98, ((e.clientX - rect.left) / rect.width) * 100));
-    const y = Math.max(2, Math.min(98, ((e.clientY - rect.top) / rect.height) * 100));
-    setPoly((prev) => prev.map((p, i) => (i === dragIdx ? { x, y } : p)));
+    if (dragCorner === null) return;
+    const bounds = e.currentTarget.getBoundingClientRect();
+    const px = Math.max(2, Math.min(98, ((e.clientX - bounds.left) / bounds.width) * 100));
+    const py = Math.max(2, Math.min(98, ((e.clientY - bounds.top) / bounds.height) * 100));
+    setRect((prev) => {
+      // Opposite corner stays fixed. Corners: 0=TL, 1=TR, 2=BR, 3=BL
+      const left = prev.x;
+      const right = prev.x + prev.w;
+      const top = prev.y;
+      const bottom = prev.y + prev.h;
+      let nL = left, nR = right, nT = top, nB = bottom;
+      if (dragCorner === 0) { nL = Math.min(px, right - MIN_SIZE); nT = Math.min(py, bottom - MIN_SIZE); }
+      if (dragCorner === 1) { nR = Math.max(px, left + MIN_SIZE); nT = Math.min(py, bottom - MIN_SIZE); }
+      if (dragCorner === 2) { nR = Math.max(px, left + MIN_SIZE); nB = Math.max(py, top + MIN_SIZE); }
+      if (dragCorner === 3) { nL = Math.min(px, right - MIN_SIZE); nB = Math.max(py, top + MIN_SIZE); }
+      return { x: nL, y: nT, w: nR - nL, h: nB - nT };
+    });
   };
-
-  const points = poly.map((p) => `${p.x},${p.y}`).join(" ");
 
   const confirmCrop = () => {
     setEditing(false);
     appToast({ title: "Re-running AI search with new crop" });
   };
+
+  const corners: Array<{ id: 0 | 1 | 2 | 3; x: number; y: number }> = [
+    { id: 0, x: rect.x, y: rect.y },
+    { id: 1, x: rect.x + rect.w, y: rect.y },
+    { id: 2, x: rect.x + rect.w, y: rect.y + rect.h },
+    { id: 3, x: rect.x, y: rect.y + rect.h },
+  ];
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
@@ -1000,8 +1017,8 @@ function CaptureImagePanel({
       <div
         className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
         onPointerMove={onPointerMove}
-        onPointerUp={() => setDragIdx(null)}
-        onPointerLeave={() => setDragIdx(null)}
+        onPointerUp={() => setDragCorner(null)}
+        onPointerLeave={() => setDragCorner(null)}
       >
         {src ? (
           <img
@@ -1015,23 +1032,22 @@ function CaptureImagePanel({
           <div className="text-sm text-muted-foreground">No capture</div>
         )}
 
-        {/* Polygon overlay */}
+        {/* Rectangle overlay */}
         {src && (
           <svg
             className="pointer-events-none absolute inset-0 h-full w-full"
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
-            <polygon
-              points={points}
+            <rect
+              x={rect.x} y={rect.y} width={rect.w} height={rect.h}
               fill="none"
               stroke="rgba(0,0,0,0.85)"
-              strokeWidth="0.9"
               vectorEffect="non-scaling-stroke"
               style={{ strokeWidth: 4 } as React.CSSProperties}
             />
-            <polygon
-              points={points}
+            <rect
+              x={rect.x} y={rect.y} width={rect.w} height={rect.h}
               fill="rgba(59,182,233,0.08)"
               stroke="#3BB6E9"
               vectorEffect="non-scaling-stroke"
@@ -1040,23 +1056,24 @@ function CaptureImagePanel({
           </svg>
         )}
 
-        {/* Polygon handles (editable) */}
+        {/* Corner handles (editable) */}
         {src && editing && (
           <div className="absolute inset-0">
-            {poly.map((p, i) => (
+            {corners.map((c) => (
               <div
-                key={i}
+                key={c.id}
                 onPointerDown={(e) => {
                   e.preventDefault();
                   (e.target as HTMLElement).setPointerCapture(e.pointerId);
-                  setDragIdx(i);
+                  setDragCorner(c.id);
                 }}
-                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
-                style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-sm border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
+                style={{ left: `${c.x}%`, top: `${c.y}%` }}
               />
             ))}
           </div>
         )}
+
 
         {/* Crop button — overlay above metadata */}
         {src && (
