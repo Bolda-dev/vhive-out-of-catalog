@@ -364,7 +364,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   ]);
 
   return (
-    <div className="flex h-[calc(100vh-104px-76px)] flex-col bg-background text-foreground">
+    <div className="-mt-4 -mb-4 flex h-[calc(100vh-72px-76px)] flex-col bg-background text-foreground">
       {done ? (
         <SessionComplete
           decisions={decisions}
@@ -509,7 +509,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
           {/* Compare images + vertical suggestion rail */}
           <section
-            className="grid min-h-0 flex-1 gap-3 px-6 pt-2 pb-2"
+            className="grid min-h-0 flex-1 gap-3 px-6 pt-1 pb-0"
             style={{
               gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
             }}
