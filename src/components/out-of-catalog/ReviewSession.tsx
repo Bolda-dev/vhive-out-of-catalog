@@ -500,7 +500,15 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
 
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
-            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
+            {searchOpen ? (
+              <CatalogSearchPanel
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                onClose={closeSearch}
+                onBind={(id) => setPendingBindId(id)}
+              />
+            ) : (
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">{/* legacy card */}
               {/* Top: catalog reference — hidden when no suggestions so empty state can fill */}
               {suggestionCount > 0 && (
                 <>
