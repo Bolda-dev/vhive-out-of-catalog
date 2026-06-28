@@ -994,8 +994,8 @@ function CaptureImagePanel({
       <div className="flex flex-col gap-1.5 border-b border-border/60 px-3 py-2">
         {/* Row 1 — identity */}
         <div className="flex items-center gap-3">
-          <span className="inline-flex shrink-0 items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground">
-            <svg width="14" height="14" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <span className="inline-flex shrink-0 items-center gap-2 text-sm font-medium text-foreground">
+            <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M5.79858 1.5V2.78655V6.6462V15.7807V19.6404V23.5H8.47752L10.0303 20.9269H14.0894L15.6421 23.5H18.321V1.5H5.79858ZM7.08513 2.78655H17.0345V19.6404H7.08513V2.78655ZM7.75122 22.2134H7.08513V20.9269H8.52761L7.75122 22.2134ZM17.0345 22.2134H16.3684L15.592 20.9269H17.0345V22.2134Z" fill="currentColor"/>
               <path d="M9.24048 4.37341H15.759V5.65996H9.24048V4.37341Z" fill="currentColor"/>
               <path d="M9.24048 6.94641H15.759V8.23296H9.24048V6.94641Z" fill="currentColor"/>
@@ -1003,6 +1003,7 @@ function CaptureImagePanel({
             </svg>
             Rack Suggestion
           </span>
+
           <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
 
             <span className="h-3 w-px shrink-0 bg-white/10" />
