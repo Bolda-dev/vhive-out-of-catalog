@@ -778,6 +778,19 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         </AlertDialogContent>
       </AlertDialog>
 
+      <CreateEquipmentSheet
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        approvedCount={captures.filter((c) => statusFor(c.id) === "approved").length}
+        hasRejected={captures.some((c) => statusFor(c.id) === "rejected")}
+        defaultImage={
+          captures.find((c) => statusFor(c.id) === "approved")?.imageUrl ??
+          currentCapture?.imageUrl ??
+          null
+        }
+        onSubmit={submitNewEquipment}
+      />
+
       {bindAnim && <BindBurst label={bindAnim.label} />}
 
       <Toaster />
