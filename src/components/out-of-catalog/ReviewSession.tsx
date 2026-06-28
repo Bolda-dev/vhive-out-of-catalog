@@ -647,8 +647,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
+                const id = pendingBindId;
                 setPendingBindId(null);
-                confirmBind();
+                confirmBind(id ?? undefined);
               }}
               className="bg-brand text-background hover:bg-brand/90"
             >
