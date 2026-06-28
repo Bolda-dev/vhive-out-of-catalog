@@ -377,9 +377,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             <h1 className="text-base font-medium text-foreground">Review Session</h1>
             <div className="flex items-center gap-2">
               <div
-                className={`flex h-9 items-center overflow-hidden rounded-md border transition-[width,border-color,background-color] duration-300 ease-out ${
+                className={`flex h-9 items-center overflow-hidden rounded-md border transition-[width,border-color,background-color,opacity] duration-300 ease-out ${
                   searchOpen ? "w-[320px] bg-background/40" : "w-[180px] bg-transparent hover:bg-white/[0.04]"
-                }`}
+                } ${!searchOpen && phase !== "reviewing" ? "opacity-50" : "opacity-100"}`}
                 style={{ borderColor: searchOpen ? "#3BB6E9" : "#E0E0E0" }}
               >
                 {searchOpen ? (
