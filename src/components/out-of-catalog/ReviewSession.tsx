@@ -276,8 +276,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       }
       if (e.key === "Enter") {
         e.preventDefault();
-        if (allApproved) {
-          setPendingBindId(selected?.item.id ?? null);
+        if (phase === "reviewing") {
+          if (selected) setPendingBindId(selected.item.id);
         } else {
           setStatus("approved");
         }
@@ -285,7 +285,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       }
       if (e.key === "Backspace") {
         e.preventDefault();
-        setStatus("rejected");
+        if (phase === "approving") setStatus("rejected");
         return;
       }
       if (e.key === "ArrowLeft") {
