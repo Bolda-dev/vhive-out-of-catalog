@@ -68,18 +68,16 @@ function OutOfCatalogPage() {
   const [visibleColumnIds, setVisibleColumnIds] = useState<ColumnMeta["id"][]>(
     DEFAULT_VISIBLE_COLUMN_IDS,
   );
-  const [loaderStep, setLoaderStep] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
   const [inSession, setInSession] = useState(false);
 
   const startSession = () => {
-    if (loaderStep !== null) return;
-    setLoaderStep(0);
-    setTimeout(() => setLoaderStep(1), 450);
-    setTimeout(() => setLoaderStep(2), 900);
+    if (loading) return;
+    setLoading(true);
     setTimeout(() => {
       setInSession(true);
-      setLoaderStep(null);
-    }, 1400);
+      setLoading(false);
+    }, 300);
   };
 
 
@@ -145,7 +143,7 @@ function OutOfCatalogPage() {
     });
   };
 
-  const showSkeleton = loaderStep !== null && !inSession;
+  const showSkeleton = loading && !inSession;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -154,7 +152,7 @@ function OutOfCatalogPage() {
         {inSession ? (
           <ReviewSession onExit={() => setInSession(false)} />
         ) : showSkeleton ? (
-          <SessionSkeleton step={loaderStep ?? 0} />
+          <SessionSkeleton />
         ) : (
           <>
             {/* Toolbar */}

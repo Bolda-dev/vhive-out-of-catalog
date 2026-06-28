@@ -1,39 +1,6 @@
-const STEPS = [
-  "Gathering pending detections",
-  "Sorting by confidence",
-  "Preparing review session",
-];
-
-export function SessionSkeleton({ step = 0 }: { step?: number }) {
+export function SessionSkeleton() {
   return (
     <div className="flex flex-col gap-3">
-      {/* Top status row */}
-      <div className="flex items-center justify-between px-1 py-1">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span
-            className="inline-block h-3 w-3 rounded-full"
-            style={{
-              border: "2px solid rgba(59,182,233,0.25)",
-              borderTopColor: "#3BB6E9",
-              animation: "ooc-spin 0.8s linear infinite",
-            }}
-          />
-          <span>{STEPS[Math.min(step, STEPS.length - 1)]}…</span>
-        </div>
-        <div className="flex gap-1.5">
-          {STEPS.map((_, i) => (
-            <span
-              key={i}
-              className="h-1 w-6 rounded-full transition-colors"
-              style={{
-                background: i <= step ? "#3BB6E9" : "rgba(255,255,255,0.10)",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Two-card skeleton mirroring session layout */}
       <div
         className="grid gap-3"
         style={{ gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)" }}
@@ -43,7 +10,6 @@ export function SessionSkeleton({ step = 0 }: { step?: number }) {
       </div>
 
       <style>{`
-        @keyframes ooc-spin { to { transform: rotate(360deg); } }
         @keyframes ooc-shimmer {
           0% { background-position: -400px 0; }
           100% { background-position: 400px 0; }

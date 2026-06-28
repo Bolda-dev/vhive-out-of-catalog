@@ -35,7 +35,7 @@ import type { OocRow } from "@/data/outOfCatalogTypes";
 
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
 type ImgStatus = "pending" | "approved" | "rejected";
-// key = `${rowId}|${suggestionCatalogId}|${captureId}`
+// key = `${rowId}|${captureId}` — approvals belong to the photo, not the suggestion
 type ApprovalMap = Record<string, ImgStatus>;
 
 const pending = mockOutOfCatalog.filter((r) => r.status === "Pending");
@@ -84,29 +84,69 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const statusFor = useCallback(
     (capId: string): ImgStatus => {
-      if (!current || !selected) return "pending";
-      return approvals[`${current.id}|${selected.item.id}|${capId}`] ?? "pending";
+      if (!current) return "pending";
+      return approvals[`${current.id}|${capId}`] ?? "pending";
     },
-    [approvals, current, selected],
+    [approvals, current],
   );
 
+  const allDecided = useMemo(() => {
+    if (!current || captureCount === 0) return false;
+    return captures.every((c) => statusFor(c.id) !== "pending");
+  }, [captures, captureCount, current, statusFor]);
+
   const allApproved = useMemo(() => {
-    if (!current || !selected || captureCount === 0) return false;
+    if (!current || captureCount === 0) return false;
     return captures.every((c) => statusFor(c.id) === "approved");
-  }, [captures, captureCount, current, selected, statusFor]);
+  }, [captures, captureCount, current, statusFor]);
+
+  const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
+
+  const setStatusFor = useCallback(
+    (s: ImgStatus, capId: string) => {
+      if (!current) return;
+      const key = `${current.id}|${capId}`;
+      setApprovals((prev) => ({ ...prev, [key]: s }));
+    },
+    [current],
+  );
+
+  const clearCaptureStatus = useCallback(
+    (capId: string) => {
+      if (!current) return;
+      const key = `${current.id}|${capId}`;
+      setApprovals((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+      const idx = captures.findIndex((c) => c.id === capId);
+      if (idx >= 0) setCaptureIndex(idx);
+    },
+    [captures, current],
+  );
+
+  const resetAllApprovals = useCallback(() => {
+    if (!current) return;
+    setApprovals((prev) => {
+      const next = { ...prev };
+      captures.forEach((c) => delete next[`${current.id}|${c.id}`]);
+      return next;
+    });
+    setCaptureIndex(0);
+  }, [captures, current]);
 
   const setStatus = useCallback(
     (s: ImgStatus) => {
-      if (!current || !selected || !currentCapture) return;
-      const key = `${current.id}|${selected.item.id}|${currentCapture.id}`;
-      setApprovals((prev) => ({ ...prev, [key]: s }));
+      if (!current || !currentCapture) return;
+      setStatusFor(s, currentCapture.id);
       // advance to next pending image if any
       const nextPendingIdx = (() => {
         for (let step = 1; step <= captureCount; step++) {
           const idx = (safeCaptureIdx + step) % captureCount;
           const cap = captures[idx];
           if (!cap) continue;
-          const k = `${current.id}|${selected.item.id}|${cap.id}`;
+          const k = `${current.id}|${cap.id}`;
           const status = idx === safeCaptureIdx ? s : (approvals[k] ?? "pending");
           if (status === "pending") return idx;
         }
@@ -114,7 +154,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       })();
       if (nextPendingIdx >= 0) setCaptureIndex(nextPendingIdx);
     },
-    [approvals, captureCount, captures, current, currentCapture, safeCaptureIdx, selected],
+    [approvals, captureCount, captures, current, currentCapture, safeCaptureIdx, setStatusFor],
   );
 
   const goNext = useCallback(() => {
@@ -236,8 +276,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       }
       if (e.key === "Enter") {
         e.preventDefault();
-        if (allApproved) {
-          setPendingBindId(selected?.item.id ?? null);
+        if (phase === "reviewing") {
+          if (selected) setPendingBindId(selected.item.id);
         } else {
           setStatus("approved");
         }
@@ -245,7 +285,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       }
       if (e.key === "Backspace") {
         e.preventDefault();
-        setStatus("rejected");
+        if (phase === "approving") setStatus("rejected");
         return;
       }
       if (e.key === "ArrowLeft") {
@@ -299,11 +339,11 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [
     addAsNew,
-    allApproved,
     captureCount,
     dismissSuggestion,
     done,
     markUnrecognized,
+    phase,
     searchCatalog,
     selected,
     setStatus,
@@ -393,10 +433,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               <button
                 type="button"
                 onClick={() => selected && setPendingBindId(selected.item.id)}
-                disabled={!selected || !allApproved}
+                disabled={!selected || phase !== "reviewing"}
                 className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ background: "#3BB6E9", color: "#0b1418" }}
-                title={selected && allApproved ? "Bind (Enter)" : "Approve all captured images first"}
+                title={
+                  phase !== "reviewing"
+                    ? "Approve or reject every captured image first"
+                    : selected
+                    ? "Bind (Enter)"
+                    : "No suggestion selected"
+                }
               >
                 <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M11.1818 0C8.16121 0 5.59353 1.97466 4.70067 4.70067C1.97466 5.59353 0 8.16121 0 11.1818C0 14.9414 3.05863 18 6.81817 18C9.83879 18 12.4065 16.0253 13.2993 13.2993C16.0253 12.4065 18 9.83879 18 6.81817C18 3.05863 14.9414 0 11.1818 0ZM6.81817 16.3637C3.96091 16.3637 1.63635 14.0391 1.63635 11.1818C1.63635 9.21076 2.74264 7.49341 4.36679 6.61757C4.36489 6.68422 4.36363 6.75109 4.36363 6.81817C4.36363 10.5777 7.42226 13.6363 11.1818 13.6363C11.2489 13.6363 11.3157 13.6351 11.3824 13.6332C10.5066 15.2574 8.78924 16.3637 6.81817 16.3637ZM13.6332 11.3824C13.6351 11.3158 13.6364 11.2489 13.6364 11.1818C13.6364 7.42229 10.5777 4.36366 6.8182 4.36366C6.75112 4.36366 6.68426 4.36493 6.6176 4.36683C7.49345 2.74268 9.2108 1.63638 11.1819 1.63638C14.0391 1.63638 16.3637 3.96095 16.3637 6.8182C16.3637 8.78924 15.2574 10.5066 13.6332 11.3824Z" fill="currentColor" />
@@ -442,60 +488,74 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 rack={currentCapture?.location}
                 onApprove={() => setStatus("approved")}
                 onReject={() => setStatus("rejected")}
-                canAct={!!currentCapture && !!selected}
+                canAct={!!currentCapture}
                 captureKey={currentCapture?.id ?? ""}
+                gridMode={phase === "reviewing"}
+                captures={captures}
+                statusFor={statusFor}
+                onCaptureSetStatus={setStatusFor}
+                onCaptureClearStatus={clearCaptureStatus}
+                onResetAllApprovals={resetAllApprovals}
               />
 
-              {/* Captured images rail (inside same card) — height matches right-card suggestions rail */}
-              <div className="flex h-[196px] shrink-0 flex-col">
-                <div className="flex h-8 shrink-0 items-center px-3">
-                  <span className="text-xs text-muted-foreground">Captured images</span>
+              {/* Captured images rail — only during approving phase */}
+              {phase === "approving" && (
+                <div className="flex h-[196px] shrink-0 flex-col">
+                  <div className="flex h-8 shrink-0 items-center px-3">
+                    <span className="text-xs text-muted-foreground">Captured images</span>
+                  </div>
+                  <ThumbRail itemWidth={236} className="flex-1">
+                    {captures.map((cap, i) => {
+                      const status = statusFor(cap.id);
+                      const active = i === safeCaptureIdx;
+                      const borderColor = active
+                        ? "#3BB6E9"
+                        : status === "approved"
+                        ? "#8FD3A8"
+                        : status === "rejected"
+                        ? "#d97a72"
+                        : "transparent";
+                      return (
+                        <button
+                          key={cap.id}
+                          type="button"
+                          onClick={() => setCaptureIndex(i)}
+                          className="group relative h-full w-[220px] shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-100"
+                          style={{ borderColor, opacity: active ? 1 : 0.92 }}
+                        >
+                          <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
+                          {status === "approved" && (
+                            <span
+                              className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                              style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                            >
+                              <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                            </span>
+                          )}
+                          {status === "rejected" && (
+                            <span
+                              className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                              style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+                            >
+                              <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </ThumbRail>
                 </div>
-                <ThumbRail itemWidth={236} className="flex-1">
-                  {captures.map((cap, i) => {
-                    const status = statusFor(cap.id);
-                    const active = i === safeCaptureIdx;
-                    const borderColor = active
-                      ? "#3BB6E9"
-                      : status === "approved"
-                      ? "#8FD3A8"
-                      : status === "rejected"
-                      ? "#d97a72"
-                      : "transparent";
-                    return (
-                      <button
-                        key={cap.id}
-                        type="button"
-                        onClick={() => setCaptureIndex(i)}
-                        className="group relative h-full w-[220px] shrink-0 overflow-hidden rounded-lg border-2 transition hover:opacity-100"
-                        style={{ borderColor, opacity: active ? 1 : 0.92 }}
-                      >
-                        <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                        {status === "approved" && (
-                          <span
-                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                            style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                          >
-                            <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                          </span>
-                        )}
-                        {status === "rejected" && (
-                          <span
-                            className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                            style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                          >
-                            <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </ThumbRail>
-              </div>
+              )}
             </div>
 
 
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
+            <div className="relative flex min-h-0 flex-col">
+              <div
+                className={`flex min-h-0 flex-1 flex-col transition-opacity ${
+                  phase === "approving" ? "pointer-events-none opacity-30" : "opacity-100"
+                }`}
+              >
             {searchOpen ? (
               <div key="search" className="flex h-full min-h-0 flex-col animate-fade-in">
                 <CatalogSearchPanel
@@ -605,6 +665,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               )}
             </div>
             )}
+              </div>
+              {phase === "approving" && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <div className="pointer-events-auto flex items-center gap-3 rounded-lg border border-border bg-surface/95 px-4 py-3 text-sm text-foreground shadow-lg backdrop-blur-sm">
+                    <ChevronLeft className="h-4 w-4" style={{ color: "#3BB6E9" }} />
+                    <span>Approve or reject every captured image first</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </section>
 
 
@@ -978,6 +1048,12 @@ function CaptureImagePanel({
   onReject,
   canAct,
   captureKey,
+  gridMode,
+  captures,
+  statusFor,
+  onCaptureSetStatus,
+  onCaptureClearStatus,
+  onResetAllApprovals,
 }: {
   src?: string;
   status?: ImgStatus;
@@ -991,6 +1067,12 @@ function CaptureImagePanel({
   onReject?: () => void;
   canAct?: boolean;
   captureKey: string;
+  gridMode?: boolean;
+  captures?: import("@/data/outOfCatalogTypes").OocCapture[];
+  statusFor?: (capId: string) => ImgStatus;
+  onCaptureSetStatus?: (s: ImgStatus, capId: string) => void;
+  onCaptureClearStatus?: (capId: string) => void;
+  onResetAllApprovals?: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [rect, setRect] = useState<Rect>(DEFAULT_RECT);
@@ -1126,109 +1208,201 @@ function CaptureImagePanel({
         </div>
       </div>
 
-      <div
-        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
-        onPointerMove={onPointerMove}
-        onPointerUp={() => setDragCorner(null)}
-        onPointerLeave={() => setDragCorner(null)}
-      >
-        {src ? (
-          <img
-            src={src}
-            alt=""
-            className="h-full w-full object-cover"
-            style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
-            draggable={false}
-          />
-        ) : (
-          <div className="text-sm text-muted-foreground">No capture</div>
-        )}
-
-        {/* Rectangle overlay */}
-        {src && (
-          <svg
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
-            <rect
-              x={rect.x} y={rect.y} width={rect.w} height={rect.h}
-              fill="none"
-              stroke="rgba(0,0,0,0.85)"
-              vectorEffect="non-scaling-stroke"
-              style={{ strokeWidth: 4 } as React.CSSProperties}
-            />
-            <rect
-              x={rect.x} y={rect.y} width={rect.w} height={rect.h}
-              fill="rgba(59,182,233,0.08)"
-              stroke="#3BB6E9"
-              vectorEffect="non-scaling-stroke"
-              style={{ strokeWidth: 2 } as React.CSSProperties}
-            />
-          </svg>
-        )}
-
-        {/* Corner handles (editable) */}
-        {src && editing && (
-          <div className="absolute inset-0">
-            {corners.map((c) => (
-              <div
-                key={c.id}
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  (e.target as HTMLElement).setPointerCapture(e.pointerId);
-                  setDragCorner(c.id);
-                }}
-                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-sm border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
-                style={{ left: `${c.x}%`, top: `${c.y}%` }}
-              />
-            ))}
+      {gridMode && captures && statusFor ? (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex h-9 shrink-0 items-center justify-between border-b border-border/60 px-3">
+            <span className="text-xs text-muted-foreground">
+              Reviewed captures — {captures.length} of {captures.length}
+            </span>
+            {onResetAllApprovals && (
+              <button
+                type="button"
+                onClick={onResetAllApprovals}
+                className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-[11px] text-foreground transition hover:bg-white/5"
+                title="Restart approval flow"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" /> Re-review all
+              </button>
+            )}
           </div>
-        )}
-
-
-        {/* Crop button — overlay above metadata */}
-        {src && (
-          <button
-            type="button"
-            onClick={() => (editing ? confirmCrop() : setEditing(true))}
-            className="absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
-            style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
-            title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
-          >
-            {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
-          </button>
-        )}
-      </div>
-
-      {/* Bottom black strip: reject/approve */}
-      {src && onApprove && onReject && (
-        <div className="flex items-center justify-end gap-1.5 border-t border-border/60 bg-black px-2 py-1.5">
-          <button
-            type="button"
-            onClick={onReject}
-            disabled={!canAct}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
-            style={{ color: "#d97a72", border: "1px solid #d97a72" }}
-            title="Reject (Backspace)"
-          >
-            <X className="h-3.5 w-3.5" /> Reject
-          </button>
-
-          <button
-            type="button"
-            onClick={onApprove}
-            disabled={!canAct}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
-            style={{
-              background: "#8FD3A8",
-              color: "#0F2A1C",
-            }}
-            title="Approve (Enter)"
-          >
-            <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
-          </button>
+          <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto p-3">
+            <div className="grid grid-cols-2 gap-3">
+              {captures.map((cap) => {
+                const s = statusFor(cap.id);
+                const borderColor =
+                  s === "approved" ? "#8FD3A8" : s === "rejected" ? "#d97a72" : "transparent";
+                return (
+                  <div
+                    key={cap.id}
+                    className="relative overflow-hidden rounded-lg border-2"
+                    style={{ borderColor, opacity: 0.85 }}
+                  >
+                    <img
+                      src={cap.imageUrl}
+                      alt=""
+                      className="aspect-[4/3] w-full object-cover"
+                      style={{ filter: "saturate(0.85) brightness(0.9)" }}
+                    />
+                    {s === "approved" && (
+                      <span
+                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
+                        style={{ background: "#8FD3A8", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+                      >
+                        <Check className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
+                      </span>
+                    )}
+                    {s === "rejected" && (
+                      <span
+                        className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
+                        style={{ background: "#d97a72", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+                      >
+                        <X className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
+                      </span>
+                    )}
+                    {/* Per-card actions */}
+                    <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => onCaptureClearStatus?.(cap.id)}
+                        className="inline-flex h-7 items-center gap-1 rounded-md border border-white/30 bg-black/60 px-2 text-[11px] text-white backdrop-blur transition hover:bg-black/80"
+                        title="Re-review this capture"
+                      >
+                        Re-review
+                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => onCaptureSetStatus?.("rejected", cap.id)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/20 bg-black/60 text-white backdrop-blur transition hover:bg-black/80"
+                          title="Set rejected"
+                          style={s === "rejected" ? { borderColor: "#d97a72", color: "#d97a72" } : undefined}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onCaptureSetStatus?.("approved", cap.id)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/20 bg-black/60 text-white backdrop-blur transition hover:bg-black/80"
+                          title="Set approved"
+                          style={s === "approved" ? { borderColor: "#8FD3A8", color: "#8FD3A8" } : undefined}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
+      ) : (
+        <>
+          <div
+            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black/30"
+            onPointerMove={onPointerMove}
+            onPointerUp={() => setDragCorner(null)}
+            onPointerLeave={() => setDragCorner(null)}
+          >
+            {src ? (
+              <img
+                src={src}
+                alt=""
+                className="h-full w-full object-cover"
+                style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
+                draggable={false}
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">No capture</div>
+            )}
+
+            {/* Rectangle overlay */}
+            {src && (
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <rect
+                  x={rect.x} y={rect.y} width={rect.w} height={rect.h}
+                  fill="none"
+                  stroke="rgba(0,0,0,0.85)"
+                  vectorEffect="non-scaling-stroke"
+                  style={{ strokeWidth: 4 } as React.CSSProperties}
+                />
+                <rect
+                  x={rect.x} y={rect.y} width={rect.w} height={rect.h}
+                  fill="rgba(59,182,233,0.08)"
+                  stroke="#3BB6E9"
+                  vectorEffect="non-scaling-stroke"
+                  style={{ strokeWidth: 2 } as React.CSSProperties}
+                />
+              </svg>
+            )}
+
+            {/* Corner handles (editable) */}
+            {src && editing && (
+              <div className="absolute inset-0">
+                {corners.map((c) => (
+                  <div
+                    key={c.id}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                      setDragCorner(c.id);
+                    }}
+                    className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-sm border-2 border-[#3BB6E9] bg-background shadow active:cursor-grabbing"
+                    style={{ left: `${c.x}%`, top: `${c.y}%` }}
+                  />
+                ))}
+              </div>
+            )}
+
+
+            {/* Crop button — overlay above metadata */}
+            {src && (
+              <button
+                type="button"
+                onClick={() => (editing ? confirmCrop() : setEditing(true))}
+                className="absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
+                style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
+                title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
+              >
+                {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
+              </button>
+            )}
+          </div>
+
+          {/* Bottom black strip: reject/approve */}
+          {src && onApprove && onReject && (
+            <div className="flex items-center justify-end gap-1.5 border-t border-border/60 bg-black px-2 py-1.5">
+              <button
+                type="button"
+                onClick={onReject}
+                disabled={!canAct}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
+                style={{ color: "#d97a72", border: "1px solid #d97a72" }}
+                title="Reject (Backspace)"
+              >
+                <X className="h-3.5 w-3.5" /> Reject
+              </button>
+
+              <button
+                type="button"
+                onClick={onApprove}
+                disabled={!canAct}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
+                style={{
+                  background: "#8FD3A8",
+                  color: "#0F2A1C",
+                }}
+                title="Approve (Enter)"
+              >
+                <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
+              </button>
+            </div>
+          )}
+        </>
       )}
 
     </div>
