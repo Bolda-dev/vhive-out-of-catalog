@@ -35,7 +35,7 @@ import type { OocRow } from "@/data/outOfCatalogTypes";
 
 type Decision = "bound" | "skipped" | "unrecognized" | "added";
 type ImgStatus = "pending" | "approved" | "rejected";
-// key = `${rowId}|${suggestionCatalogId}|${captureId}`
+// key = `${rowId}|${captureId}` — approvals belong to the photo, not the suggestion
 type ApprovalMap = Record<string, ImgStatus>;
 
 const pending = mockOutOfCatalog.filter((r) => r.status === "Pending");
