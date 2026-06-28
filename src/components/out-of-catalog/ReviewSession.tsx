@@ -122,18 +122,27 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     setCurrentIndex((i) => Math.min(i + 1, total));
   }, [total]);
 
-  const confirmBind = useCallback(() => {
-    if (!current || !selected) return;
-    const label = `${selected.item.manufacturer} ${selected.item.model}`;
-    playBindSound();
-    setBindAnim({ label });
-    window.setTimeout(() => {
-      setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
-      appToast({ variant: "success", title: "Bound to catalog item", description: label });
-      setBindAnim(null);
-      goNext();
-    }, 1100);
-  }, [current, selected, goNext]);
+  const confirmBind = useCallback(
+    (overrideCatalogId?: string) => {
+      if (!current) return;
+      const item = overrideCatalogId
+        ? mockCatalog.find((c) => c.id === overrideCatalogId)
+        : selected?.item;
+      if (!item) return;
+      const label = `${item.manufacturer} ${item.model}`;
+      playBindSound();
+      setBindAnim({ label });
+      window.setTimeout(() => {
+        setDecisions((prev) => ({ ...prev, [current.id]: "bound" }));
+        appToast({ variant: "success", title: "Bound to catalog item", description: label });
+        setBindAnim(null);
+        setSearchOpen(false);
+        setSearchQuery("");
+        goNext();
+      }, 1100);
+    },
+    [current, selected, goNext],
+  );
 
   const skipSession = useCallback(() => {
     onExit();
