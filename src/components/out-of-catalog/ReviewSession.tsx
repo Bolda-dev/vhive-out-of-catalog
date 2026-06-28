@@ -293,7 +293,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   ]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground pb-[120px]">
+    <div className="flex min-h-[calc(100vh-104px)] flex-1 flex-col bg-background text-foreground pb-[76px]">
       {done ? (
         <SessionComplete
           decisions={decisions}
@@ -771,7 +771,7 @@ function ShortcutBar({
   onAddAsNew: () => void;
 }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 flex shrink-0 flex-col gap-2 border-t border-border bg-surface px-6 py-2.5">
+    <div className="fixed bottom-0 left-0 right-0 z-40 flex shrink-0 flex-col gap-2 bg-surface px-6 py-2.5">
 
       <ShortcutsScroller>
         <ShortcutGroup
