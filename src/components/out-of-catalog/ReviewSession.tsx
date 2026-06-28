@@ -11,6 +11,7 @@ import {
   SkipForward,
   Sparkles,
   X,
+  ZoomIn,
 } from "lucide-react";
 
 
@@ -19,7 +20,7 @@ import { appToast } from "@/components/ui/app-toast";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import { mockCatalog } from "@/data/mockCatalog";
 import { Toaster } from "@/components/ui/sonner";
-import { AddNewBindIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
+import { AddNewBindIcon, BindToExistingIcon, MarkUnrecognizedIcon } from "@/components/out-of-catalog/RowActions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -324,46 +325,51 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-2 pb-2">
             <h1 className="text-base font-medium text-foreground">Review Session</h1>
             <div className="flex items-center gap-2">
-              {searchOpen ? (
-                <div
-                  className="flex h-9 items-center gap-2 rounded-md border bg-background/40 px-3"
-                  style={{ borderColor: "#3BB6E9" }}
-                >
-                  <Search className="h-4 w-4" style={{ color: "#3BB6E9" }} />
-                  <input
-                    autoFocus
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Escape") {
-                        e.preventDefault();
-                        closeSearch();
-                      }
-                    }}
-                    placeholder="Type, manufacturer, model…"
-                    className="w-64 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
+              <div
+                className={`flex h-9 items-center overflow-hidden rounded-md border transition-[width,border-color,background-color] duration-300 ease-out ${
+                  searchOpen ? "w-[320px] bg-background/40" : "w-[180px] bg-transparent hover:bg-white/[0.04]"
+                }`}
+                style={{ borderColor: searchOpen ? "#3BB6E9" : "#E0E0E0" }}
+              >
+                {searchOpen ? (
+                  <div className="flex h-full w-full items-center gap-2 px-3">
+                    <Search className="h-4 w-4 shrink-0" style={{ color: "#3BB6E9" }} />
+                    <input
+                      autoFocus
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") {
+                          e.preventDefault();
+                          closeSearch();
+                        }
+                      }}
+                      placeholder="Type, manufacturer, model…"
+                      className="h-full w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                    />
+                    <button
+                      type="button"
+                      onClick={closeSearch}
+                      aria-label="Close search"
+                      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
                   <button
                     type="button"
-                    onClick={closeSearch}
-                    aria-label="Close search"
-                    className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                    onClick={searchCatalog}
+                    className="flex h-full w-full items-center gap-2 px-3 text-sm font-normal"
+                    style={{ color: "#E0E0E0" }}
+                    title="Search from catalog (F)"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
+                    Search from catalog
                   </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={searchCatalog}
-                  className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                  title="Search from catalog (F)"
-                >
-                  <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                  Search from catalog
-                </button>
-              )}
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={markUnrecognized}
@@ -501,14 +507,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
             {searchOpen ? (
-              <CatalogSearchPanel
-                query={searchQuery}
-                onQueryChange={setSearchQuery}
-                onClose={closeSearch}
-                onBind={(id) => setPendingBindId(id)}
-              />
+              <div key="search" className="flex min-h-0 flex-col animate-fade-in">
+                <CatalogSearchPanel
+                  query={searchQuery}
+                  onQueryChange={setSearchQuery}
+                  onClose={closeSearch}
+                  onBind={(id) => setPendingBindId(id)}
+                />
+              </div>
             ) : (
-            <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">{/* legacy card */}
+            <div key="reference" className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface animate-fade-in">{/* legacy card */}
               {/* Top: catalog reference — hidden when no suggestions so empty state can fill */}
               {suggestionCount > 0 && (
                 <>
@@ -1576,23 +1584,7 @@ function CatalogSearchPanel({
         </span>
       </div>
 
-      <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border/60 px-3">
-        <Search className="h-3.5 w-3.5 text-muted-foreground" />
-        <input
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              e.preventDefault();
-              onClose();
-            }
-          }}
-          placeholder="Filter by type, manufacturer, model…"
-          className="h-full w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-        />
-      </div>
-
-      <div className="grid h-8 shrink-0 grid-cols-[64px_88px_1fr_1.4fr_88px_92px] items-center gap-2 border-b border-border/60 bg-background/30 px-3 text-[11px] uppercase tracking-wide text-muted-foreground">
+      <div className="grid h-9 shrink-0 grid-cols-[64px_88px_1fr_1.4fr_88px_104px] items-center gap-2 border-b border-border/60 bg-background/30 px-3 text-[12px] text-muted-foreground">
         <span>Image</span>
         <span>Type</span>
         <span>Manufacturer</span>
@@ -1610,37 +1602,51 @@ function CatalogSearchPanel({
           results.map((item) => (
             <div
               key={item.id}
-              className="grid grid-cols-[64px_88px_1fr_1.4fr_88px_92px] items-center gap-2 border-b border-border/40 px-3 py-2 text-sm transition-colors hover:bg-white/[0.03]"
+              className="grid grid-cols-[64px_88px_1fr_1.4fr_88px_104px] items-center gap-2 border-b border-border/40 px-3 py-2 text-sm transition-colors animate-fade-in hover:bg-white/[0.03]"
+              style={{ color: "rgba(255,255,255,0.87)" }}
             >
               <button
                 type="button"
                 onClick={() => setPreview(item.referenceImageUrl)}
-                className="h-12 w-12 overflow-hidden rounded border border-border bg-black/30 transition hover:ring-2 hover:ring-[#3BB6E9]"
+                className="group relative h-12 w-12 overflow-hidden rounded border border-border bg-black/30 transition hover:border-[#3BB6E9]"
                 title="Click to enlarge"
               >
                 <img
                   src={item.referenceImageUrl}
                   alt=""
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
                 />
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                  <span className="relative inline-flex h-6 w-6 items-center justify-center">
+                    <ZoomIn className="h-5 w-5" style={{ color: "#ffffff" }} />
+                    <Plus
+                      className="absolute -right-1 -bottom-1 h-3 w-3"
+                      strokeWidth={3}
+                      style={{ color: "#ffffff" }}
+                    />
+                  </span>
+                </span>
               </button>
-              <span className="truncate text-foreground">{item.type}</span>
-              <span className="truncate text-foreground">{item.manufacturer}</span>
+              <span className="truncate">{item.type}</span>
+              <span className="truncate">{item.manufacturer}</span>
               <div className="min-w-0">
-                <div className="truncate text-foreground">{item.model}</div>
-                <div className="truncate text-[11px] text-muted-foreground">
+                <div className="truncate">{item.model}</div>
+                <div className="truncate text-[12px] text-muted-foreground">
                   {item.classification}
                 </div>
               </div>
-              <span className="text-right font-mono text-[11px] text-muted-foreground">
+              <span className="text-right font-mono text-[12px] text-muted-foreground">
                 #{item.id.replace("cat-", "")}
               </span>
               <div className="flex justify-end">
                 <button
                   type="button"
                   onClick={() => onBind(item.id)}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand px-3 text-xs font-medium text-background transition-colors hover:bg-brand/90"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition hover:opacity-90"
+                  style={{ background: "#3BB6E9", color: "#0b1418" }}
+                  title="Bind to this catalog item"
                 >
+                  <BindToExistingIcon className="h-3.5 w-3.5" />
                   Bind
                 </button>
               </div>
@@ -1653,7 +1659,7 @@ function CatalogSearchPanel({
         <button
           type="button"
           onClick={() => setPreview(null)}
-          className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 p-8"
+          className="absolute inset-0 z-30 flex items-center justify-center bg-black/80 p-8 animate-fade-in"
           aria-label="Close preview"
         >
           <img
@@ -1667,5 +1673,6 @@ function CatalogSearchPanel({
         </button>
       )}
     </div>
+
   );
 }
