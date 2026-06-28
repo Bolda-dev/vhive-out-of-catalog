@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Play, Wand2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,9 +13,11 @@ import {
   type ColumnMeta,
 } from "@/components/out-of-catalog/OutOfCatalogTable";
 import { SessionLoader } from "@/components/out-of-catalog/SessionLoader";
+import { ReviewSession } from "@/components/out-of-catalog/ReviewSession";
 import { mockOutOfCatalog } from "@/data/mockOutOfCatalog";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { Toaster } from "@/components/ui/sonner";
+
 
 export const Route = createFileRoute("/out-of-catalog")({
   head: () => ({
@@ -58,7 +60,6 @@ const EMPTY_FILTERS: Filters = {
 };
 
 function OutOfCatalogPage() {
-  const navigate = useNavigate();
   const [rows] = useState<OocRow[]>(mockOutOfCatalog);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -68,14 +69,19 @@ function OutOfCatalogPage() {
     DEFAULT_VISIBLE_COLUMN_IDS,
   );
   const [loaderStep, setLoaderStep] = useState<number | null>(null);
+  const [inSession, setInSession] = useState(false);
 
   const startSession = () => {
     if (loaderStep !== null) return;
     setLoaderStep(0);
     setTimeout(() => setLoaderStep(1), 450);
     setTimeout(() => setLoaderStep(2), 900);
-    setTimeout(() => navigate({ to: "/review-session" }), 1400);
+    setTimeout(() => {
+      setInSession(true);
+      setLoaderStep(null);
+    }, 1400);
   };
+
 
 
 
@@ -143,61 +149,68 @@ function OutOfCatalogPage() {
     <div className="min-h-screen bg-background text-foreground">
       <TopBar activeTab="out-of-catalog" />
       <main className="w-full px-6 py-6">
-        {/* Toolbar */}
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">
-            Showing <span className="text-foreground">{fromIdx}</span> to{" "}
-            <span className="text-foreground">{toIdx}</span> of{" "}
-            <span className="text-foreground">{filtered.length}</span> entries
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => toast.success("Auto-Bind run started")}
-              className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-              style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-            >
-              <Wand2 className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-              Auto-Bind Attempt
-            </button>
-            <button
-              type="button"
-              onClick={startSession}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
-            >
-              <Play className="h-4 w-4" />
-              Start Session
-            </button>
-          </div>
-        </div>
+        {inSession ? (
+          <ReviewSession onExit={() => setInSession(false)} />
+        ) : (
+          <>
+            {/* Toolbar */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Showing <span className="text-foreground">{fromIdx}</span> to{" "}
+                <span className="text-foreground">{toIdx}</span> of{" "}
+                <span className="text-foreground">{filtered.length}</span> entries
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => toast.success("Auto-Bind run started")}
+                  className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+                  style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                >
+                  <Wand2 className="h-4 w-4" style={{ color: "#E0E0E0" }} />
+                  Auto-Bind Attempt
+                </button>
+                <button
+                  type="button"
+                  onClick={startSession}
+                  className="inline-flex h-9 items-center gap-2 rounded-md bg-brand px-3 text-sm font-medium text-background transition-colors hover:bg-brand/90"
+                >
+                  <Play className="h-4 w-4" />
+                  Start Session
+                </button>
+              </div>
+            </div>
 
-        <OutOfCatalogTable
-          rows={pageRows}
-          visibleColumnIds={visibleColumnIds}
-          onReorderColumns={setVisibleColumnIds}
-          sortState={sortState}
-          onToggleSort={toggleSort}
-          filters={filters}
-          onFiltersChange={(f) => {
-            setFilters(f);
-            setPage(1);
-          }}
-          equipmentTypeOptions={equipmentTypeOptions}
-        />
+            <OutOfCatalogTable
+              rows={pageRows}
+              visibleColumnIds={visibleColumnIds}
+              onReorderColumns={setVisibleColumnIds}
+              sortState={sortState}
+              onToggleSort={toggleSort}
+              filters={filters}
+              onFiltersChange={(f) => {
+                setFilters(f);
+                setPage(1);
+              }}
+              equipmentTypeOptions={equipmentTypeOptions}
+            />
 
-        <Pagination
-          page={currentPage}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          onPage={setPage}
-          onPageSize={(s) => {
-            setPageSize(s);
-            setPage(1);
-          }}
-        />
+            <Pagination
+              page={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPage={setPage}
+              onPageSize={(s) => {
+                setPageSize(s);
+                setPage(1);
+              }}
+            />
+          </>
+        )}
       </main>
       <Toaster />
       {loaderStep !== null && <SessionLoader step={loaderStep} />}
     </div>
   );
 }
+
