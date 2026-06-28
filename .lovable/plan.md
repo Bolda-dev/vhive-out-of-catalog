@@ -1,39 +1,14 @@
-## Changes to `src/components/out-of-catalog/ReviewSession.tsx`
+## Goal
+Reduce vertical padding above the action buttons row and below the two main cards in the Review Session.
 
-### 1. Disable header actions during the "approving" phase
-Currently only the `Bind` button is gated by `phase !== "reviewing"`. The other primary header controls remain clickable, which contradicts the rule that nothing on the right-hand flow should be triggerable until every captured image has been approved/rejected.
+## Changes — `src/components/out-of-catalog/ReviewSession.tsx`
 
-Apply the same `disabled={phase !== "reviewing"}` gate to:
-- "Search from catalog" (and the `F` keyboard shortcut that opens it)
-- "Unrecognize"
-- "New equipment"
-- "Bind" (already gated — keep)
+1. Root container (line 367): add `-mt-4 -mb-4` to offset the page-level `py-6`, and shrink the height calc so cards stay flush above the fixed shortcut bar.
+   - From: `flex h-[calc(100vh-104px-76px)] flex-col bg-background text-foreground`
+   - To:   `-mt-4 -mb-4 flex h-[calc(100vh-72px-76px)] flex-col bg-background text-foreground`
 
-Disabled styling: `disabled:cursor-not-allowed disabled:opacity-40`, matching the existing Bind button. Tooltips switch to "Approve or reject every captured image first" while disabled.
+2. Session body grid (line 512): trim residual padding.
+   - From: `grid min-h-0 flex-1 gap-3 px-6 pt-2 pb-2`
+   - To:   `grid min-h-0 flex-1 gap-3 px-6 pt-1 pb-0`
 
-### 2. Merge into a Bind split-button
-Replace the three separate buttons (`Unrecognize`, `New equipment`, `Bind`) with a single split-button group:
-
-```text
-┌────────────────────┬───┐
-│  ⊙  Bind           │ ▾ │
-└────────────────────┴───┘
-```
-
-- Left segment: primary `Bind` action (cyan `#3BB6E9`, current styling, same disabled rule, Enter shortcut).
-- Right segment: chevron toggle that opens a dropdown menu (shadcn `DropdownMenu`) with:
-  - `New equipment` (icon: `AddNewBindIcon`, shortcut `Ctrl+Enter`)
-  - `Unrecognize` (icon: `MarkUnrecognizedIcon`, shortcut `U`)
-- The chevron segment inherits the same disabled state and tooltip as Bind during the approving phase.
-- Visual: a thin divider (`bg-black/20`) between the two segments, both share the cyan background, same height (`h-9`), rounded only on the outer corners.
-
-### 3. Dim the "Search from catalog" placeholder
-When the search pill is collapsed (button state), reduce its label + icon opacity to 50% so it reads as a placeholder rather than a primary action.
-
-- Apply `opacity-50` to the collapsed-state button content (icon + "Search from catalog" text).
-- On hover, raise to `opacity-100` for affordance.
-- When expanded (input visible), opacity stays 100% as today.
-
-### Out of scope
-- Keyboard shortcuts keep working (the split-button doesn't change shortcut bindings).
-- No changes to the bottom shortcut bar, the captures grid, or the right-panel suggestions logic.
+No other files touched.
