@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Crop,
   ExternalLink,
+  MoreVertical,
   Plus,
   RotateCcw,
   Search,
@@ -14,6 +15,12 @@ import {
   X,
   ZoomIn,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 
@@ -353,7 +360,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   ]);
 
   return (
-    <div className="flex min-h-[calc(100vh-104px)] flex-1 flex-col bg-background text-foreground pb-[76px]">
+    <div className="flex h-[calc(100vh-104px-76px)] flex-col bg-background text-foreground">
       {done ? (
         <SessionComplete
           decisions={decisions}
@@ -1164,18 +1171,6 @@ function CaptureImagePanel({
                 </span>
               );
             })()}
-            {status && status !== "pending" && (
-              <span
-                className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize"
-                style={
-                  status === "approved"
-                    ? { background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }
-                    : { background: "rgba(217,122,114,0.15)", color: "#d97a72" }
-                }
-              >
-                {status}
-              </span>
-            )}
           </div>
           {/* Row 2 — capture context */}
           {(capturedAt || account || rack) && (
@@ -1210,23 +1205,8 @@ function CaptureImagePanel({
       </div>
 
       {gridMode && captures && statusFor ? (
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="flex h-9 shrink-0 items-center justify-between border-b border-border/60 px-3">
-            <span className="text-xs text-muted-foreground">
-              Reviewed captures — {captures.length} of {captures.length}
-            </span>
-            {onResetAllApprovals && (
-              <button
-                type="button"
-                onClick={onResetAllApprovals}
-                className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-[11px] text-foreground transition hover:bg-white/5"
-                title="Restart approval flow"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" /> Re-review all
-              </button>
-            )}
-          </div>
-          <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto p-3">
+        <div className="flex min-h-0 flex-1 flex-col bg-background">
+          <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto bg-background p-3">
             <div className="grid grid-cols-2 gap-3">
               {captures.map((cap) => {
                 const s = statusFor(cap.id);
@@ -1236,13 +1216,12 @@ function CaptureImagePanel({
                   <div
                     key={cap.id}
                     className="relative overflow-hidden rounded-lg border-2"
-                    style={{ borderColor, opacity: 0.85 }}
+                    style={{ borderColor }}
                   >
                     <img
                       src={cap.imageUrl}
                       alt=""
                       className="aspect-[4/3] w-full object-cover"
-                      style={{ filter: "saturate(0.85) brightness(0.9)" }}
                     />
                     {s === "approved" && (
                       <span
@@ -1260,37 +1239,28 @@ function CaptureImagePanel({
                         <X className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
                       </span>
                     )}
-                    {/* Per-card actions */}
-                    <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => onCaptureClearStatus?.(cap.id)}
-                        className="inline-flex h-7 items-center gap-1 rounded-md border border-white/30 bg-black/60 px-2 text-[11px] text-white backdrop-blur transition hover:bg-black/80"
-                        title="Re-review this capture"
-                      >
-                        Re-review
-                      </button>
-                      <div className="flex gap-1">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
                         <button
                           type="button"
-                          onClick={() => onCaptureSetStatus?.("rejected", cap.id)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/20 bg-black/60 text-white backdrop-blur transition hover:bg-black/80"
-                          title="Set rejected"
-                          style={s === "rejected" ? { borderColor: "#d97a72", color: "#d97a72" } : undefined}
+                          className="absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur transition hover:bg-black/75"
+                          title="More actions"
+                          aria-label="More actions"
                         >
-                          <X className="h-3.5 w-3.5" />
+                          <MoreVertical className="h-4 w-4" />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => onCaptureSetStatus?.("approved", cap.id)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/20 bg-black/60 text-white backdrop-blur transition hover:bg-black/80"
-                          title="Set approved"
-                          style={s === "approved" ? { borderColor: "#8FD3A8", color: "#8FD3A8" } : undefined}
-                        >
-                          <Check className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="min-w-[180px]">
+                        <DropdownMenuItem onClick={() => onCaptureClearStatus?.(cap.id)}>
+                          Re-review this image
+                        </DropdownMenuItem>
+                        {onResetAllApprovals && (
+                          <DropdownMenuItem onClick={() => onResetAllApprovals()}>
+                            Re-review all images
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 );
               })}
