@@ -212,10 +212,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const addAsNew = useCallback(() => {
     if (!current || phase !== "reviewing") return;
+    setCreateOpen(true);
+  }, [current, phase]);
+
+  const submitNewEquipment = useCallback(() => {
+    if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "added" }));
     appToast({ variant: "success", title: "Added as new equipment" });
+    setCreateOpen(false);
     goNext();
-  }, [current, goNext, phase]);
+  }, [current, goNext]);
 
   const searchCatalog = useCallback(() => {
     if (phase !== "reviewing") return;
