@@ -416,7 +416,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                             type="button"
                             onClick={searchCatalog}
                             disabled={phase !== "reviewing"}
-                            className="group flex h-full w-full items-center gap-2 px-3 text-sm font-normal transition-opacity hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="group flex h-full w-full items-center gap-2 px-3 text-sm font-normal transition-opacity hover:opacity-100 disabled:cursor-not-allowed"
                             style={{ color: "#E0E0E0" }}
                           >
                             <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
@@ -425,7 +425,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                         </span>
                       </TooltipTrigger>
                       {phase !== "reviewing" && (
-                        <TooltipContent side="bottom">
+                        <TooltipContent
+                          side="bottom"
+                          className="border border-border bg-[#1E1E1E] text-foreground"
+                        >
                           Approve or reject every captured image first
                         </TooltipContent>
                       )}
