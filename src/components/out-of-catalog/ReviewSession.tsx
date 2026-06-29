@@ -1313,12 +1313,40 @@ function CaptureImagePanel({
   const [editing, setEditing] = useState(false);
   const [rect, setRect] = useState<Rect>(DEFAULT_RECT);
   const [dragCorner, setDragCorner] = useState<0 | 1 | 2 | 3 | null>(null);
+  const [zoom, setZoom] = useState(1.7);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const panRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
 
-  // Reset rectangle when capture changes
+  // Reset rectangle + zoom when capture changes
   useEffect(() => {
     setRect(DEFAULT_RECT);
     setEditing(false);
+    setZoom(1.7);
+    setPan({ x: 0, y: 0 });
   }, [captureKey]);
+
+  const onWheelZoom = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.0015;
+    setZoom((z) => Math.max(1, Math.min(6, z + delta * z)));
+  };
+
+  const onPanPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Middle mouse button (button === 1) initiates pan
+    if (e.button !== 1) return;
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
+  };
+  const onPanPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!panRef.current) return;
+    setPan({
+      x: panRef.current.origX + (e.clientX - panRef.current.startX),
+      y: panRef.current.origY + (e.clientY - panRef.current.startY),
+    });
+  };
+  const endPan = () => { panRef.current = null; };
+
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (dragCorner === null) return;
@@ -1447,18 +1475,23 @@ function CaptureImagePanel({
         <>
           <div
             className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-background"
-            onPointerMove={onPointerMove}
-            onPointerUp={() => setDragCorner(null)}
-            onPointerLeave={() => setDragCorner(null)}
+            onPointerMove={(e) => { onPointerMove(e); onPanPointerMove(e); }}
+            onPointerUp={(e) => { setDragCorner(null); endPan(); }}
+            onPointerLeave={() => { setDragCorner(null); endPan(); }}
+            onPointerDown={onPanPointerDown}
+            onWheel={onWheelZoom}
+            onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
+            style={{ cursor: panRef.current ? "grabbing" : "default" }}
           >
             {src ? (
               <img
                 src={src}
                 alt=""
-                className="h-full w-full object-cover"
-                style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
+                className="h-full w-full object-cover select-none"
+                style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "50% 48%" }}
                 draggable={false}
               />
+
             ) : (
               <div className="text-sm text-muted-foreground">No capture</div>
             )}
