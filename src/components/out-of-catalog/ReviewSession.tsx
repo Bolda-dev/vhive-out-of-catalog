@@ -1077,10 +1077,18 @@ function ShortcutBar({
                 <>
                   <Kbd>Ctrl</Kbd>
                   <Kbd>Enter</Kbd>
+                </>
+              ),
+              action: "Bind",
+            },
+            {
+              keys: (
+                <>
+                  <Kbd>N</Kbd>
                   <Plus className="h-3 w-3 text-muted-foreground" />
                 </>
               ),
-              action: "Add as new",
+              action: "New equipment",
             },
             {
               keys: (
