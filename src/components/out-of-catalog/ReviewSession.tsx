@@ -12,7 +12,7 @@ import {
   Plus,
   RotateCcw,
   Search,
-  SkipForward,
+  
   Sparkles,
   X,
   ZoomIn,
@@ -233,9 +233,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     [captures, statusFor, confirmBind, allRejected],
   );
 
-  const skipSession = useCallback(() => {
-    onExit();
-  }, [onExit]);
+
+
 
 
   const markUnrecognized = useCallback(() => {
@@ -393,11 +392,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         searchCatalog();
         return;
       }
-      if (e.key === "s" || e.key === "S") {
-        e.preventDefault();
-        skipSession();
-        return;
-      }
+
+
       if (e.key === "u" || e.key === "U") {
         e.preventDefault();
         markUnrecognized();
@@ -417,7 +413,6 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     searchCatalog,
     selected,
     setStatus,
-    skipSession,
     suggestionCount,
   ]);
 
@@ -507,24 +502,6 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 <MarkUnrecognizedIcon className="h-4 w-4" />
                 Cannot Identify
               </button>
-              <TooltipProvider delayDuration={150}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={skipSession}
-                      aria-label="Skip to next group"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors hover:bg-white/[0.04]"
-                      style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                    >
-                      <SkipForward className="h-4 w-4" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-[#1E1E1E] text-[#E0E0E0] border border-white/10">
-                    Skip to next group (S)
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
 
               {/* Bind split-button (CTA) */}
               <div className="inline-flex h-9 items-stretch">
@@ -1152,15 +1129,6 @@ function ShortcutBar({
               ),
               action: "New equipment",
             },
-            {
-              keys: (
-                <>
-                  <Kbd>S</Kbd>
-                  <SkipForward className="h-3 w-3 text-muted-foreground" />
-                </>
-              ),
-              action: "Skip session",
-            },
             { keys: <Kbd>U</Kbd>, action: "Cannot Identify" },
           ]}
         />
@@ -1652,10 +1620,9 @@ function SessionComplete({
           You reviewed {total} pending {total === 1 ? "object" : "objects"}.
         </h1>
 
-        <div className="mt-6 grid grid-cols-4 gap-3">
+        <div className="mt-6 grid grid-cols-3 gap-3">
           {stat("Bound", counts.bound ?? 0, "#3BB6E9")}
           {stat("Added", counts.added ?? 0, "#8FBFA3")}
-          {stat("Skipped", counts.skipped ?? 0, "rgba(255,255,255,0.8)")}
           {stat("Unrecognized", counts.unrecognized ?? 0, "#C98A8A")}
         </div>
 
