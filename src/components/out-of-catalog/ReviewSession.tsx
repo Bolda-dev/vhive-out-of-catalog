@@ -313,8 +313,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       if (done) return;
 
       // Global
-      if (e.ctrlKey && e.key === "Enter") {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
+        e.stopPropagation();
         (document.activeElement as HTMLElement | null)?.blur?.();
         if (phase === "reviewing" && selected) requestBind(selected.item.id);
         return;
@@ -518,7 +519,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     phase !== "reviewing"
                       ? "Approve or reject every captured image first"
                       : selected
-                      ? "Bind to suggestion (Ctrl+Enter)"
+                      ? "Bind to suggestion (⌘/Ctrl + Enter)"
                       : "No suggestion selected"
                   }
                 >
@@ -1075,7 +1076,7 @@ function ShortcutBar({
             {
               keys: (
                 <>
-                  <Kbd>Ctrl</Kbd>
+                  <Kbd>⌘/Ctrl</Kbd>
                   <Kbd>Enter</Kbd>
                 </>
               ),
