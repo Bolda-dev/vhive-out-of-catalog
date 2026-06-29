@@ -393,6 +393,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     done,
     markUnrecognized,
     phase,
+    requestBind,
     searchCatalog,
     selected,
     setStatus,
