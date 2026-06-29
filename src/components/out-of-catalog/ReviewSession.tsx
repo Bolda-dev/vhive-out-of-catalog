@@ -1161,7 +1161,7 @@ function ShortcutBar({
               ),
               action: "Skip session",
             },
-            { keys: <Kbd>U</Kbd>, action: "Unrecognize" },
+            { keys: <Kbd>U</Kbd>, action: "Cannot Identify" },
           ]}
         />
       </ShortcutsScroller>
