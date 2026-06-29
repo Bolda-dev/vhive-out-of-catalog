@@ -96,7 +96,7 @@ export function ReferenceImageDialog({
 
   const totalSlots = images.length + 1; // include plus button
   const rows = Math.ceil(totalSlots / 4);
-  const scrollThumbs = rows > 3 && rowH > 0;
+  const scrollThumbs = rows > 2 && rowH > 0;
   const thumbsMaxH = scrollThumbs ? rowH * 2.25 + 8 * 2 : undefined;
 
   return (
