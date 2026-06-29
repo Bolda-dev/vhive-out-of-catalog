@@ -39,30 +39,14 @@ export function RowActions({ row }: { row: OocRow }) {
     <div className="flex items-center justify-end gap-1.5">
       <button
         type="button"
-        onClick={() => appToast({ variant: "success", title: "Added new & bound", description: row.equipmentType })}
-        className={BTN}
-      >
-        <AddNewBindIcon className="h-4 w-4 shrink-0" />
-        Add New &amp; Bind
-      </button>
-      <button
-        type="button"
         onClick={() => appToast({ variant: "success", title: "Bound to existing", description: row.equipmentType })}
         className={BTN}
       >
         <BindToExistingIcon className="h-4 w-4 shrink-0" />
         Bind to Existing
       </button>
-      <button
-        type="button"
-        disabled={isUnrecognized}
-        onClick={() => appToast({ title: "Marked as Unrecognized", description: row.equipmentType })}
-        className={BTN}
-      >
-        <MarkUnrecognizedIcon className="h-4 w-4 shrink-0" />
-        Mark as Unrecognized
-      </button>
     </div>
   );
+
 }
 
