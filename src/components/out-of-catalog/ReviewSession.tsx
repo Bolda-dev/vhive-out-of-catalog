@@ -315,17 +315,19 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       // Global
       if (e.ctrlKey && e.key === "Enter") {
         e.preventDefault();
-        addAsNew();
+        (document.activeElement as HTMLElement | null)?.blur?.();
+        if (phase === "reviewing" && selected) requestBind(selected.item.id);
         return;
       }
       if (e.key === "Enter") {
         e.preventDefault();
         (document.activeElement as HTMLElement | null)?.blur?.();
-        if (phase === "reviewing") {
-          if (selected) requestBind(selected.item.id);
-        } else {
-          setStatus("approved");
-        }
+        if (phase === "approving") setStatus("approved");
+        return;
+      }
+      if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        addAsNew();
         return;
       }
       if (e.key === "Backspace") {
