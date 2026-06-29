@@ -856,18 +856,12 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Dissolve this group?</AlertDialogTitle>
             <AlertDialogDescription asChild>
-              <div className="space-y-3 text-sm text-muted-foreground">
-                <p>
-                  All{" "}
-                  <span className="font-medium text-foreground">{captureCount}</span> image
-                  {captureCount === 1 ? "" : "s"} in this group are marked as{" "}
-                  <span className="font-medium text-foreground">not part of the group</span>.
-                </p>
-                <div className="rounded-md border border-[#F2D066]/30 bg-[#F2D066]/10 px-3 py-2 text-foreground">
-                  The group will be dissolved and each image will return to the{" "}
-                  <span className="font-medium">Out of Catalog</span> table as an individual
-                  item for later review.
-                </div>
+              <div className="text-sm text-muted-foreground">
+                Are you sure? All{" "}
+                <span className="font-medium text-foreground">{captureCount}</span> image
+                {captureCount === 1 ? "" : "s"} will be scattered back to the{" "}
+                <span className="font-medium text-foreground">Out of Catalog</span> table as
+                individual items, and you'll move on to the next case.
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
