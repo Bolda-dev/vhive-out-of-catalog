@@ -1475,18 +1475,23 @@ function CaptureImagePanel({
         <>
           <div
             className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-background"
-            onPointerMove={onPointerMove}
-            onPointerUp={() => setDragCorner(null)}
-            onPointerLeave={() => setDragCorner(null)}
+            onPointerMove={(e) => { onPointerMove(e); onPanPointerMove(e); }}
+            onPointerUp={(e) => { setDragCorner(null); endPan(); }}
+            onPointerLeave={() => { setDragCorner(null); endPan(); }}
+            onPointerDown={onPanPointerDown}
+            onWheel={onWheelZoom}
+            onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
+            style={{ cursor: panRef.current ? "grabbing" : "default" }}
           >
             {src ? (
               <img
                 src={src}
                 alt=""
-                className="h-full w-full object-cover"
-                style={{ transform: "scale(1.7)", transformOrigin: "50% 48%" }}
+                className="h-full w-full object-cover select-none"
+                style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "50% 48%" }}
                 draggable={false}
               />
+
             ) : (
               <div className="text-sm text-muted-foreground">No capture</div>
             )}
