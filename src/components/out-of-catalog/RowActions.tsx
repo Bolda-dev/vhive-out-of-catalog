@@ -33,7 +33,7 @@ export function MarkUnrecognizedIcon({ className }: { className?: string }) {
 }
 
 export function RowActions({ row }: { row: OocRow }) {
-  const isUnrecognized = row.status === "Unrecognized";
+
 
   return (
     <div className="flex items-center justify-end gap-1.5">
