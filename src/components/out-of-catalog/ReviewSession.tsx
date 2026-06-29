@@ -240,15 +240,23 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const markUnrecognized = useCallback(() => {
     if (!current || phase !== "reviewing") return;
+    if (allRejected) {
+      setDissolveOpen(true);
+      return;
+    }
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
     appToast({ title: "Marked as Unrecognized" });
     goNext();
-  }, [current, goNext, phase]);
+  }, [current, goNext, phase, allRejected]);
 
   const addAsNew = useCallback(() => {
     if (!current || phase !== "reviewing") return;
+    if (allRejected) {
+      setDissolveOpen(true);
+      return;
+    }
     setCreateOpen(true);
-  }, [current, phase]);
+  }, [current, phase, allRejected]);
 
   const submitNewEquipment = useCallback(() => {
     if (!current) return;
