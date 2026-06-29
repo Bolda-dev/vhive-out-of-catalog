@@ -67,7 +67,14 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   const [createOpen, setCreateOpen] = useState(false);
 
   const queue = useMemo<OocRow[]>(
-    () => [...pending].sort((a, b) => a.confidence - b.confidence),
+    () => {
+      // Prototype: always start with the single-capture case (ooc-001), then the rest by confidence asc.
+      const first = pending.find((r) => r.id === "ooc-001");
+      const rest = pending
+        .filter((r) => r.id !== "ooc-001")
+        .sort((a, b) => a.confidence - b.confidence);
+      return first ? [first, ...rest] : rest;
+    },
     [],
   );
   const total = queue.length;
