@@ -113,6 +113,13 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     return captures.every((c) => statusFor(c.id) === "approved");
   }, [captures, captureCount, current, statusFor]);
 
+  const allRejected = useMemo(() => {
+    if (!current || captureCount === 0) return false;
+    return captures.every((c) => statusFor(c.id) === "rejected");
+  }, [captures, captureCount, current, statusFor]);
+
+  const [dissolveOpen, setDissolveOpen] = useState(false);
+
   const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
 
   // Stagger the right-panel reveal: let the left side switch to grid first,
