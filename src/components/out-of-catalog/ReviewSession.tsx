@@ -2240,9 +2240,27 @@ function GridReviewView({
           onSet={(ns) => onCaptureSetStatus?.(ns, cap.id)}
           onClear={() => onCaptureClearStatus?.(cap.id)}
         />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="absolute right-1.5 top-1.5 z-10 inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/55 text-white/90 transition hover:bg-black/75"
+              aria-label="More options"
+              title="More options"
+            >
+              <MoreVertical className="h-3.5 w-3.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-auto min-w-[200px]">
+            <DropdownMenuItem onClick={() => onCaptureClearStatus?.(cap.id)}>
+              Re-review this image
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   };
+
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-background">
