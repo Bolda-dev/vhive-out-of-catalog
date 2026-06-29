@@ -1098,6 +1098,62 @@ type Rect = { x: number; y: number; w: number; h: number };
 const DEFAULT_RECT: Rect = { x: 26, y: 34, w: 48, h: 34 };
 const MIN_SIZE = 8;
 
+function StatusToggle({
+  status,
+  onSet,
+  onClear,
+  size = "sm",
+}: {
+  status: ImgStatus;
+  onSet: (s: "approved" | "rejected") => void;
+  onClear: () => void;
+  size?: "sm" | "md";
+}) {
+  const dims = size === "md" ? "h-6 w-6" : "h-5 w-5";
+  const icon = size === "md" ? "h-4 w-4" : "h-3.5 w-3.5";
+  const handle = (target: "approved" | "rejected") => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (status === target) onClear();
+    else onSet(target);
+  };
+  const approved = status === "approved";
+  const rejected = status === "rejected";
+  return (
+    <div className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1">
+      <button
+        type="button"
+        onClick={handle("approved")}
+        title={approved ? "Clear approval" : "Approve"}
+        aria-label={approved ? "Clear approval" : "Approve"}
+        className={`inline-flex ${dims} items-center justify-center rounded-full transition hover:scale-110`}
+        style={
+          approved
+            ? { background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }
+            : { background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.35)" }
+        }
+      >
+        <Check className={icon} strokeWidth={3.5} style={{ color: approved ? "#ffffff" : "rgba(255,255,255,0.7)" }} />
+      </button>
+      <button
+        type="button"
+        onClick={handle("rejected")}
+        title={rejected ? "Clear rejection" : "Reject"}
+        aria-label={rejected ? "Clear rejection" : "Reject"}
+        className={`inline-flex ${dims} items-center justify-center rounded-full transition hover:scale-110`}
+        style={
+          rejected
+            ? { background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }
+            : { background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.35)" }
+        }
+      >
+        <X className={icon} strokeWidth={3.5} style={{ color: rejected ? "#ffffff" : "rgba(255,255,255,0.7)" }} />
+      </button>
+    </div>
+  );
+}
+
+
+
 
 function CaptureImagePanel({
   src,
