@@ -1078,7 +1078,9 @@ function ShortcutBar({
           label="Image"
           items={[
             { keys: <Kbd>Enter</Kbd>, action: "Approve" },
-            { keys: <Kbd>⌫</Kbd>, action: "Not part of the group" },
+            ...(singleCapture
+              ? []
+              : [{ keys: <Kbd>⌫</Kbd>, action: "Not part of the group" }]),
             {
               keys: (
                 <>
