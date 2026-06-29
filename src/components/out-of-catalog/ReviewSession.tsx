@@ -1425,8 +1425,11 @@ function CaptureImagePanel({
   };
 
   const onPanPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Left-click pan, but only when not editing the crop rectangle
+    // Left-click pan, but only when not editing the crop rectangle.
+    // Bail if the click originated on an interactive child (button, etc.)
     if (e.button !== 0 || editing) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("button, a, [role='button'], input, select, textarea")) return;
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
