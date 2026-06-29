@@ -1357,7 +1357,7 @@ function CaptureImagePanel({
 
       <div className="flex items-stretch gap-3 border-b border-border/60 px-3 py-2">
         {/* Title block — spans both rows */}
-        <div className="flex shrink-0 items-center gap-2 border-r border-white/10 pr-3">
+        <div className="flex shrink-0 items-center gap-4 border-r border-white/10 pr-4">
           <span className="relative inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-[#3BB6E9]/12 text-[#3BB6E9]">
             <svg width="36" height="36" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M5.79858 1.5V2.78655V6.6462V15.7807V19.6404V23.5H8.47752L10.0303 20.9269H14.0894L15.6421 23.5H18.321V1.5H5.79858ZM7.08513 2.78655H17.0345V19.6404H7.08513V2.78655ZM7.75122 22.2134H7.08513V20.9269H8.52761L7.75122 22.2134ZM17.0345 22.2134H16.3684L15.592 20.9269H17.0345V22.2134Z" fill="currentColor"/>
@@ -1365,7 +1365,7 @@ function CaptureImagePanel({
               <path d="M9.24048 6.94641H15.759V8.23296H9.24048V6.94641Z" fill="currentColor"/>
               <path d="M14.4722 10.4633H15.7587V13.8512H14.4722V10.4633Z" fill="currentColor"/>
             </svg>
-            <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-[#3BB6E9]" strokeWidth={2.5} />
+            <Sparkles className="absolute right-1.5 top-1.5 h-3 w-3 text-[#3BB6E9]" strokeWidth={2.5} />
           </span>
           {(() => {
             // Deterministic 80–95% score per capture
