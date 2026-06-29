@@ -210,6 +210,18 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     [current, selected, goNext],
   );
 
+  const requestBind = useCallback(
+    (catalogId: string) => {
+      const hasRejected = captures.some((c) => statusFor(c.id) === "rejected");
+      if (hasRejected) {
+        setPendingBindId(catalogId);
+      } else {
+        confirmBind(catalogId);
+      }
+    },
+    [captures, statusFor, confirmBind],
+  );
+
   const skipSession = useCallback(() => {
     onExit();
   }, [onExit]);
@@ -310,7 +322,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         e.preventDefault();
         (document.activeElement as HTMLElement | null)?.blur?.();
         if (phase === "reviewing") {
-          if (selected) setPendingBindId(selected.item.id);
+          if (selected) requestBind(selected.item.id);
         } else {
           setStatus("approved");
         }
@@ -495,7 +507,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               <div className="inline-flex h-9 items-stretch">
                 <button
                   type="button"
-                  onClick={() => selected && setPendingBindId(selected.item.id)}
+                  onClick={() => selected && requestBind(selected.item.id)}
                   disabled={!selected || phase !== "reviewing"}
                   className="inline-flex items-center gap-2 rounded-l-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
                   style={{ background: "#3BB6E9", color: "#0b1418" }}
@@ -648,7 +660,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
                   onClose={closeSearch}
-                  onBind={(id) => setPendingBindId(id)}
+                  onBind={(id) => requestBind(id)}
                 />
               </div>
             ) : (
@@ -778,7 +790,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           <ShortcutBar
             allApproved={allApproved}
             canBind={!!selected && allApproved}
-            onBind={() => selected && setPendingBindId(selected.item.id)}
+            onBind={() => selected && requestBind(selected.item.id)}
             onUnrecognize={markUnrecognized}
             onAddAsNew={addAsNew}
           />
@@ -794,13 +806,29 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm bind to catalog item?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle>Some images aren't part of this group</AlertDialogTitle>
+            <AlertDialogDescription asChild>
               {(() => {
                 const it = mockCatalog.find((c) => c.id === pendingBindId);
-                return it
-                  ? `This will bind ${current?.instances ?? 0} instance(s) to ${it.manufacturer} · ${it.model}.`
-                  : "This will bind the current object to the selected catalog item.";
+                const approvedCount = captures.filter((c) => statusFor(c.id) === "approved").length;
+                const rejectedCount = captures.filter((c) => statusFor(c.id) === "rejected").length;
+                const target = it ? `${it.manufacturer} · ${it.model}` : "the selected catalog item";
+                return (
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <p>
+                      <span className="font-medium text-foreground">{approvedCount}</span>{" "}
+                      approved image{approvedCount === 1 ? "" : "s"} will be bound to{" "}
+                      <span className="font-medium text-foreground">{target}</span>.
+                    </p>
+                    <div className="rounded-md border border-[#F2D066]/30 bg-[#F2D066]/10 px-3 py-2 text-foreground">
+                      <span className="font-medium" style={{ color: "#F2D066" }}>
+                        {rejectedCount} image{rejectedCount === 1 ? "" : "s"}
+                      </span>{" "}
+                      marked as <span className="font-medium">not part of the group</span> will
+                      return to the table as a separate group for later review.
+                    </div>
+                  </div>
+                );
               })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
