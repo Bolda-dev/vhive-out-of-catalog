@@ -322,7 +322,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         e.preventDefault();
         (document.activeElement as HTMLElement | null)?.blur?.();
         if (phase === "reviewing") {
-          if (selected) setPendingBindId(selected.item.id);
+          if (selected) requestBind(selected.item.id);
         } else {
           setStatus("approved");
         }
