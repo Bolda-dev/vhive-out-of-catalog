@@ -1448,26 +1448,27 @@ function CaptureImagePanel({
                 onClick={() => (editing ? confirmCrop() : setEditing(true))}
                 className={
                   editing
-                    ? "absolute bottom-2 left-2 inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-semibold shadow-lg ring-2 ring-[#8FD3A8]/60 transition hover:brightness-110 animate-pulse"
+                    ? "absolute bottom-2 left-2 inline-flex h-11 items-center gap-2 rounded-md px-5 text-sm font-bold shadow-[0_0_0_3px_rgba(143,211,168,0.45),0_8px_24px_rgba(143,211,168,0.55)] ring-2 ring-white/30 transition hover:brightness-110 animate-pulse"
                     : "absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
                 }
                 style={
                   editing
-                    ? { background: "#8FD3A8", color: "#0F2A1C" }
+                    ? { background: "#8FD3A8", color: "#1A1A1A" }
                     : undefined
                 }
                 title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
               >
                 {editing ? (
                   <>
-                    <Check className="h-4 w-4" strokeWidth={3} />
-                    Confirm crop
+                    <Check className="h-5 w-5" strokeWidth={3.5} style={{ color: "#1A1A1A" }} />
+                    <span>Confirm crop</span>
                   </>
                 ) : (
                   <Crop className="h-3.5 w-3.5" />
                 )}
               </button>
             )}
+
           </div>
 
           {/* Bottom black strip: reject/approve */}
