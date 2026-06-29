@@ -1966,31 +1966,31 @@ function CatalogSearchPanel({
           </tr>
           <tr>
             <th
-              style={{ width: 72, minWidth: 72 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 88, minWidth: 88 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Image
             </th>
             <th
-              style={{ width: 96, minWidth: 96 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 120, minWidth: 120 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Type
             </th>
             <th
-              style={{ width: 110, minWidth: 110 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 140, minWidth: 140 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Manufacturer
             </th>
             <th
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Model
             </th>
             <th
-              style={{ width: 88, minWidth: 88 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-right text-sm font-semibold text-white"
+              style={{ width: 110, minWidth: 110 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-right text-sm font-semibold text-white"
             >
               Actions
             </th>
