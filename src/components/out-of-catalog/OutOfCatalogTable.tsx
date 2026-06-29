@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Eye, ExternalLink, GripVertical } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, FileSearch, ExternalLink, GripVertical } from "lucide-react";
 import { useState } from "react";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { cn } from "@/lib/utils";
