@@ -1398,59 +1398,13 @@ function CaptureImagePanel({
       </div>
 
       {gridMode && captures && statusFor ? (
-        <div className="flex min-h-0 flex-1 flex-col bg-background">
-          <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto bg-background p-3">
-            <div className="grid grid-cols-2 gap-3">
-              {captures.map((cap) => {
-                const s = statusFor(cap.id);
-                const borderColor =
-                  s === "approved" ? "#8FD3A8" : s === "rejected" ? "#d97a72" : "transparent";
-                return (
-                  <div
-                    key={cap.id}
-                    className="relative overflow-hidden rounded-lg border-2"
-                    style={{ borderColor }}
-                  >
-                    <img
-                      src={cap.imageUrl}
-                      alt=""
-                      className="aspect-[4/3] w-full object-cover"
-                    />
-                    <StatusToggle
-                      status={s}
-                      size="md"
-                      onSet={(ns) => onCaptureSetStatus?.(ns, cap.id)}
-                      onClear={() => onCaptureClearStatus?.(cap.id)}
-                    />
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          type="button"
-                          className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur transition hover:bg-black/75"
-                          title="More actions"
-                          aria-label="More actions"
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="min-w-[180px]">
-                        <DropdownMenuItem onClick={() => onCaptureClearStatus?.(cap.id)}>
-                          Re-review this image
-                        </DropdownMenuItem>
-                        {onResetAllApprovals && (
-                          <DropdownMenuItem onClick={() => onResetAllApprovals()}>
-                            Re-review all images
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <GridReviewView
+          captures={captures}
+          statusFor={statusFor}
+          onCaptureSetStatus={onCaptureSetStatus}
+          onCaptureClearStatus={onCaptureClearStatus}
+          onResetAllApprovals={onResetAllApprovals}
+        />
       ) : (
         <>
           <div
