@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { cn } from "@/lib/utils";
 import { RowActions } from "./RowActions";
-import { ConfidenceBadge } from "./ConfidenceBadge";
+
 
 export type SortDir = "asc" | "desc";
 export type SortState = { colId: string; dir: SortDir } | null;
