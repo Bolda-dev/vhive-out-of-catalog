@@ -856,7 +856,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     style={{ color: "#3BB6E9" }}
                     strokeWidth={1.75}
                   />
-                  <span>Approve or reject every captured image first</span>
+                  <span>Review each image and adjust the bounding box if needed. Exclude any equipment that doesn't belong to this group.</span>
                 </div>
               </div>
             </div>
