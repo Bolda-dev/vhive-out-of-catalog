@@ -497,14 +497,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center rounded-r-md px-2 text-sm transition"
+                      disabled={phase !== "reviewing"}
+                      className="inline-flex items-center justify-center rounded-r-md px-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-40"
                       style={{ background: "#3BB6E9", color: "#0b1418" }}
-                      title="More bind options"
+                      title={phase !== "reviewing" ? "Approve or reject every captured image first" : "More bind options"}
                       aria-label="More bind options"
                     >
                       <ChevronDown className="h-4 w-4" />
                     </button>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent align="end" className="w-auto min-w-[240px]">
                     <DropdownMenuItem
                       onClick={addAsNew}
