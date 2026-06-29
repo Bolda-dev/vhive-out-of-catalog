@@ -142,27 +142,6 @@ export function ReferenceImageDialog({
                   onClick={() => setActiveIdx(i)}
                 >
                   <img src={src} alt={`ref ${i + 1}`} className="h-full w-full object-cover" />
-                  {i === 0 ? (
-                    <span
-                      className="absolute left-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded"
-                      style={{ background: "rgba(59,182,233,0.85)", color: "#0b1418" }}
-                      title="Primary"
-                    >
-                      <Star className="h-2.5 w-2.5" />
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        makePrimary(i);
-                      }}
-                      className="absolute left-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded bg-black/60 text-white/70 opacity-0 transition group-hover:opacity-100 hover:text-white"
-                      title="Set as primary"
-                    >
-                      <Star className="h-2.5 w-2.5" />
-                    </button>
-                  )}
                   <button
                     type="button"
                     onClick={(e) => {
