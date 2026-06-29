@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Sparkles, Upload, Trash2, Image as ImageIcon, Plus } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Sparkles, Trash2, Image as ImageIcon, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -7,8 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const MAX_IMAGES = 8;
 
 const MOCK_DESCRIPTIONS = [
   "Rack-mounted Fortinet firewall, 1U chassis with dual redundant power supplies, front-facing console port and 8 SFP+ uplinks. Status LEDs all green.",
@@ -36,6 +34,8 @@ export function ReferenceImageDialog({
   const [description, setDescription] = useState(initialDescription);
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const thumbsWrapRef = useRef<HTMLDivElement>(null);
+  const [rowH, setRowH] = useState(0);
 
   useEffect(() => {
     if (open) {
@@ -46,6 +46,13 @@ export function ReferenceImageDialog({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  useLayoutEffect(() => {
+    const el = thumbsWrapRef.current;
+    if (!el) return;
+    const first = el.querySelector("[data-thumb]") as HTMLElement | null;
+    if (first) setRowH(first.offsetHeight);
+  }, [images.length, open]);
 
   const generate = () => {
     setLoading(true);
@@ -60,8 +67,7 @@ export function ReferenceImageDialog({
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
-    const remaining = MAX_IMAGES - images.length;
-    const accepted = files.slice(0, remaining).map((f) => URL.createObjectURL(f));
+    const accepted = files.map((f) => URL.createObjectURL(f));
     const wasEmpty = images.length === 0;
     const next = [...images, ...accepted];
     setImages(next);
@@ -70,7 +76,6 @@ export function ReferenceImageDialog({
       setDescription("");
       generate();
     }
-    // reset so same file can be re-picked
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -87,11 +92,12 @@ export function ReferenceImageDialog({
     }
   };
 
-
-
-
-  const canAdd = images.length < MAX_IMAGES;
   const activeImage = images[activeIdx] ?? null;
+
+  const totalSlots = images.length + 1; // include plus button
+  const rows = Math.ceil(totalSlots / 4);
+  const scrollThumbs = rows > 3 && rowH > 0;
+  const thumbsMaxH = scrollThumbs ? rowH * 2.25 + 8 * 2 : undefined;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -100,11 +106,8 @@ export function ReferenceImageDialog({
         style={{ background: "#1E1E1E", fontFamily: "Roboto, sans-serif" }}
       >
         <DialogHeader className="border-b border-white/10 px-5 py-3">
-          <DialogTitle className="flex items-center justify-between text-sm font-medium">
-            <span>Reference images</span>
-            <span className="text-xs font-normal text-white/50">
-              {images.length} / {MAX_IMAGES}
-            </span>
+          <DialogTitle className="text-sm font-medium">
+            Reference images
           </DialogTitle>
         </DialogHeader>
 
@@ -126,10 +129,19 @@ export function ReferenceImageDialog({
             </div>
 
             {/* Thumbs */}
-            <div className="grid grid-cols-4 gap-2">
+            <div
+              ref={thumbsWrapRef}
+              className="grid grid-cols-4 gap-2 ooc-thumbs-scroll"
+              style={{
+                maxHeight: thumbsMaxH,
+                overflowY: scrollThumbs ? "auto" : undefined,
+                paddingRight: scrollThumbs ? 6 : undefined,
+              }}
+            >
               {images.map((src, i) => (
                 <div
                   key={src + i}
+                  data-thumb
                   className="group relative aspect-square cursor-pointer overflow-hidden rounded-md border transition"
                   style={{
                     borderColor: i === activeIdx ? "#3BB6E9" : "rgba(255,255,255,0.10)",
@@ -152,17 +164,16 @@ export function ReferenceImageDialog({
                   </button>
                 </div>
               ))}
-              {canAdd ? (
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="flex aspect-square items-center justify-center rounded-md border border-dashed text-white/50 transition hover:border-[#3BB6E9] hover:text-[#3BB6E9]"
-                  style={{ borderColor: "rgba(255,255,255,0.20)", background: "#121212" }}
-                  title="Add images"
-                >
-                  <Plus className="h-5 w-5" />
-                </button>
-              ) : null}
+              <button
+                type="button"
+                data-thumb
+                onClick={() => fileRef.current?.click()}
+                className="flex aspect-square items-center justify-center rounded-md border border-dashed text-white/50 transition hover:border-[#3BB6E9] hover:text-[#3BB6E9]"
+                style={{ borderColor: "rgba(255,255,255,0.20)", background: "#121212" }}
+                title="Add images"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
             </div>
 
             <input
@@ -174,18 +185,8 @@ export function ReferenceImageDialog({
               onChange={handleUpload}
             />
 
-            <div className="flex items-center justify-between text-[11px] text-white/45">
-              <span>Click a thumb to preview · First image is used as the default</span>
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={!canAdd}
-                className="inline-flex items-center gap-1 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ color: "#E0E0E0" }}
-              >
-                <Upload className="h-3 w-3" />
-                Upload more
-              </button>
+            <div className="text-[11px] text-white/45">
+              Click a thumb to preview · First image is used as the default
             </div>
           </div>
 
@@ -198,7 +199,7 @@ export function ReferenceImageDialog({
 
             {loading ? (
               <div
-                className="flex flex-1 flex-col items-start justify-center gap-3 rounded-md border border-white/10 p-4"
+                className="flex flex-1 flex-col items-start justify-start gap-3 rounded-md border border-white/10 p-4"
                 style={{ background: "#121212", minHeight: 220 }}
               >
                 <div className="flex items-center gap-2 text-sm text-white/80">
