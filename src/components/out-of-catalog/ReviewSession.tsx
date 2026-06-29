@@ -444,7 +444,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               <h1 className="text-base font-medium text-foreground">
                 Review Session
                 <span className="ml-2 font-light text-muted-foreground whitespace-pre-line">
-                  {currentIndex + (done ? 0 : 0)}&nbsp;completed in this session{"\n"}
+                  {currentIndex + (done ? 0 : 0)}&nbsp;completed during this session{"\n"}
                 </span>
               </h1>
             </div>
