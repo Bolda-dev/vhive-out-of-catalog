@@ -115,6 +115,18 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
 
+  // Stagger the right-panel reveal: let the left side switch to grid first,
+  // then fade the dim overlay out and bring the right panel to full opacity.
+  const [revealRight, setRevealRight] = useState(false);
+  useEffect(() => {
+    if (phase !== "reviewing") {
+      setRevealRight(false);
+      return;
+    }
+    const t = window.setTimeout(() => setRevealRight(true), 420);
+    return () => window.clearTimeout(t);
+  }, [phase]);
+
   const setStatusFor = useCallback(
     (s: ImgStatus, capId: string) => {
       if (!current) return;
@@ -618,8 +630,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
             <div className="relative flex min-h-0 flex-col">
               <div
-                className={`flex min-h-0 flex-1 flex-col transition-opacity ${
-                  phase === "approving" ? "pointer-events-none opacity-30" : "opacity-100"
+                className={`flex min-h-0 flex-1 flex-col transition-opacity duration-500 ease-out ${
+                  revealRight ? "opacity-100" : "pointer-events-none opacity-30"
                 }`}
               >
             {searchOpen ? (
@@ -732,18 +744,21 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             </div>
             )}
               </div>
-              {phase === "approving" && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-[2px]">
-                  <div className="flex flex-col items-center gap-3 text-center text-sm text-foreground">
-                    <ListChecks
-                      className="h-8 w-8 animate-pulse"
-                      style={{ color: "#3BB6E9" }}
-                      strokeWidth={1.75}
-                    />
-                    <span>Approve or reject every captured image first</span>
-                  </div>
+              <div
+                className={`pointer-events-none absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-[2px] transition-opacity duration-300 ease-out ${
+                  revealRight ? "opacity-0" : "opacity-100"
+                }`}
+                aria-hidden={revealRight}
+              >
+                <div className="flex flex-col items-center gap-3 text-center text-sm text-foreground">
+                  <ListChecks
+                    className="h-8 w-8 animate-pulse"
+                    style={{ color: "#3BB6E9" }}
+                    strokeWidth={1.75}
+                  />
+                  <span>Approve or reject every captured image first</span>
                 </div>
-              )}
+              </div>
             </div>
           </section>
 
