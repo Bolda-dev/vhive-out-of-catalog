@@ -183,6 +183,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   }, [captures, captureCount, current, statusFor]);
 
   const [dissolveOpen, setDissolveOpen] = useState(false);
+  const [cannotIdentifyOpen, setCannotIdentifyOpen] = useState(false);
 
   const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
 
@@ -303,10 +304,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       setDissolveOpen(true);
       return;
     }
+    setCannotIdentifyOpen(true);
+  }, [current, phase, allRejected]);
+
+  const confirmCannotIdentify = useCallback(() => {
+    if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
-    appToast({ title: "Marked as Unrecognized" });
+    appToast({ title: "Marked as Cannot Identify" });
+    setCannotIdentifyOpen(false);
     goNext();
-  }, [current, goNext, phase, allRejected]);
+  }, [current, goNext]);
 
   const addAsNew = useCallback(() => {
     if (!current || phase !== "reviewing") return;
@@ -948,6 +955,29 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               className="bg-brand text-background hover:bg-brand/90"
             >
               Dissolve group
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={cannotIdentifyOpen} onOpenChange={setCannotIdentifyOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark as Cannot Identify?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="text-sm text-muted-foreground">
+                Are you sure? This group will be flagged as{" "}
+                <span className="font-medium text-foreground">Cannot Identify</span> and moved out of the review queue.
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCannotIdentify}
+              className="bg-brand text-background hover:bg-brand/90"
+            >
+              Cannot Identify
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
