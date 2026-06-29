@@ -741,10 +741,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     </div>
                     <div className="relative flex min-h-0 flex-1 items-center justify-center bg-background">
                       {selected?.item.referenceImageUrl ? (
-                        <img
+                        <ZoomPanImage
                           src={selected.item.referenceImageUrl}
-                          alt=""
-                          className="h-full w-full object-contain"
+                          resetKey={selected.item.id}
+                          objectFit="contain"
                         />
                       ) : (
                         <div className="text-sm text-muted-foreground">No suggestion</div>
