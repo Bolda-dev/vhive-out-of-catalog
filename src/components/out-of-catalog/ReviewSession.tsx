@@ -1888,7 +1888,16 @@ function CatalogSearchPanel({
   onClose: () => void;
   onBind: (catalogId: string) => void;
 }) {
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ images: string[]; index: number } | null>(null);
+
+  const closePreview = useCallback(() => setPreview(null), []);
+  const stepPreview = useCallback((dir: -1 | 1) => {
+    setPreview((p) => {
+      if (!p) return p;
+      const n = p.images.length;
+      return { ...p, index: (p.index + dir + n) % n };
+    });
+  }, []);
 
   useEffect(() => {
     if (!preview) return;
@@ -1896,12 +1905,21 @@ function CatalogSearchPanel({
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
-        setPreview(null);
+        closePreview();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        e.stopPropagation();
+        stepPreview(1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        e.stopPropagation();
+        stepPreview(-1);
       }
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
-  }, [preview]);
+  }, [preview, closePreview, stepPreview]);
+
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -1913,6 +1931,18 @@ function CatalogSearchPanel({
         .includes(q),
     );
   }, [query]);
+
+  const allCatalogImages = useMemo(
+    () => Array.from(new Set(mockCatalog.map((c) => c.referenceImageUrl))),
+    [],
+  );
+  const imagesFor = useCallback(
+    (item: (typeof mockCatalog)[number]) => {
+      const others = allCatalogImages.filter((u) => u !== item.referenceImageUrl);
+      return [item.referenceImageUrl, ...others].slice(0, 4);
+    },
+    [allCatalogImages],
+  );
 
   return (
     <div className="custom-scrollbar relative flex h-full min-h-0 flex-1 flex-col overflow-auto rounded-lg border border-border bg-background">
@@ -1989,7 +2019,7 @@ function CatalogSearchPanel({
                 <td className="border-b border-border/60 px-2 py-2 align-middle">
                   <button
                     type="button"
-                    onClick={() => setPreview(item.referenceImageUrl)}
+                    onClick={() => setPreview({ images: imagesFor(item), index: 0 })}
                     className="group relative h-14 w-14 overflow-hidden rounded-md border border-border bg-background transition hover:border-[#3BB6E9]"
                     title="Click to enlarge"
                   >
@@ -2038,21 +2068,65 @@ function CatalogSearchPanel({
       </table>
 
       {preview && (
-        <button
-          type="button"
-          onClick={() => setPreview(null)}
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image preview"
+          onClick={closePreview}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-8 animate-fade-in"
-          aria-label="Close preview"
         >
+          {preview.images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                stepPreview(-1);
+              }}
+              aria-label="Previous image"
+              className="absolute left-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+
           <img
-            src={preview}
+            src={preview.images[preview.index]}
             alt=""
+            onClick={(e) => e.stopPropagation()}
             className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
           />
-          <span className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white">
+
+          {preview.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  stepPreview(1);
+                }}
+                aria-label="Next image"
+                className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white tabular-nums">
+                {preview.index + 1} / {preview.images.length}
+              </div>
+            </>
+          )}
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              closePreview();
+            }}
+            aria-label="Close preview"
+            className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+          >
             <X className="h-4 w-4" />
-          </span>
-        </button>
+          </button>
+        </div>
       )}
     </div>
 
