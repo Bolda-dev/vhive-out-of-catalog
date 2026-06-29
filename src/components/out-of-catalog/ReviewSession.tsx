@@ -472,10 +472,9 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      disabled={phase !== "reviewing"}
-                      className="inline-flex items-center justify-center rounded-r-md px-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-40"
+                      className="inline-flex items-center justify-center rounded-r-md px-2 text-sm transition"
                       style={{ background: "#3BB6E9", color: "#0b1418" }}
-                      title={phase !== "reviewing" ? "Approve or reject every captured image first" : "More bind options"}
+                      title="More bind options"
                       aria-label="More bind options"
                     >
                       <ChevronDown className="h-4 w-4" />
@@ -492,14 +491,21 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       <span className="flex-1 whitespace-nowrap">Unrecognize</span>
                       <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">U</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={skipSession} className="whitespace-nowrap">
-                      <SkipForward className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="flex-1 whitespace-nowrap">Skip</span>
-                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">S</span>
-                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+
+              <button
+                type="button"
+                onClick={skipSession}
+                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                title="Skip session (S)"
+              >
+                <SkipForward className="h-4 w-4" />
+                Skip
+              </button>
+
 
               <span className="mx-1 h-6 w-px bg-white/10" />
               <button
