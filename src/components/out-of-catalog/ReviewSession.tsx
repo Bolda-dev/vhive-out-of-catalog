@@ -1425,8 +1425,8 @@ function CaptureImagePanel({
   };
 
   const onPanPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Middle mouse button (button === 1) initiates pan
-    if (e.button !== 1) return;
+    // Left-click pan, but only when not editing the crop rectangle
+    if (e.button !== 0 || editing) return;
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
@@ -1444,10 +1444,15 @@ function CaptureImagePanel({
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (dragCorner === null) return;
     const bounds = e.currentTarget.getBoundingClientRect();
-    const px = Math.max(2, Math.min(98, ((e.clientX - bounds.left) / bounds.width) * 100));
-    const py = Math.max(2, Math.min(98, ((e.clientY - bounds.top) / bounds.height) * 100));
+    // Inverse-transform mouse position into the unscaled image coordinate space
+    // (image is transformed with translate(pan) scale(zoom), origin 50% 50%)
+    const cx = bounds.width / 2;
+    const cy = bounds.height / 2;
+    const localX = (e.clientX - bounds.left - cx - pan.x) / zoom + cx;
+    const localY = (e.clientY - bounds.top - cy - pan.y) / zoom + cy;
+    const px = Math.max(0, Math.min(100, (localX / bounds.width) * 100));
+    const py = Math.max(0, Math.min(100, (localY / bounds.height) * 100));
     setRect((prev) => {
-      // Opposite corner stays fixed. Corners: 0=TL, 1=TR, 2=BR, 3=BL
       const left = prev.x;
       const right = prev.x + prev.w;
       const top = prev.y;
