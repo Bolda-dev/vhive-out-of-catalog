@@ -472,16 +472,24 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 <MarkUnrecognizedIcon className="h-4 w-4" />
                 Unrecognize
               </button>
-              <button
-                type="button"
-                onClick={skipSession}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Skip session (S)"
-              >
-                <SkipForward className="h-4 w-4" />
-                Skip
-              </button>
+              <TooltipProvider delayDuration={150}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={skipSession}
+                      aria-label="Skip to next group"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors hover:bg-white/[0.04]"
+                      style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                    >
+                      <SkipForward className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-[#1E1E1E] text-[#E0E0E0] border border-white/10">
+                    Skip to next group (S)
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
               {/* Bind split-button (CTA) */}
               <div className="inline-flex h-9 items-stretch">
