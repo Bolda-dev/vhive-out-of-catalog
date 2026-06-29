@@ -2223,30 +2223,55 @@ function CatalogSearchPanel({
             </button>
           )}
 
-          <img
-            src={preview.images[preview.index]}
-            alt=""
+          <div
             onClick={(e) => e.stopPropagation()}
-            className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
-          />
+            className="flex max-h-full max-w-full flex-col items-center gap-4"
+          >
+            <img
+              src={preview.images[preview.index]}
+              alt=""
+              className="max-h-[calc(100vh-220px)] max-w-full rounded-lg object-contain shadow-2xl"
+            />
+
+            {preview.images.length > 1 && (
+              <>
+                <div className="flex items-center gap-2 overflow-x-auto px-2 py-1 custom-scrollbar max-w-full">
+                  {preview.images.map((src, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setPreview((p) => (p ? { ...p, index: i } : p))}
+                      aria-label={`Show image ${i + 1}`}
+                      aria-current={i === preview.index}
+                      className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-md border transition ${
+                        i === preview.index
+                          ? "border-[#3BB6E9] opacity-100"
+                          : "border-white/20 opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img src={src} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+                <div className="rounded-full bg-black/60 px-3 py-1 text-xs text-white tabular-nums">
+                  {preview.index + 1} / {preview.images.length}
+                </div>
+              </>
+            )}
+          </div>
 
           {preview.images.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  stepPreview(1);
-                }}
-                aria-label="Next image"
-                className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
-              >
-                <ChevronRight className="h-6 w-6" />
-              </button>
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white tabular-nums">
-                {preview.index + 1} / {preview.images.length}
-              </div>
-            </>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                stepPreview(1);
+              }}
+              aria-label="Next image"
+              className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
           )}
 
           <button
