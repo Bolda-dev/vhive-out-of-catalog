@@ -1337,22 +1337,13 @@ function CaptureImagePanel({
                       alt=""
                       className="aspect-[4/3] w-full object-cover"
                     />
-                    {s === "approved" && (
-                      <span
-                        className="absolute left-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
-                        style={{ background: "#8FD3A8", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
-                      >
-                        <Check className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
-                      </span>
-                    )}
-                    {s === "rejected" && (
-                      <span
-                        className="absolute left-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full"
-                        style={{ background: "#d97a72", boxShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
-                      >
-                        <X className="h-4 w-4" strokeWidth={3.5} style={{ color: "#fff" }} />
-                      </span>
-                    )}
+                    <StatusToggle
+                      status={s}
+                      size="md"
+                      onSet={(ns) => onCaptureSetStatus?.(ns, cap.id)}
+                      onClear={() => onCaptureClearStatus?.(cap.id)}
+                    />
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
