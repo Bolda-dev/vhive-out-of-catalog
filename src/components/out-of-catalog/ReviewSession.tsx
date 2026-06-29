@@ -434,7 +434,12 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <h1 className="text-base font-medium text-foreground">Review Session</h1>
+              <h1 className="text-base font-medium text-foreground">
+                Review Session
+                <span className="ml-2 font-light text-muted-foreground">
+                  {currentIndex + (done ? 0 : 1)} of {total}
+                </span>
+              </h1>
             </div>
             <div className="flex items-center gap-2">
               <div
