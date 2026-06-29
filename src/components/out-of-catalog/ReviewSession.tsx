@@ -960,6 +960,29 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={cannotIdentifyOpen} onOpenChange={setCannotIdentifyOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark as Cannot Identify?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="text-sm text-muted-foreground">
+                Are you sure? This group will be flagged as{" "}
+                <span className="font-medium text-foreground">Cannot Identify</span> and moved out of the review queue.
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCannotIdentify}
+              className="bg-brand text-background hover:bg-brand/90"
+            >
+              Cannot Identify
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <CreateEquipmentSheet
         open={createOpen}
         onOpenChange={setCreateOpen}
