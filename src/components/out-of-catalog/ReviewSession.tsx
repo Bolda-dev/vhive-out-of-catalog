@@ -1218,14 +1218,26 @@ function CaptureImagePanel({
               for (let i = 0; i < captureKey.length; i++) h = (h * 31 + captureKey.charCodeAt(i)) | 0;
               const score = 80 + (Math.abs(h) % 16);
               return (
-                <span
-                  className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-semibold"
-                  style={{ background: "rgba(143,211,168,0.15)", color: "#8FD3A8" }}
+                <div
+                  className="ml-auto flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5"
+                  style={{ background: "rgba(143,211,168,0.12)", border: "1px solid rgba(143,211,168,0.35)" }}
                   title="AI match confidence"
                 >
-                  {score}%
-                </span>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "#8FD3A8", opacity: 0.85 }}>
+                      Match score
+                    </span>
+                    <span className="text-[11px]" style={{ color: "#8FD3A8", opacity: 0.7 }}>
+                      AI confidence
+                    </span>
+                  </div>
+                  <span className="text-2xl font-bold leading-none tabular-nums" style={{ color: "#8FD3A8" }}>
+                    {score}
+                    <span className="text-sm font-semibold">%</span>
+                  </span>
+                </div>
               );
+
             })()}
           </div>
           {/* Row 2 — capture context */}
