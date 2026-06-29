@@ -73,7 +73,7 @@ function ZoomPanImage({ src, resetKey, className, objectFit = "contain" }: {
     setZoom((z) => Math.max(1, Math.min(6, z + delta * z)));
   };
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 1) return;
+    if (e.button !== 0) return;
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
@@ -95,8 +95,8 @@ function ZoomPanImage({ src, resetKey, className, objectFit = "contain" }: {
       onPointerMove={onPointerMove}
       onPointerUp={endPan}
       onPointerLeave={endPan}
-      onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
-      style={{ cursor: panRef.current ? "grabbing" : "default" }}
+      style={{ cursor: panRef.current ? "grabbing" : zoom > 1 ? "grab" : "default" }}
+    
     >
       <img
         src={src}
