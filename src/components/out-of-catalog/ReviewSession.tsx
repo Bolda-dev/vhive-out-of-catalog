@@ -790,7 +790,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
           <ShortcutBar
             allApproved={allApproved}
             canBind={!!selected && allApproved}
-            onBind={() => selected && setPendingBindId(selected.item.id)}
+            onBind={() => selected && requestBind(selected.item.id)}
             onUnrecognize={markUnrecognized}
             onAddAsNew={addAsNew}
           />
