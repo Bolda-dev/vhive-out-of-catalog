@@ -1107,46 +1107,41 @@ function StatusToggle({
 }) {
   const dims = size === "md" ? "h-6 w-6" : "h-5 w-5";
   const icon = size === "md" ? "h-4 w-4" : "h-3.5 w-3.5";
-  const handle = (target: "approved" | "rejected") => (e: React.MouseEvent) => {
+  const cycle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (status === target) onClear();
-    else onSet(target);
+    if (status === "pending") onSet("approved");
+    else if (status === "approved") onSet("rejected");
+    else onClear();
   };
   const approved = status === "approved";
   const rejected = status === "rejected";
+  const title = approved
+    ? "Approved — click for Not part of the group"
+    : rejected
+      ? "Not part of the group — click to clear"
+      : "Click to approve";
+  const style: React.CSSProperties = approved
+    ? { background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }
+    : rejected
+      ? { background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }
+      : { background: "rgba(0,0,0,0.45)", border: "1px dashed rgba(255,255,255,0.4)" };
   return (
-    <div className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1">
+    <div className="absolute left-1.5 top-1.5 z-10">
       <button
         type="button"
-        onClick={handle("approved")}
-        title={approved ? "Clear approval" : "Approve"}
-        aria-label={approved ? "Clear approval" : "Approve"}
+        onClick={cycle}
+        title={title}
+        aria-label={title}
         className={`inline-flex ${dims} items-center justify-center rounded-full transition hover:scale-110`}
-        style={
-          approved
-            ? { background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }
-            : { background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.35)" }
-        }
+        style={style}
       >
-        <Check className={icon} strokeWidth={3.5} style={{ color: approved ? "#ffffff" : "rgba(255,255,255,0.7)" }} />
-      </button>
-      <button
-        type="button"
-        onClick={handle("rejected")}
-        title={rejected ? "Clear" : "Not part of the group"}
-        aria-label={rejected ? "Clear" : "Not part of the group"}
-        className={`inline-flex ${dims} items-center justify-center rounded-full transition hover:scale-110`}
-        style={
-          rejected
-            ? { background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }
-            : { background: "rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.35)" }
-        }
-      >
-        <X className={icon} strokeWidth={3.5} style={{ color: rejected ? "#ffffff" : "rgba(255,255,255,0.7)" }} />
+        {approved && <Check className={icon} strokeWidth={3.5} style={{ color: "#ffffff" }} />}
+        {rejected && <X className={icon} strokeWidth={3.5} style={{ color: "#ffffff" }} />}
       </button>
     </div>
   );
 }
+
 
 
 
