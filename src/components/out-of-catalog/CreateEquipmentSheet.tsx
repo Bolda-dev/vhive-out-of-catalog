@@ -88,13 +88,16 @@ export function CreateEquipmentSheet({
   const [depthM, setDepthM] = useState("");
   const [powerW, setPowerW] = useState("");
   const [thermalBtu, setThermalBtu] = useState("");
-  const [referenceImage, setReferenceImage] = useState<string | null>(defaultImage);
+  const [referenceImages, setReferenceImages] = useState<string[]>(
+    defaultImage ? [defaultImage] : [],
+  );
   const [referenceDescription, setReferenceDescription] = useState("");
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (open) setReferenceImage(defaultImage);
+    if (open) setReferenceImages(defaultImage ? [defaultImage] : []);
   }, [open, defaultImage]);
+
 
   const manufacturerNotFound =
     manufacturer.trim().length > 0 &&
