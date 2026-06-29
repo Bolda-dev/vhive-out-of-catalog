@@ -446,7 +446,29 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 )}
               </div>
 
-              {/* Bind split-button */}
+              {/* Secondary actions — left of CTA */}
+              <button
+                type="button"
+                onClick={markUnrecognized}
+                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                title="Mark as unrecognized (U)"
+              >
+                <MarkUnrecognizedIcon className="h-4 w-4" />
+                Unrecognize
+              </button>
+              <button
+                type="button"
+                onClick={skipSession}
+                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                title="Skip session (S)"
+              >
+                <SkipForward className="h-4 w-4" />
+                Skip
+              </button>
+
+              {/* Bind split-button (CTA) */}
               <div className="inline-flex h-9 items-stretch">
                 <button
                   type="button"
@@ -486,25 +508,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       <span className="flex-1 whitespace-nowrap">New equipment</span>
                       <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">Ctrl+Enter</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={markUnrecognized} className="whitespace-nowrap">
-                      <MarkUnrecognizedIcon className="mr-2 h-4 w-4 shrink-0" />
-                      <span className="flex-1 whitespace-nowrap">Unrecognize</span>
-                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">U</span>
-                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
 
-              <button
-                type="button"
-                onClick={skipSession}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Skip session (S)"
-              >
-                <SkipForward className="h-4 w-4" />
-                Skip
-              </button>
 
 
               <span className="mx-1 h-6 w-px bg-white/10" />
