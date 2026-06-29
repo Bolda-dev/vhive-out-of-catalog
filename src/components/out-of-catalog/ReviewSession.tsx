@@ -744,18 +744,21 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             </div>
             )}
               </div>
-              {phase === "approving" && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-[2px]">
-                  <div className="flex flex-col items-center gap-3 text-center text-sm text-foreground">
-                    <ListChecks
-                      className="h-8 w-8 animate-pulse"
-                      style={{ color: "#3BB6E9" }}
-                      strokeWidth={1.75}
-                    />
-                    <span>Approve or reject every captured image first</span>
-                  </div>
+              <div
+                className={`pointer-events-none absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-[2px] transition-opacity duration-300 ease-out ${
+                  revealRight ? "opacity-0" : "opacity-100"
+                }`}
+                aria-hidden={revealRight}
+              >
+                <div className="flex flex-col items-center gap-3 text-center text-sm text-foreground">
+                  <ListChecks
+                    className="h-8 w-8 animate-pulse"
+                    style={{ color: "#3BB6E9" }}
+                    strokeWidth={1.75}
+                  />
+                  <span>Approve or reject every captured image first</span>
                 </div>
-              )}
+              </div>
             </div>
           </section>
 
