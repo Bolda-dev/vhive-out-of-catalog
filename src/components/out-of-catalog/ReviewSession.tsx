@@ -2068,21 +2068,65 @@ function CatalogSearchPanel({
       </table>
 
       {preview && (
-        <button
-          type="button"
-          onClick={() => setPreview(null)}
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image preview"
+          onClick={closePreview}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-8 animate-fade-in"
-          aria-label="Close preview"
         >
+          {preview.images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                stepPreview(-1);
+              }}
+              aria-label="Previous image"
+              className="absolute left-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+
           <img
-            src={preview}
+            src={preview.images[preview.index]}
             alt=""
+            onClick={(e) => e.stopPropagation()}
             className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
           />
-          <span className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white">
+
+          {preview.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  stepPreview(1);
+                }}
+                aria-label="Next image"
+                className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white tabular-nums">
+                {preview.index + 1} / {preview.images.length}
+              </div>
+            </>
+          )}
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              closePreview();
+            }}
+            aria-label="Close preview"
+            className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+          >
             <X className="h-4 w-4" />
-          </span>
-        </button>
+          </button>
+        </div>
       )}
     </div>
 
