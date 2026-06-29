@@ -1277,12 +1277,12 @@ function CaptureImagePanel({
           </div>
           {/* Row 2 — capture context */}
           {(capturedAt || account || rack) && (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
               {capturedAt && <span className="shrink-0">{capturedAt}</span>}
               {account && (
                 <>
                   <span className="h-3 w-px shrink-0 bg-white/10" />
-                  <span className="inline-flex h-6 shrink-0 items-center rounded-md border border-border bg-background px-2 text-[11px] text-foreground">
+                  <span className="inline-flex h-6 shrink-0 items-center rounded-md border border-border bg-background px-2 text-[13px] text-foreground">
                     {account}
                   </span>
                 </>
@@ -1294,12 +1294,13 @@ function CaptureImagePanel({
                   <button
                     type="button"
                     onClick={() => appToast({ title: `Opening ${rack}` })}
-                    className="inline-flex shrink-0 items-center gap-1 text-[11px] text-[#3BB6E9] hover:underline"
+                    className="inline-flex shrink-0 items-center gap-1 text-[13px] text-[#3BB6E9] hover:underline"
                     title="Open rack"
                   >
                     <span className="max-w-[280px] truncate">{rack}</span>
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </button>
+
 
                 </>
               )}
