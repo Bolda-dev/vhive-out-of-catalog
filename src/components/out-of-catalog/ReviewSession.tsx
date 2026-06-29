@@ -1136,7 +1136,7 @@ function ShortcutBar({
                   <Plus className="h-3 w-3 text-muted-foreground" />
                 </>
               ),
-              action: "New equipment",
+              action: "Add new & Bind",
             },
             { keys: <Kbd>U</Kbd>, action: "Cannot Identify" },
           ]}
