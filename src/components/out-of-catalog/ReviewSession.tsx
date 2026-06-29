@@ -2217,9 +2217,9 @@ function GridReviewView({
                 </span>
               </span>
               <span className="h-px flex-1 bg-white/10" />
-              <ChevronRight
+              <ChevronDown
                 className={`h-4 w-4 shrink-0 text-white/60 transition-transform ${
-                  rejectedOpen ? "rotate-90" : ""
+                  rejectedOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
