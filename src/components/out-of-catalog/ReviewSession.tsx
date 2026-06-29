@@ -1773,7 +1773,7 @@ function NoSuggestionsEmpty({
   canRecreate: boolean;
 }) {
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch justify-center overflow-y-auto p-4">
+    <div className="custom-scrollbar flex min-h-0 min-w-0 flex-1 flex-col items-stretch justify-center overflow-y-auto p-4">
       <div className="flex flex-col items-center">
         <div className="relative mb-3 flex h-14 w-14 items-center justify-center">
           <div
