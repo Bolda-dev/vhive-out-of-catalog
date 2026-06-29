@@ -948,7 +948,7 @@ function ShortcutBar({
           label="Image"
           items={[
             { keys: <Kbd>Enter</Kbd>, action: allApproved ? "Bind" : "Approve" },
-            { keys: <Kbd>⌫</Kbd>, action: "Reject" },
+            { keys: <Kbd>⌫</Kbd>, action: "Not part of the group" },
             {
               keys: (
                 <>
