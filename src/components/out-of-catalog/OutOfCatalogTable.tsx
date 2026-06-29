@@ -74,9 +74,6 @@ function StatusCell({ status }: { status: OocStatus }) {
   return <span style={{ color }}>{status}</span>;
 }
 
-function ConfidenceCell({ value }: { value: number }) {
-  return <ConfidenceBadge value={value} />;
-}
 
 function EquipmentTypeCell({ row }: { row: OocRow }) {
   return <span className="text-foreground">{row.equipmentType}</span>;
