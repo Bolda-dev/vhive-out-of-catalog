@@ -143,7 +143,7 @@ export function CreateEquipmentSheet({
       <SheetContent
         side="right"
         className="flex h-full w-full max-w-[440px] flex-col gap-0 border-l border-white/10 p-0 sm:max-w-[440px]"
-        style={{ background: "#1E1E1E", fontFamily: "Roboto, sans-serif" }}
+        style={{ background: "#0d0d0d", fontFamily: "Roboto, sans-serif" }}
       >
         {/* Header */}
         <SheetHeader className="border-b border-white/10 px-4 py-3">
@@ -228,8 +228,8 @@ export function CreateEquipmentSheet({
             <button
               type="button"
               onClick={() => setImageDialogOpen(true)}
-              className="mt-2 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 text-xs font-medium transition hover:opacity-90"
-              style={{ background: "#3BB6E9", color: "#0b1418" }}
+              className="mt-2 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border bg-transparent px-3 text-xs font-medium transition hover:bg-[#3BB6E9]/10"
+              style={{ borderColor: "#3BB6E9", color: "#3BB6E9" }}
             >
               <Pencil className="h-3.5 w-3.5" />
               Edit images &amp; description
