@@ -2104,3 +2104,105 @@ function ThumbRail({
     </div>
   );
 }
+
+function GridReviewView({
+  captures,
+  statusFor,
+  onCaptureSetStatus,
+  onCaptureClearStatus,
+  onResetAllApprovals,
+}: {
+  captures: NonNullable<CaptureImagePanelProps["captures"]>;
+  statusFor: NonNullable<CaptureImagePanelProps["statusFor"]>;
+  onCaptureSetStatus?: CaptureImagePanelProps["onCaptureSetStatus"];
+  onCaptureClearStatus?: CaptureImagePanelProps["onCaptureClearStatus"];
+  onResetAllApprovals?: CaptureImagePanelProps["onResetAllApprovals"];
+}) {
+  const [rejectedOpen, setRejectedOpen] = useState(false);
+  const inGroup = captures.filter((c) => statusFor(c.id) !== "rejected");
+  const rejected = captures.filter((c) => statusFor(c.id) === "rejected");
+
+  const renderCard = (cap: (typeof captures)[number]) => {
+    const s = statusFor(cap.id);
+    const borderColor =
+      s === "approved" ? "#8FD3A8" : s === "rejected" ? "#d97a72" : "transparent";
+    return (
+      <div
+        key={cap.id}
+        className="relative overflow-hidden rounded-lg border-2"
+        style={{ borderColor }}
+      >
+        <img src={cap.imageUrl} alt="" className="aspect-[4/3] w-full object-cover" />
+        <StatusToggle
+          status={s}
+          size="md"
+          onSet={(ns) => onCaptureSetStatus?.(ns, cap.id)}
+          onClear={() => onCaptureClearStatus?.(cap.id)}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur transition hover:bg-black/75"
+              title="More actions"
+              aria-label="More actions"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[180px]">
+            <DropdownMenuItem onClick={() => onCaptureClearStatus?.(cap.id)}>
+              Re-review this image
+            </DropdownMenuItem>
+            {onResetAllApprovals && (
+              <DropdownMenuItem onClick={() => onResetAllApprovals()}>
+                Re-review all images
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col bg-background">
+      <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto bg-background p-3">
+        <div className="grid grid-cols-2 gap-3">{inGroup.map(renderCard)}</div>
+
+        {rejected.length > 0 && (
+          <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.02]">
+            <button
+              type="button"
+              onClick={() => setRejectedOpen((v) => !v)}
+              className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm text-[#E0E0E0] transition hover:bg-white/[0.04]"
+              aria-expanded={rejectedOpen}
+            >
+              <span className="flex items-center gap-2">
+                {rejectedOpen ? (
+                  <ChevronDown className="h-4 w-4 opacity-70" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 opacity-70" />
+                )}
+                <span
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: "#d97a72" }}
+                />
+                <span className="font-medium">Not part of the group</span>
+                <span className="text-xs text-white/50">
+                  {rejected.length} image{rejected.length === 1 ? "" : "s"}
+                </span>
+              </span>
+              <span className="text-xs text-white/40">
+                {rejectedOpen ? "Hide" : "Expand to change your mind"}
+              </span>
+            </button>
+            {rejectedOpen && (
+              <div className="grid grid-cols-2 gap-3 p-3 pt-2">{rejected.map(renderCard)}</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
