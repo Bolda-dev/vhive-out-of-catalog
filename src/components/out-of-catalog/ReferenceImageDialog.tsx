@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Upload, Trash2, Image as ImageIcon, Plus, Star } from "lucide-react";
+import { Sparkles, Upload, Trash2, Image as ImageIcon, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
