@@ -1932,6 +1932,18 @@ function CatalogSearchPanel({
     );
   }, [query]);
 
+  const allCatalogImages = useMemo(
+    () => Array.from(new Set(mockCatalog.map((c) => c.referenceImageUrl))),
+    [],
+  );
+  const imagesFor = useCallback(
+    (item: (typeof mockCatalog)[number]) => {
+      const others = allCatalogImages.filter((u) => u !== item.referenceImageUrl);
+      return [item.referenceImageUrl, ...others].slice(0, 4);
+    },
+    [allCatalogImages],
+  );
+
   return (
     <div className="custom-scrollbar relative flex h-full min-h-0 flex-1 flex-col overflow-auto rounded-lg border border-border bg-background">
       <table className="w-full border-separate border-spacing-0 text-sm">
