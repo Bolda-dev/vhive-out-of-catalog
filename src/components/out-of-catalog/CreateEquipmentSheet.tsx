@@ -213,7 +213,7 @@ export function CreateEquipmentSheet({
                 </div>
               </div>
               <div
-                className="flex-1 overflow-y-auto rounded-md border border-white/10 p-2.5 text-xs leading-relaxed"
+                className="custom-scrollbar flex-1 overflow-y-auto rounded-md border border-white/10 p-2.5 text-xs leading-relaxed"
                 style={{
                   background: "#121212",
                   color: referenceDescription
