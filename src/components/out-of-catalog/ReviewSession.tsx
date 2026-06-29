@@ -507,9 +507,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               <button
                 type="button"
                 onClick={markUnrecognized}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
+                disabled={phase !== "reviewing"}
+                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
                 style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Cannot Identify (U)"
+                title={phase !== "reviewing" ? "Approve or reject every captured image first" : "Cannot Identify (U)"}
               >
                 <MarkUnrecognizedIcon className="h-4 w-4" />
                 Cannot Identify
