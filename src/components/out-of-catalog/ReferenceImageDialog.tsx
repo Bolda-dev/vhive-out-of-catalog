@@ -127,14 +127,6 @@ export function ReferenceImageDialog({
                   <span className="text-xs">No images yet</span>
                 </div>
               )}
-              {activeImage && activeIdx === 0 ? (
-                <span
-                  className="absolute left-2 top-2 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px]"
-                  style={{ background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }}
-                >
-                  <Star className="h-3 w-3" /> Primary
-                </span>
-              ) : null}
             </div>
 
             {/* Thumbs */}
