@@ -969,11 +969,12 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       <AlertDialog open={cannotIdentifyOpen} onOpenChange={setCannotIdentifyOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Mark as Cannot Identify?</AlertDialogTitle>
+            <div className="text-[12px] text-muted-foreground">Omer Gohary (29 Jun 2026, 14:08)</div>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="text-sm text-muted-foreground">
-                Are you sure? This group will be flagged as{" "}
-                <span className="font-medium text-foreground">Cannot Identify</span> and moved out of the review queue.
+                This action will reset the Type, Make, and Model values for this group and display them as{" "}
+                <span className="font-medium text-foreground">Unknown</span> in all associated racks. Only use this option if the equipment cannot be identified by any means.
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
