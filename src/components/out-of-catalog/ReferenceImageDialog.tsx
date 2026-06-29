@@ -40,6 +40,7 @@ export function ReferenceImageDialog({
   const fileRef = useRef<HTMLInputElement>(null);
   const thumbsWrapRef = useRef<HTMLDivElement>(null);
   const [thumbsMaxH, setThumbsMaxH] = useState<number>();
+  const [thumbSize, setThumbSize] = useState<number>();
 
   useEffect(() => {
     if (open) {
@@ -59,15 +60,20 @@ export function ReferenceImageDialog({
     if (!el) return;
 
     const updateMaxHeight = () => {
+      const availableWidth = el.clientWidth - (scrollThumbs ? 6 : 0);
+      const nextThumbSize = Math.max(
+        56,
+        Math.floor((availableWidth - THUMB_GAP * (THUMB_COLUMNS - 1)) / THUMB_COLUMNS),
+      );
+
+      setThumbSize(nextThumbSize);
+
       if (!scrollThumbs) {
         setThumbsMaxH(undefined);
         return;
       }
 
-      const availableWidth = el.clientWidth - 6;
-      const thumbSize =
-        (availableWidth - THUMB_GAP * (THUMB_COLUMNS - 1)) / THUMB_COLUMNS;
-      setThumbsMaxH(thumbSize * VISIBLE_THUMB_ROWS + THUMB_GAP * 2);
+      setThumbsMaxH(nextThumbSize * VISIBLE_THUMB_ROWS + THUMB_GAP * 2);
     };
 
     updateMaxHeight();
@@ -119,7 +125,7 @@ export function ReferenceImageDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-3xl border-white/10 p-0 text-foreground"
+        className="flex max-h-[calc(100vh-48px)] max-w-3xl flex-col overflow-hidden border-white/10 p-0 text-foreground"
         style={{ background: "#1E1E1E", fontFamily: "Roboto, sans-serif" }}
       >
         <DialogHeader className="border-b border-white/10 px-5 py-3">
@@ -128,11 +134,11 @@ export function ReferenceImageDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-[1.1fr_1fr] gap-0">
+        <div className="grid min-h-0 flex-1 grid-cols-[1.1fr_1fr] gap-0 overflow-hidden">
           {/* Image */}
-          <div className="flex flex-col gap-3 border-r border-white/10 p-4">
+          <div className="flex min-h-0 flex-col gap-3 border-r border-white/10 p-4">
             <div
-              className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md"
+              className="relative flex aspect-square max-h-[46vh] w-full shrink-0 items-center justify-center overflow-hidden rounded-md"
               style={{ background: "#121212" }}
             >
               {activeImage ? (
@@ -148,8 +154,10 @@ export function ReferenceImageDialog({
             {/* Thumbs */}
             <div
               ref={thumbsWrapRef}
-              className="custom-scrollbar grid grid-cols-4 gap-2 overflow-x-hidden"
+              className="custom-scrollbar grid shrink-0 gap-2 overflow-x-hidden"
               style={{
+                gridTemplateColumns: `repeat(${THUMB_COLUMNS}, minmax(0, 1fr))`,
+                gridAutoRows: thumbSize ? `${thumbSize}px` : undefined,
                 maxHeight: thumbsMaxH,
                 overflowY: scrollThumbs ? "auto" : "visible",
                 paddingRight: scrollThumbs ? 6 : 0,
@@ -159,7 +167,7 @@ export function ReferenceImageDialog({
                 <div
                   key={src + i}
                   data-thumb
-                  className="group relative aspect-square cursor-pointer overflow-hidden rounded-md border transition"
+                  className="group relative h-full min-h-0 w-full min-w-0 cursor-pointer overflow-hidden rounded-md border transition"
                   style={{
                     borderColor: i === activeIdx ? "#3BB6E9" : "rgba(255,255,255,0.10)",
                     background: "#121212",
@@ -185,7 +193,7 @@ export function ReferenceImageDialog({
                 type="button"
                 data-thumb
                 onClick={() => fileRef.current?.click()}
-                className="flex aspect-square items-center justify-center rounded-md border border-dashed text-white/50 transition hover:border-[#3BB6E9] hover:text-[#3BB6E9]"
+                className="flex h-full min-h-0 w-full min-w-0 items-center justify-center rounded-md border border-dashed text-white/50 transition hover:border-[#3BB6E9] hover:text-[#3BB6E9]"
                 style={{ borderColor: "rgba(255,255,255,0.20)", background: "#121212" }}
                 title="Add images"
               >
@@ -208,7 +216,7 @@ export function ReferenceImageDialog({
           </div>
 
           {/* Description */}
-          <div className="flex flex-col gap-2 p-4">
+          <div className="flex min-h-0 flex-col gap-2 p-4">
             <div className="flex items-center gap-2 text-xs text-white/70">
               <Sparkles className="h-3.5 w-3.5" style={{ color: "#3BB6E9" }} />
               <span>AI generated description</span>
