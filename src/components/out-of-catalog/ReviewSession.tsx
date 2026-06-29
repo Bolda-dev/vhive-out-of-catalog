@@ -518,7 +518,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     phase !== "reviewing"
                       ? "Approve or reject every captured image first"
                       : selected
-                      ? "Bind to suggestion (Enter)"
+                      ? "Bind to suggestion (Ctrl+Enter)"
                       : "No suggestion selected"
                   }
                 >
