@@ -195,7 +195,9 @@ function OutOfCatalogPage() {
                 setPage(1);
               }}
               equipmentTypeOptions={equipmentTypeOptions}
+              onReviewRow={() => startSession()}
             />
+
 
             <Pagination
               page={currentPage}
