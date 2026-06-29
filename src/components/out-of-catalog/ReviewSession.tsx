@@ -115,6 +115,18 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
 
+  // Stagger the right-panel reveal: let the left side switch to grid first,
+  // then fade the dim overlay out and bring the right panel to full opacity.
+  const [revealRight, setRevealRight] = useState(false);
+  useEffect(() => {
+    if (phase !== "reviewing") {
+      setRevealRight(false);
+      return;
+    }
+    const t = window.setTimeout(() => setRevealRight(true), 420);
+    return () => window.clearTimeout(t);
+  }, [phase]);
+
   const setStatusFor = useCallback(
     (s: ImgStatus, capId: string) => {
       if (!current) return;
