@@ -571,22 +571,12 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                           style={{ borderColor, opacity: active ? 1 : 0.92 }}
                         >
                           <img src={cap.imageUrl} alt="" className="h-full w-full object-cover" />
-                          {status === "approved" && (
-                            <span
-                              className="absolute left-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                              style={{ background: "#8FD3A8", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                            >
-                              <Check className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                            </span>
-                          )}
-                          {status === "rejected" && (
-                            <span
-                              className="absolute left-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full"
-                              style={{ background: "#d97a72", boxShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
-                            >
-                              <X className="h-3.5 w-3.5" strokeWidth={3.5} style={{ color: "#ffffff" }} />
-                            </span>
-                          )}
+                          <StatusToggle
+                            status={status}
+                            onSet={(s) => setStatusFor(s, cap.id)}
+                            onClear={() => clearCaptureStatus(cap.id)}
+                          />
+
                         </button>
                       );
                     })}
