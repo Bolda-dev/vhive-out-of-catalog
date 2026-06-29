@@ -1030,7 +1030,7 @@ function ShortcutBar({
         <ShortcutGroup
           label="Image"
           items={[
-            { keys: <Kbd>Enter</Kbd>, action: allApproved ? "Bind" : "Approve" },
+            { keys: <Kbd>Enter</Kbd>, action: "Approve" },
             { keys: <Kbd>⌫</Kbd>, action: "Not part of the group" },
             {
               keys: (
