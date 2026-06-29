@@ -180,8 +180,6 @@ export function OutOfCatalogTable({
         return <StatusCell status={row.status} />;
       case "equipmentType":
         return <EquipmentTypeCell row={row} />;
-      case "confidence":
-        return <ConfidenceCell value={row.confidence} />;
       case "manufacturer":
         return <span className="text-foreground">{row.manufacturer}</span>;
       case "model":
