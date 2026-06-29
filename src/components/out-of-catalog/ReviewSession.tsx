@@ -1128,8 +1128,8 @@ function StatusToggle({
       <button
         type="button"
         onClick={handle("rejected")}
-        title={rejected ? "Clear rejection" : "Reject"}
-        aria-label={rejected ? "Clear rejection" : "Reject"}
+        title={rejected ? "Clear" : "Not part of the group"}
+        aria-label={rejected ? "Clear" : "Not part of the group"}
         className={`inline-flex ${dims} items-center justify-center rounded-full transition hover:scale-110`}
         style={
           rejected
