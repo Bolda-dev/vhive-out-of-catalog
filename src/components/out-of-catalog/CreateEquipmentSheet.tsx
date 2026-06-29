@@ -161,7 +161,7 @@ export function CreateEquipmentSheet({
         </SheetHeader>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="custom-scrollbar flex-1 overflow-y-auto px-4 py-4">
           {hasRejected ? (
             <div
               className="mb-4 flex items-start gap-2 rounded-md border px-3 py-2 text-xs"
