@@ -1076,7 +1076,7 @@ function ShortcutBar({
             {
               keys: (
                 <>
-                  <Kbd>Ctrl</Kbd>
+                  <Kbd>⌘/Ctrl</Kbd>
                   <Kbd>Enter</Kbd>
                 </>
               ),
