@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles, Trash2, Image as ImageIcon, Plus } from "lucide-react";
 import {
   Dialog,
@@ -13,6 +13,10 @@ const MOCK_DESCRIPTIONS = [
   "Front view of a 1U network appliance — black brushed metal bezel, branding center-left, ventilation grilles on both sides, mounting ears installed.",
   "Active equipment, single rack unit, multiple copper Ethernet ports with link-state indicators lit; serial label partially visible on the lower right.",
 ];
+
+const THUMB_COLUMNS = 4;
+const THUMB_GAP = 8;
+const VISIBLE_THUMB_ROWS = 2.25;
 
 export interface ReferenceImageDialogProps {
   open: boolean;
@@ -35,7 +39,7 @@ export function ReferenceImageDialog({
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const thumbsWrapRef = useRef<HTMLDivElement>(null);
-  const [rowH, setRowH] = useState(0);
+  const [thumbsMaxH, setThumbsMaxH] = useState<number>();
 
   useEffect(() => {
     if (open) {
@@ -47,12 +51,30 @@ export function ReferenceImageDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  useLayoutEffect(() => {
+  const totalSlots = images.length + 1; // include plus button
+  const scrollThumbs = totalSlots > THUMB_COLUMNS * 2;
+
+  useEffect(() => {
     const el = thumbsWrapRef.current;
     if (!el) return;
-    const first = el.querySelector("[data-thumb]") as HTMLElement | null;
-    if (first) setRowH(first.offsetHeight);
-  }, [images.length, open]);
+
+    const updateMaxHeight = () => {
+      if (!scrollThumbs) {
+        setThumbsMaxH(undefined);
+        return;
+      }
+
+      const availableWidth = el.clientWidth - 6;
+      const thumbSize =
+        (availableWidth - THUMB_GAP * (THUMB_COLUMNS - 1)) / THUMB_COLUMNS;
+      setThumbsMaxH(thumbSize * VISIBLE_THUMB_ROWS + THUMB_GAP * 2);
+    };
+
+    updateMaxHeight();
+    const observer = new ResizeObserver(updateMaxHeight);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [scrollThumbs, open]);
 
   const generate = () => {
     setLoading(true);
@@ -94,11 +116,6 @@ export function ReferenceImageDialog({
 
   const activeImage = images[activeIdx] ?? null;
 
-  const totalSlots = images.length + 1; // include plus button
-  const rows = Math.ceil(totalSlots / 4);
-  const scrollThumbs = rows > 2 && rowH > 0;
-  const thumbsMaxH = scrollThumbs ? rowH * 2.25 + 8 * 2 : undefined;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -131,11 +148,11 @@ export function ReferenceImageDialog({
             {/* Thumbs */}
             <div
               ref={thumbsWrapRef}
-              className="custom-scrollbar grid grid-cols-4 gap-2"
+              className="custom-scrollbar grid grid-cols-4 gap-2 overflow-x-hidden"
               style={{
                 maxHeight: thumbsMaxH,
-                overflowY: scrollThumbs ? "auto" : undefined,
-                paddingRight: scrollThumbs ? 6 : undefined,
+                overflowY: scrollThumbs ? "auto" : "visible",
+                paddingRight: scrollThumbs ? 6 : 0,
               }}
             >
               {images.map((src, i) => (
