@@ -554,7 +554,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       title={phase !== "reviewing" ? "Approve or reject every captured image first" : undefined}
                     >
                       <AddNewBindIcon className="mr-2 h-4 w-4 shrink-0" />
-                      <span className="flex-1 whitespace-nowrap">New equipment</span>
+                      <span className="flex-1 whitespace-nowrap">Add new &amp; Bind</span>
                       <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">N</span>
                     </DropdownMenuItem>
 
@@ -1136,7 +1136,7 @@ function ShortcutBar({
                   <Plus className="h-3 w-3 text-muted-foreground" />
                 </>
               ),
-              action: "New equipment",
+              action: "Add new & Bind",
             },
             { keys: <Kbd>U</Kbd>, action: "Cannot Identify" },
           ]}
