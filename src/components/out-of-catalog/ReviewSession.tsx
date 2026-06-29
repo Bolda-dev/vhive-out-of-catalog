@@ -507,7 +507,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               <div className="inline-flex h-9 items-stretch">
                 <button
                   type="button"
-                  onClick={() => selected && setPendingBindId(selected.item.id)}
+                  onClick={() => selected && requestBind(selected.item.id)}
                   disabled={!selected || phase !== "reviewing"}
                   className="inline-flex items-center gap-2 rounded-l-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
                   style={{ background: "#3BB6E9", color: "#0b1418" }}
