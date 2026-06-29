@@ -660,7 +660,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
                   onClose={closeSearch}
-                  onBind={(id) => setPendingBindId(id)}
+                  onBind={(id) => requestBind(id)}
                 />
               </div>
             ) : (
