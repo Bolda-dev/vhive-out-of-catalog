@@ -568,17 +568,6 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
 
 
-              <span className="mx-1 h-6 w-px bg-white/10" />
-              <button
-                type="button"
-                onClick={onExit}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Exit session"
-              >
-                <X className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                Exit session
-              </button>
             </div>
           </div>
 
