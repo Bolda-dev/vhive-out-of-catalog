@@ -551,7 +551,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     >
                       <AddNewBindIcon className="mr-2 h-4 w-4 shrink-0" />
                       <span className="flex-1 whitespace-nowrap">New equipment</span>
-                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">Ctrl+Enter</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">N</span>
                     </DropdownMenuItem>
 
                   </DropdownMenuContent>
