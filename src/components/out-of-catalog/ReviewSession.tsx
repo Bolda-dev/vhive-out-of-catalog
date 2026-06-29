@@ -559,11 +559,11 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                             type="button"
                             onClick={searchCatalog}
                             disabled={phase !== "reviewing"}
-                            className="group flex h-full w-full items-center gap-2 px-3 text-sm font-normal transition-opacity hover:opacity-100 disabled:cursor-not-allowed"
+                            className="group flex h-full w-full items-center gap-2 px-3 text-sm font-normal hover:opacity-100 disabled:cursor-not-allowed"
                             style={{ color: "#E0E0E0" }}
                           >
-                            <Search className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                            Search from catalog
+                            <Search className="h-4 w-4 opacity-50" style={{ color: "#E0E0E0" }} />
+                            <span className="opacity-50">Search from catalog</span>
                           </button>
                         </span>
                       </TooltipTrigger>
