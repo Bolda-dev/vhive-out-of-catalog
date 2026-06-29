@@ -223,15 +223,11 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         setDissolveOpen(true);
         return;
       }
-      const hasRejected = captures.some((c) => statusFor(c.id) === "rejected");
-      if (hasRejected) {
-        setPendingBindId(catalogId);
-      } else {
-        confirmBind(catalogId);
-      }
+      setPendingBindId(catalogId);
     },
-    [captures, statusFor, confirmBind, allRejected],
+    [allRejected],
   );
+
 
 
 
