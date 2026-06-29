@@ -87,6 +87,7 @@ export function OutOfCatalogTable({
   filters,
   onFiltersChange,
   equipmentTypeOptions,
+  onReviewRow,
 }: {
   rows: OocRow[];
   visibleColumnIds: (ColumnMeta["id"])[];
@@ -96,6 +97,7 @@ export function OutOfCatalogTable({
   filters: Filters;
   onFiltersChange: (f: Filters) => void;
   equipmentTypeOptions: string[];
+  onReviewRow?: (row: OocRow) => void;
 }) {
   const cols = visibleColumnIds
     .map((id) => ALL_OOC_COLUMNS.find((c) => c.id === id)!)
