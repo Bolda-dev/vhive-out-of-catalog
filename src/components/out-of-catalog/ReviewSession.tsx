@@ -315,17 +315,19 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       // Global
       if (e.ctrlKey && e.key === "Enter") {
         e.preventDefault();
-        addAsNew();
+        (document.activeElement as HTMLElement | null)?.blur?.();
+        if (phase === "reviewing" && selected) requestBind(selected.item.id);
         return;
       }
       if (e.key === "Enter") {
         e.preventDefault();
         (document.activeElement as HTMLElement | null)?.blur?.();
-        if (phase === "reviewing") {
-          if (selected) requestBind(selected.item.id);
-        } else {
-          setStatus("approved");
-        }
+        if (phase === "approving") setStatus("approved");
+        return;
+      }
+      if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        addAsNew();
         return;
       }
       if (e.key === "Backspace") {
@@ -391,6 +393,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     done,
     markUnrecognized,
     phase,
+    requestBind,
     searchCatalog,
     selected,
     setStatus,
@@ -515,7 +518,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     phase !== "reviewing"
                       ? "Approve or reject every captured image first"
                       : selected
-                      ? "Bind to suggestion (Enter)"
+                      ? "Bind to suggestion (Ctrl+Enter)"
                       : "No suggestion selected"
                   }
                 >
@@ -548,7 +551,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     >
                       <AddNewBindIcon className="mr-2 h-4 w-4 shrink-0" />
                       <span className="flex-1 whitespace-nowrap">New equipment</span>
-                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">Ctrl+Enter</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">N</span>
                     </DropdownMenuItem>
 
                   </DropdownMenuContent>
@@ -1027,7 +1030,7 @@ function ShortcutBar({
         <ShortcutGroup
           label="Image"
           items={[
-            { keys: <Kbd>Enter</Kbd>, action: allApproved ? "Bind" : "Approve" },
+            { keys: <Kbd>Enter</Kbd>, action: "Approve" },
             { keys: <Kbd>⌫</Kbd>, action: "Not part of the group" },
             {
               keys: (
@@ -1074,10 +1077,18 @@ function ShortcutBar({
                 <>
                   <Kbd>Ctrl</Kbd>
                   <Kbd>Enter</Kbd>
+                </>
+              ),
+              action: "Bind",
+            },
+            {
+              keys: (
+                <>
+                  <Kbd>N</Kbd>
                   <Plus className="h-3 w-3 text-muted-foreground" />
                 </>
               ),
-              action: "Add as new",
+              action: "New equipment",
             },
             {
               keys: (
@@ -1796,12 +1807,7 @@ function NoSuggestionsEmpty({
           icon={<AddNewBindIcon className="h-6 w-6" />}
           title="Add as new equipment"
           subtitle="Create a fresh catalog entry"
-          shortcut={
-            <>
-              <Kbd>Ctrl</Kbd>
-              <Kbd>Enter</Kbd>
-            </>
-          }
+          shortcut={<Kbd>N</Kbd>}
           primary
         />
         <EmptyAction
