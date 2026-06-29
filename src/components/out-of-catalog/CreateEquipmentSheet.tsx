@@ -30,6 +30,8 @@ export interface CreateEquipmentPayload {
   powerW: string;
   thermalBtu: string;
   referenceImage: string | null;
+  referenceImages: string[];
+
   referenceDescription: string;
 }
 
