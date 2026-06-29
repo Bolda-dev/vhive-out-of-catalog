@@ -183,6 +183,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
   }, [captures, captureCount, current, statusFor]);
 
   const [dissolveOpen, setDissolveOpen] = useState(false);
+  const [cannotIdentifyOpen, setCannotIdentifyOpen] = useState(false);
 
   const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
 
