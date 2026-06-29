@@ -304,10 +304,16 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       setDissolveOpen(true);
       return;
     }
+    setCannotIdentifyOpen(true);
+  }, [current, phase, allRejected]);
+
+  const confirmCannotIdentify = useCallback(() => {
+    if (!current) return;
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
-    appToast({ title: "Marked as Unrecognized" });
+    appToast({ title: "Marked as Cannot Identify" });
+    setCannotIdentifyOpen(false);
     goNext();
-  }, [current, goNext, phase, allRejected]);
+  }, [current, goNext]);
 
   const addAsNew = useCallback(() => {
     if (!current || phase !== "reviewing") return;
