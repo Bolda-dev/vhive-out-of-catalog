@@ -355,7 +355,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       if (e.key === "Backspace") {
         e.preventDefault();
         (document.activeElement as HTMLElement | null)?.blur?.();
-        if (phase === "approving") setStatus("rejected");
+        if (phase === "approving" && captureCount > 1) setStatus("rejected");
         return;
       }
 
@@ -803,6 +803,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             onBind={() => selected && requestBind(selected.item.id)}
             onUnrecognize={markUnrecognized}
             onAddAsNew={addAsNew}
+            singleCapture={captureCount <= 1}
           />
 
         </div>
@@ -1001,7 +1002,6 @@ function ImagePanel({
               title="Not part of the group (Backspace)"
             >
               <X className="h-3.5 w-3.5" /> Not part of the group
-
             </button>
             <button
               type="button"
@@ -1060,12 +1060,14 @@ function ShortcutBar({
   onBind,
   onUnrecognize,
   onAddAsNew,
+  singleCapture,
 }: {
   allApproved: boolean;
   canBind: boolean;
   onBind: () => void;
   onUnrecognize: () => void;
   onAddAsNew: () => void;
+  singleCapture?: boolean;
 }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 flex shrink-0 flex-col gap-2 bg-surface px-6 py-2.5">
@@ -1075,7 +1077,9 @@ function ShortcutBar({
           label="Image"
           items={[
             { keys: <Kbd>Enter</Kbd>, action: "Approve" },
-            { keys: <Kbd>⌫</Kbd>, action: "Not part of the group" },
+            ...(singleCapture
+              ? []
+              : [{ keys: <Kbd>⌫</Kbd>, action: "Not part of the group" }]),
             {
               keys: (
                 <>
@@ -1536,17 +1540,18 @@ function CaptureImagePanel({
           {/* Bottom black strip: reject/approve */}
           {src && onApprove && onReject && (
             <div className="flex items-center justify-end gap-1.5 border-t border-border/60 bg-black px-2 py-1.5">
-              <button
-                type="button"
-                onClick={onReject}
-                disabled={!canAct || editing}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ color: "#d97a72", border: "1px solid #d97a72" }}
-                title={editing ? "Finish crop first" : "Not part of the group (Backspace)"}
-              >
-                <X className="h-3.5 w-3.5" /> Not part of the group
-
-              </button>
+              {(captures?.length ?? 0) > 1 && (
+                <button
+                  type="button"
+                  onClick={onReject}
+                  disabled={!canAct || editing}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
+                  style={{ color: "#d97a72", border: "1px solid #d97a72" }}
+                  title={editing ? "Finish crop first" : "Not part of the group (Backspace)"}
+                >
+                  <X className="h-3.5 w-3.5" /> Not part of the group
+                </button>
+              )}
 
               <button
                 type="button"
