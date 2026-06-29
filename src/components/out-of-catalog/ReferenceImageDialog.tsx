@@ -270,7 +270,7 @@ export function ReferenceImageDialog({
           </div>
         </div>
 
-        <DialogFooter className="border-t border-white/10 px-5 py-3">
+        <DialogFooter className="shrink-0 border-t border-white/10 px-5 py-3">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
