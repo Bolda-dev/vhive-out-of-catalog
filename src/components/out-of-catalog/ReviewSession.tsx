@@ -1254,14 +1254,13 @@ function CaptureImagePanel({
             for (let i = 0; i < captureKey.length; i++) h = (h * 31 + captureKey.charCodeAt(i)) | 0;
             const score = 80 + (Math.abs(h) % 16);
             return (
-              <div className="flex flex-col leading-tight">
+              <div className="flex items-center gap-2 leading-tight">
                 <span className="text-sm font-medium text-foreground">Rack Suggestion</span>
-                <span className="text-[11px]" style={{ color: "#8FD3A8" }} title="AI match confidence">
-                  Confidence {score}%
-                </span>
+                <MatchScoreBadge score={score} />
               </div>
             );
           })()}
+
         </div>
 
         {/* Right side — two rows */}
