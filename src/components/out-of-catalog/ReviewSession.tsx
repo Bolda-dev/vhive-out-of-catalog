@@ -806,13 +806,29 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm bind to catalog item?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle>Some images aren't part of this group</AlertDialogTitle>
+            <AlertDialogDescription asChild>
               {(() => {
                 const it = mockCatalog.find((c) => c.id === pendingBindId);
-                return it
-                  ? `This will bind ${current?.instances ?? 0} instance(s) to ${it.manufacturer} · ${it.model}.`
-                  : "This will bind the current object to the selected catalog item.";
+                const approvedCount = captures.filter((c) => statusFor(c.id) === "approved").length;
+                const rejectedCount = captures.filter((c) => statusFor(c.id) === "rejected").length;
+                const target = it ? `${it.manufacturer} · ${it.model}` : "the selected catalog item";
+                return (
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <p>
+                      <span className="font-medium text-foreground">{approvedCount}</span>{" "}
+                      approved image{approvedCount === 1 ? "" : "s"} will be bound to{" "}
+                      <span className="font-medium text-foreground">{target}</span>.
+                    </p>
+                    <div className="rounded-md border border-[#F2D066]/30 bg-[#F2D066]/10 px-3 py-2 text-foreground">
+                      <span className="font-medium" style={{ color: "#F2D066" }}>
+                        {rejectedCount} image{rejectedCount === 1 ? "" : "s"}
+                      </span>{" "}
+                      marked as <span className="font-medium">not part of the group</span> will
+                      return to the table as a separate group for later review.
+                    </div>
+                  </div>
+                );
               })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
