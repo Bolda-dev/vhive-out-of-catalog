@@ -166,8 +166,8 @@ export function CreateEquipmentSheet({
             >
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>
-                Rejected images will be moved to a separate group and will not be
-                bound to this new equipment.
+                Images marked "not part of the group" will be moved to a separate
+                group and will not be bound to this new equipment.
               </span>
             </div>
           ) : null}

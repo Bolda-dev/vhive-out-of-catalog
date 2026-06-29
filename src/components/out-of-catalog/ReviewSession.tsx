@@ -871,9 +871,10 @@ function ImagePanel({
               disabled={!canAct}
               className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-black/55 px-2.5 text-xs backdrop-blur transition hover:bg-black/70 disabled:opacity-40"
               style={{ color: "#d97a72" }}
-              title="Reject (Backspace)"
+              title="Not part of the group (Backspace)"
             >
-              <X className="h-3.5 w-3.5" /> Reject
+              <X className="h-3.5 w-3.5" /> Not part of the group
+
             </button>
             <button
               type="button"
@@ -947,7 +948,7 @@ function ShortcutBar({
           label="Image"
           items={[
             { keys: <Kbd>Enter</Kbd>, action: allApproved ? "Bind" : "Approve" },
-            { keys: <Kbd>⌫</Kbd>, action: "Reject" },
+            { keys: <Kbd>⌫</Kbd>, action: "Not part of the group" },
             {
               keys: (
                 <>
@@ -1127,8 +1128,8 @@ function StatusToggle({
       <button
         type="button"
         onClick={handle("rejected")}
-        title={rejected ? "Clear rejection" : "Reject"}
-        aria-label={rejected ? "Clear rejection" : "Reject"}
+        title={rejected ? "Clear" : "Not part of the group"}
+        aria-label={rejected ? "Clear" : "Not part of the group"}
         className={`inline-flex ${dims} items-center justify-center rounded-full transition hover:scale-110`}
         style={
           rejected
@@ -1473,9 +1474,10 @@ function CaptureImagePanel({
                 disabled={!canAct || editing}
                 className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ color: "#d97a72", border: "1px solid #d97a72" }}
-                title={editing ? "Finish crop first" : "Reject (Backspace)"}
+                title={editing ? "Finish crop first" : "Not part of the group (Backspace)"}
               >
-                <X className="h-3.5 w-3.5" /> Reject
+                <X className="h-3.5 w-3.5" /> Not part of the group
+
               </button>
 
               <button
