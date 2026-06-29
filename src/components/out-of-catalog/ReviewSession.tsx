@@ -630,8 +630,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             {/* Combined Catalog reference + AI suggestions card (stacked) */}
             <div className="relative flex min-h-0 flex-col">
               <div
-                className={`flex min-h-0 flex-1 flex-col transition-opacity ${
-                  phase === "approving" ? "pointer-events-none opacity-30" : "opacity-100"
+                className={`flex min-h-0 flex-1 flex-col transition-opacity duration-500 ease-out ${
+                  revealRight ? "opacity-100" : "pointer-events-none opacity-30"
                 }`}
               >
             {searchOpen ? (
