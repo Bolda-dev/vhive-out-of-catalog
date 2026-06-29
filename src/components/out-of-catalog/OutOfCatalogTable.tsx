@@ -252,7 +252,6 @@ export function OutOfCatalogTable({
       <table className="w-full min-w-[1200px] border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-20 bg-[#121212]">
           <tr>
-            <th className="w-9 border-b border-border px-2 py-3" aria-label="Expand" />
             {cols.map((col) => {
               const active = sortState?.colId === col.id;
               const isDragging = dragColId === col.id;
@@ -328,7 +327,6 @@ export function OutOfCatalogTable({
           </tr>
           {/* Per-column filter row */}
           <tr>
-            <th className="w-9 border-b border-border px-2 py-2" />
             {cols.map((col) => {
               const width = getColWidth(col);
               return (
