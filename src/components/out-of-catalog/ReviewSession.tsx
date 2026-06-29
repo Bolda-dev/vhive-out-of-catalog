@@ -219,6 +219,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const requestBind = useCallback(
     (catalogId: string) => {
+      if (allRejected) {
+        setDissolveOpen(true);
+        return;
+      }
       const hasRejected = captures.some((c) => statusFor(c.id) === "rejected");
       if (hasRejected) {
         setPendingBindId(catalogId);
@@ -226,7 +230,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         confirmBind(catalogId);
       }
     },
-    [captures, statusFor, confirmBind],
+    [captures, statusFor, confirmBind, allRejected],
   );
 
   const skipSession = useCallback(() => {
