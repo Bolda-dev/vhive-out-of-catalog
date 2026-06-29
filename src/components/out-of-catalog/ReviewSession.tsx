@@ -1807,12 +1807,7 @@ function NoSuggestionsEmpty({
           icon={<AddNewBindIcon className="h-6 w-6" />}
           title="Add as new equipment"
           subtitle="Create a fresh catalog entry"
-          shortcut={
-            <>
-              <Kbd>Ctrl</Kbd>
-              <Kbd>Enter</Kbd>
-            </>
-          }
+          shortcut={<Kbd>N</Kbd>}
           primary
         />
         <EmptyAction
