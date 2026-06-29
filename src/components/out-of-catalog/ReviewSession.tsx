@@ -444,7 +444,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               <h1 className="text-base font-medium text-foreground">
                 Review Session
                 <span className="ml-2 font-light text-muted-foreground">
-                  {currentIndex + (done ? 0 : 1)} of {total}
+                  {currentIndex + (done ? 0 : 0)} done
                 </span>
               </h1>
             </div>
