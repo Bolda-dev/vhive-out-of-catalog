@@ -341,12 +341,13 @@ export function CreateEquipmentSheet({
         <ReferenceImageDialog
           open={imageDialogOpen}
           onOpenChange={setImageDialogOpen}
-          initialImage={referenceImage}
+          initialImages={referenceImages}
           initialDescription={referenceDescription}
-          onConfirm={(img, desc) => {
-            setReferenceImage(img);
+          onConfirm={(imgs, desc) => {
+            setReferenceImages(imgs);
             setReferenceDescription(desc);
           }}
+
         />
       </SheetContent>
     </Sheet>
