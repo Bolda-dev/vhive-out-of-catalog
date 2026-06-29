@@ -131,7 +131,9 @@ export function CreateEquipmentSheet({
       depthM,
       powerW,
       thermalBtu,
-      referenceImage,
+      referenceImage: referenceImages[0] ?? null,
+      referenceImages,
+
       referenceDescription,
     });
   };
