@@ -502,10 +502,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 onClick={markUnrecognized}
                 className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
                 style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Mark as unrecognized (U)"
+                title="Cannot Identify (U)"
               >
                 <MarkUnrecognizedIcon className="h-4 w-4" />
-                Unrecognize
+                Cannot Identify
               </button>
               <TooltipProvider delayDuration={150}>
                 <Tooltip>
