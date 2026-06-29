@@ -12,7 +12,7 @@ import {
   Plus,
   RotateCcw,
   Search,
-  SkipForward,
+  
   Sparkles,
   X,
   ZoomIn,
