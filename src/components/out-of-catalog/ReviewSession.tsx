@@ -1391,11 +1391,26 @@ function CaptureImagePanel({
               <button
                 type="button"
                 onClick={() => (editing ? confirmCrop() : setEditing(true))}
-                className="absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
-                style={editing ? { color: "#8FBFA3", borderColor: "#8FBFA3" } : undefined}
+                className={
+                  editing
+                    ? "absolute bottom-2 left-2 inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-semibold shadow-lg ring-2 ring-[#8FD3A8]/60 transition hover:brightness-110 animate-pulse"
+                    : "absolute bottom-2 left-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-black/55 text-white backdrop-blur transition hover:bg-black/70"
+                }
+                style={
+                  editing
+                    ? { background: "#8FD3A8", color: "#0F2A1C" }
+                    : undefined
+                }
                 title={editing ? "Confirm crop (re-run AI)" : "Edit crop"}
               >
-                {editing ? <Check className="h-3.5 w-3.5" /> : <Crop className="h-3.5 w-3.5" />}
+                {editing ? (
+                  <>
+                    <Check className="h-4 w-4" strokeWidth={3} />
+                    Confirm crop
+                  </>
+                ) : (
+                  <Crop className="h-3.5 w-3.5" />
+                )}
               </button>
             )}
           </div>
@@ -1406,10 +1421,10 @@ function CaptureImagePanel({
               <button
                 type="button"
                 onClick={onReject}
-                disabled={!canAct}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:opacity-40"
+                disabled={!canAct || editing}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ color: "#d97a72", border: "1px solid #d97a72" }}
-                title="Reject (Backspace)"
+                title={editing ? "Finish crop first" : "Reject (Backspace)"}
               >
                 <X className="h-3.5 w-3.5" /> Reject
               </button>
@@ -1417,18 +1432,19 @@ function CaptureImagePanel({
               <button
                 type="button"
                 onClick={onApprove}
-                disabled={!canAct}
-                className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:opacity-40"
+                disabled={!canAct || editing}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
                 style={{
                   background: "#8FD3A8",
                   color: "#0F2A1C",
                 }}
-                title="Approve (Enter)"
+                title={editing ? "Finish crop first" : "Approve (Enter)"}
               >
                 <Check className="h-3.5 w-3.5" strokeWidth={3} /> Approve
               </button>
             </div>
           )}
+
         </>
       )}
 
