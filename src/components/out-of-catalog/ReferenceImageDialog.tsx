@@ -175,7 +175,7 @@ export function ReferenceImageDialog({
             />
 
             <div className="flex items-center justify-between text-[11px] text-white/45">
-              <span>Click a thumb to preview · Star to set primary</span>
+              <span>Click a thumb to preview · First image is used as the default</span>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
