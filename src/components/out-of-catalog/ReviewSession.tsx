@@ -1242,10 +1242,20 @@ function CaptureImagePanel({
             </svg>
             <Sparkles className="absolute -right-1 -top-1 h-3 w-3 text-[#3BB6E9]" strokeWidth={2.5} />
           </span>
-          <div className="flex flex-col leading-tight">
-            <span className="text-sm font-medium text-foreground">Rack Suggestion</span>
-            <span className="text-[11px] text-muted-foreground">AI generated</span>
-          </div>
+          {(() => {
+            // Deterministic 80–95% score per capture
+            let h = 0;
+            for (let i = 0; i < captureKey.length; i++) h = (h * 31 + captureKey.charCodeAt(i)) | 0;
+            const score = 80 + (Math.abs(h) % 16);
+            return (
+              <div className="flex flex-col leading-tight">
+                <span className="text-sm font-medium text-foreground">Rack Suggestion</span>
+                <span className="text-[11px]" style={{ color: "#8FD3A8" }} title="AI match confidence">
+                  Confidence {score}%
+                </span>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Right side — two rows */}
@@ -1259,33 +1269,6 @@ function CaptureImagePanel({
               <span className="h-3 w-px shrink-0 bg-white/10" />
               <MetaField label="Model" value={model || "—"} truncate />
             </div>
-            {(() => {
-              // Deterministic 80–95% score per capture
-              let h = 0;
-              for (let i = 0; i < captureKey.length; i++) h = (h * 31 + captureKey.charCodeAt(i)) | 0;
-              const score = 80 + (Math.abs(h) % 16);
-              return (
-                <div
-                  className="ml-auto flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5"
-                  style={{ background: "rgba(143,211,168,0.12)", border: "1px solid rgba(143,211,168,0.35)" }}
-                  title="AI match confidence"
-                >
-                  <div className="flex flex-col leading-none">
-                    <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "#8FD3A8", opacity: 0.85 }}>
-                      Match score
-                    </span>
-                    <span className="text-[11px]" style={{ color: "#8FD3A8", opacity: 0.7 }}>
-                      AI confidence
-                    </span>
-                  </div>
-                  <span className="text-2xl font-bold leading-none tabular-nums" style={{ color: "#8FD3A8" }}>
-                    {score}
-                    <span className="text-sm font-semibold">%</span>
-                  </span>
-                </div>
-              );
-
-            })()}
           </div>
           {/* Row 2 — capture context */}
           {(capturedAt || account || rack) && (
