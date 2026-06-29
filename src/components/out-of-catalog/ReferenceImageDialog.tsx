@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Upload, Trash2, Image as ImageIcon, Plus, Star } from "lucide-react";
+import { Sparkles, Upload, Trash2, Image as ImageIcon, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -87,12 +87,8 @@ export function ReferenceImageDialog({
     }
   };
 
-  const makePrimary = (idx: number) => {
-    if (idx === 0) return;
-    const next = [images[idx], ...images.filter((_, i) => i !== idx)];
-    setImages(next);
-    setActiveIdx(0);
-  };
+
+
 
   const canAdd = images.length < MAX_IMAGES;
   const activeImage = images[activeIdx] ?? null;
@@ -127,14 +123,6 @@ export function ReferenceImageDialog({
                   <span className="text-xs">No images yet</span>
                 </div>
               )}
-              {activeImage && activeIdx === 0 ? (
-                <span
-                  className="absolute left-2 top-2 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px]"
-                  style={{ background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }}
-                >
-                  <Star className="h-3 w-3" /> Primary
-                </span>
-              ) : null}
             </div>
 
             {/* Thumbs */}
@@ -150,27 +138,6 @@ export function ReferenceImageDialog({
                   onClick={() => setActiveIdx(i)}
                 >
                   <img src={src} alt={`ref ${i + 1}`} className="h-full w-full object-cover" />
-                  {i === 0 ? (
-                    <span
-                      className="absolute left-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded"
-                      style={{ background: "rgba(59,182,233,0.85)", color: "#0b1418" }}
-                      title="Primary"
-                    >
-                      <Star className="h-2.5 w-2.5" />
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        makePrimary(i);
-                      }}
-                      className="absolute left-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded bg-black/60 text-white/70 opacity-0 transition group-hover:opacity-100 hover:text-white"
-                      title="Set as primary"
-                    >
-                      <Star className="h-2.5 w-2.5" />
-                    </button>
-                  )}
                   <button
                     type="button"
                     onClick={(e) => {
@@ -208,7 +175,7 @@ export function ReferenceImageDialog({
             />
 
             <div className="flex items-center justify-between text-[11px] text-white/45">
-              <span>Click a thumb to preview · Star to set primary</span>
+              <span>Click a thumb to preview · First image is used as the default</span>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
