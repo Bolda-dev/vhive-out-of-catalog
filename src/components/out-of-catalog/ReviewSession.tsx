@@ -2238,28 +2238,6 @@ function GridReviewView({
           onSet={(ns) => onCaptureSetStatus?.(ns, cap.id)}
           onClear={() => onCaptureClearStatus?.(cap.id)}
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-md bg-black/55 text-white backdrop-blur transition hover:bg-black/75"
-              title="More actions"
-              aria-label="More actions"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[180px]">
-            <DropdownMenuItem onClick={() => onCaptureClearStatus?.(cap.id)}>
-              Re-review this image
-            </DropdownMenuItem>
-            {onResetAllApprovals && (
-              <DropdownMenuItem onClick={() => onResetAllApprovals()}>
-                Re-review all images
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     );
   };
