@@ -355,7 +355,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       if (e.key === "Backspace") {
         e.preventDefault();
         (document.activeElement as HTMLElement | null)?.blur?.();
-        if (phase === "approving") setStatus("rejected");
+        if (phase === "approving" && captureCount > 1) setStatus("rejected");
         return;
       }
 
