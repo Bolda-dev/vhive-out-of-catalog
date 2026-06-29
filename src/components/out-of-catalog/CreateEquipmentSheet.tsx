@@ -228,8 +228,8 @@ export function CreateEquipmentSheet({
             <button
               type="button"
               onClick={() => setImageDialogOpen(true)}
-              className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs transition hover:bg-white/[0.04]"
-              style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+              className="mt-2 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 text-xs font-medium transition hover:opacity-90"
+              style={{ background: "#3BB6E9", color: "#0b1418" }}
             >
               <Pencil className="h-3.5 w-3.5" />
               Edit images &amp; description
