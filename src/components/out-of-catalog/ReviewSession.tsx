@@ -233,9 +233,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     [captures, statusFor, confirmBind, allRejected],
   );
 
-  const skipSession = useCallback(() => {
-    onExit();
-  }, [onExit]);
+
+
 
 
   const markUnrecognized = useCallback(() => {
