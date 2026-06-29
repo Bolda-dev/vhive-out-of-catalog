@@ -123,12 +123,13 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(59,182,233,0.55); }
 
 
-/* Case transition: slide in from right with fade */
+/* Case transition: pronounced slide in from right with fade + blur */
 @keyframes case-enter {
-  0% { opacity: 0; transform: translateX(64px) scale(0.985); filter: blur(2px); }
-  60% { opacity: 1; filter: blur(0); }
+  0%   { opacity: 0; transform: translateX(180px) scale(0.96); filter: blur(6px); }
+  40%  { opacity: 1; }
+  70%  { transform: translateX(-10px) scale(1.005); filter: blur(0); }
   100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
 }
 .animate-case-enter {
-  animation: case-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: case-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
