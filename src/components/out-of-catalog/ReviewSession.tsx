@@ -1620,10 +1620,9 @@ function SessionComplete({
           You reviewed {total} pending {total === 1 ? "object" : "objects"}.
         </h1>
 
-        <div className="mt-6 grid grid-cols-4 gap-3">
+        <div className="mt-6 grid grid-cols-3 gap-3">
           {stat("Bound", counts.bound ?? 0, "#3BB6E9")}
           {stat("Added", counts.added ?? 0, "#8FBFA3")}
-          {stat("Skipped", counts.skipped ?? 0, "rgba(255,255,255,0.8)")}
           {stat("Unrecognized", counts.unrecognized ?? 0, "#C98A8A")}
         </div>
 
