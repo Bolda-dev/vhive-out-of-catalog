@@ -355,15 +355,6 @@ export function OutOfCatalogTable({
                 lineHeight: "21px",
               }}
             >
-              <td className="w-9 border-b border-border/60 px-2 py-2 align-middle">
-                <button
-                  type="button"
-                  aria-label="Expand row"
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-row-hover hover:text-foreground"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-              </td>
               {cols.map((col) => (
                 <td
                   key={col.id}
@@ -373,14 +364,19 @@ export function OutOfCatalogTable({
                 </td>
               ))}
               <td className="border-b border-border/60 px-3 py-2 text-right align-middle">
-                {row.hasLink ? null : <RowActions row={row} />}
+                <button
+                  type="button"
+                  className="inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-black transition-colors hover:bg-brand/90"
+                >
+                  Review this Case
+                </button>
               </td>
             </tr>
           ))}
           {rows.length === 0 && (
             <tr>
               <td
-                colSpan={cols.length + 2}
+                colSpan={cols.length + 1}
                 className="px-4 py-12 text-center text-sm text-muted-foreground"
               >
                 No entries match the current filters.
