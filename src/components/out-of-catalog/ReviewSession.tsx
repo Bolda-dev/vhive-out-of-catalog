@@ -392,11 +392,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         searchCatalog();
         return;
       }
-      if (e.key === "s" || e.key === "S") {
-        e.preventDefault();
-        skipSession();
-        return;
-      }
+
+
       if (e.key === "u" || e.key === "U") {
         e.preventDefault();
         markUnrecognized();
