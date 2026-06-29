@@ -20,7 +20,7 @@ export const ALL_OOC_COLUMNS: ColumnMeta[] = [
   { id: "detectedOn", label: "Detected on", sortable: true, minWidth: 180 },
   { id: "status", label: "Status", sortable: true, minWidth: 120 },
   { id: "equipmentType", label: "Equipment Type", sortable: true, minWidth: 220 },
-  { id: "confidence", label: "Confidence", sortable: true, minWidth: 140 },
+  
   { id: "manufacturer", label: "Manufacturer", sortable: true, minWidth: 150 },
   { id: "model", label: "Model", sortable: true, minWidth: 140 },
   { id: "instances", label: "Instances", sortable: true, minWidth: 110 },
