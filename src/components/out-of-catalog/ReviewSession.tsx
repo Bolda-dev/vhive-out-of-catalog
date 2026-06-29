@@ -1888,7 +1888,16 @@ function CatalogSearchPanel({
   onClose: () => void;
   onBind: (catalogId: string) => void;
 }) {
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ images: string[]; index: number } | null>(null);
+
+  const closePreview = useCallback(() => setPreview(null), []);
+  const stepPreview = useCallback((dir: -1 | 1) => {
+    setPreview((p) => {
+      if (!p) return p;
+      const n = p.images.length;
+      return { ...p, index: (p.index + dir + n) % n };
+    });
+  }, []);
 
   useEffect(() => {
     if (!preview) return;
@@ -1896,12 +1905,21 @@ function CatalogSearchPanel({
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
-        setPreview(null);
+        closePreview();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        e.stopPropagation();
+        stepPreview(1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        e.stopPropagation();
+        stepPreview(-1);
       }
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
-  }, [preview]);
+  }, [preview, closePreview, stepPreview]);
+
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
