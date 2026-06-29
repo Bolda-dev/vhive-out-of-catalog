@@ -1297,9 +1297,10 @@ function CaptureImagePanel({
                     className="inline-flex shrink-0 items-center gap-1 text-[11px] text-[#3BB6E9] hover:underline"
                     title="Open rack"
                   >
-                    <ExternalLink className="h-3 w-3" />
                     <span className="max-w-[280px] truncate">{rack}</span>
+                    <ExternalLink className="h-3 w-3" />
                   </button>
+
                 </>
               )}
             </div>
