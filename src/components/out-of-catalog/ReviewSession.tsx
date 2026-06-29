@@ -2112,11 +2112,11 @@ function GridReviewView({
   onCaptureClearStatus,
   onResetAllApprovals,
 }: {
-  captures: NonNullable<CaptureImagePanelProps["captures"]>;
-  statusFor: NonNullable<CaptureImagePanelProps["statusFor"]>;
-  onCaptureSetStatus?: CaptureImagePanelProps["onCaptureSetStatus"];
-  onCaptureClearStatus?: CaptureImagePanelProps["onCaptureClearStatus"];
-  onResetAllApprovals?: CaptureImagePanelProps["onResetAllApprovals"];
+  captures: import("@/data/outOfCatalogTypes").OocCapture[];
+  statusFor: (capId: string) => ImgStatus;
+  onCaptureSetStatus?: (s: ImgStatus, capId: string) => void;
+  onCaptureClearStatus?: (capId: string) => void;
+  onResetAllApprovals?: () => void;
 }) {
   const [rejectedOpen, setRejectedOpen] = useState(false);
   const inGroup = captures.filter((c) => statusFor(c.id) !== "rejected");
