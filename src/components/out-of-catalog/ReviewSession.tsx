@@ -629,7 +629,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     </button>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent align="end" className="w-auto min-w-[240px]">
+                  <DropdownMenuContent align="end" className="w-auto min-w-[240px] border border-border bg-[#1E1E1E] text-foreground">
                     <DropdownMenuItem
                       onClick={addAsNew}
                       disabled={phase !== "reviewing"}
