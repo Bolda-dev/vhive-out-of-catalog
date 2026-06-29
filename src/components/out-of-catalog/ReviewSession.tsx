@@ -2171,19 +2171,14 @@ function GridReviewView({
         <div className="grid grid-cols-2 gap-3">{inGroup.map(renderCard)}</div>
 
         {rejected.length > 0 && (
-          <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.02]">
+          <div className="mt-6">
             <button
               type="button"
               onClick={() => setRejectedOpen((v) => !v)}
-              className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm text-[#E0E0E0] transition hover:bg-white/[0.04]"
+              className="group flex w-full items-center gap-3 py-2 text-left text-sm text-[#E0E0E0]"
               aria-expanded={rejectedOpen}
             >
-              <span className="flex items-center gap-2">
-                {rejectedOpen ? (
-                  <ChevronDown className="h-4 w-4 opacity-70" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 opacity-70" />
-                )}
+              <span className="flex shrink-0 items-center gap-2">
                 <span
                   className="inline-block h-2 w-2 rounded-full"
                   style={{ backgroundColor: "#d97a72" }}
@@ -2193,12 +2188,15 @@ function GridReviewView({
                   {rejected.length} image{rejected.length === 1 ? "" : "s"}
                 </span>
               </span>
-              <span className="text-xs text-white/40">
-                {rejectedOpen ? "Hide" : "Expand to change your mind"}
-              </span>
+              <span className="h-px flex-1 bg-white/10" />
+              <ChevronRight
+                className={`h-4 w-4 shrink-0 text-white/60 transition-transform ${
+                  rejectedOpen ? "rotate-90" : ""
+                }`}
+              />
             </button>
             {rejectedOpen && (
-              <div className="grid grid-cols-2 gap-3 p-3 pt-2">{rejected.map(renderCard)}</div>
+              <div className="mt-3 grid grid-cols-2 gap-3">{rejected.map(renderCard)}</div>
             )}
           </div>
         )}
