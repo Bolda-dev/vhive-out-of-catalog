@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { cn } from "@/lib/utils";
 import { RowActions } from "./RowActions";
-import { ConfidenceBadge } from "./ConfidenceBadge";
+
 
 export type SortDir = "asc" | "desc";
 export type SortState = { colId: string; dir: SortDir } | null;
@@ -20,7 +20,7 @@ export const ALL_OOC_COLUMNS: ColumnMeta[] = [
   { id: "detectedOn", label: "Detected on", sortable: true, minWidth: 180 },
   { id: "status", label: "Status", sortable: true, minWidth: 120 },
   { id: "equipmentType", label: "Equipment Type", sortable: true, minWidth: 220 },
-  { id: "confidence", label: "Confidence", sortable: true, minWidth: 140 },
+  
   { id: "manufacturer", label: "Manufacturer", sortable: true, minWidth: 150 },
   { id: "model", label: "Model", sortable: true, minWidth: 140 },
   { id: "instances", label: "Instances", sortable: true, minWidth: 110 },
@@ -74,9 +74,6 @@ function StatusCell({ status }: { status: OocStatus }) {
   return <span style={{ color }}>{status}</span>;
 }
 
-function ConfidenceCell({ value }: { value: number }) {
-  return <ConfidenceBadge value={value} />;
-}
 
 function EquipmentTypeCell({ row }: { row: OocRow }) {
   return <span className="text-foreground">{row.equipmentType}</span>;
@@ -180,8 +177,6 @@ export function OutOfCatalogTable({
         return <StatusCell status={row.status} />;
       case "equipmentType":
         return <EquipmentTypeCell row={row} />;
-      case "confidence":
-        return <ConfidenceCell value={row.confidence} />;
       case "manufacturer":
         return <span className="text-foreground">{row.manufacturer}</span>;
       case "model":
