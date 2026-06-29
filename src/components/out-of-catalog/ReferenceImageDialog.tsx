@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Upload, Trash2, Image as ImageIcon } from "lucide-react";
+import { Sparkles, Upload, Trash2, Image as ImageIcon, Plus, Star } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -7,6 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+const MAX_IMAGES = 8;
 
 const MOCK_DESCRIPTIONS = [
   "Rack-mounted Fortinet firewall, 1U chassis with dual redundant power supplies, front-facing console port and 8 SFP+ uplinks. Status LEDs all green.",
@@ -17,34 +19,35 @@ const MOCK_DESCRIPTIONS = [
 export interface ReferenceImageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialImage: string | null;
+  initialImages: string[];
   initialDescription: string;
-  onConfirm: (image: string | null, description: string) => void;
+  onConfirm: (images: string[], description: string) => void;
 }
 
 export function ReferenceImageDialog({
   open,
   onOpenChange,
-  initialImage,
+  initialImages,
   initialDescription,
   onConfirm,
 }: ReferenceImageDialogProps) {
-  const [image, setImage] = useState<string | null>(initialImage);
+  const [images, setImages] = useState<string[]>(initialImages);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [description, setDescription] = useState(initialDescription);
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
-      setImage(initialImage);
+      setImages(initialImages);
+      setActiveIdx(0);
       setDescription(initialDescription);
-      if (initialImage && !initialDescription) generate(initialImage);
+      if (initialImages.length > 0 && !initialDescription) generate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const generate = (src: string | null) => {
-    if (!src) return;
+  const generate = () => {
     setLoading(true);
     window.setTimeout(() => {
       const next =
@@ -55,18 +58,44 @@ export function ReferenceImageDialog({
   };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setImage(url);
-    setDescription("");
-    generate(url);
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    const remaining = MAX_IMAGES - images.length;
+    const accepted = files.slice(0, remaining).map((f) => URL.createObjectURL(f));
+    const wasEmpty = images.length === 0;
+    const next = [...images, ...accepted];
+    setImages(next);
+    if (wasEmpty) {
+      setActiveIdx(0);
+      setDescription("");
+      generate();
+    }
+    // reset so same file can be re-picked
+    if (fileRef.current) fileRef.current.value = "";
   };
 
-  const handleRemove = () => {
-    setImage(null);
-    setDescription("");
+  const handleRemove = (idx: number) => {
+    const next = images.filter((_, i) => i !== idx);
+    setImages(next);
+    if (next.length === 0) {
+      setActiveIdx(0);
+      setDescription("");
+    } else if (activeIdx >= next.length) {
+      setActiveIdx(next.length - 1);
+    } else if (idx < activeIdx) {
+      setActiveIdx(activeIdx - 1);
+    }
   };
+
+  const makePrimary = (idx: number) => {
+    if (idx === 0) return;
+    const next = [images[idx], ...images.filter((_, i) => i !== idx)];
+    setImages(next);
+    setActiveIdx(0);
+  };
+
+  const canAdd = images.length < MAX_IMAGES;
+  const activeImage = images[activeIdx] ?? null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,8 +104,11 @@ export function ReferenceImageDialog({
         style={{ background: "#1E1E1E", fontFamily: "Roboto, sans-serif" }}
       >
         <DialogHeader className="border-b border-white/10 px-5 py-3">
-          <DialogTitle className="text-sm font-medium">
-            Reference image
+          <DialogTitle className="flex items-center justify-between text-sm font-medium">
+            <span>Reference images</span>
+            <span className="text-xs font-normal text-white/50">
+              {images.length} / {MAX_IMAGES}
+            </span>
           </DialogTitle>
         </DialogHeader>
 
@@ -87,42 +119,106 @@ export function ReferenceImageDialog({
               className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md"
               style={{ background: "#121212" }}
             >
-              {image ? (
-                <img src={image} alt="reference" className="h-full w-full object-cover" />
+              {activeImage ? (
+                <img src={activeImage} alt="reference" className="h-full w-full object-cover" />
               ) : (
                 <div className="flex flex-col items-center gap-2 text-white/40">
                   <ImageIcon className="h-10 w-10" />
-                  <span className="text-xs">No image</span>
+                  <span className="text-xs">No images yet</span>
                 </div>
               )}
+              {activeImage && activeIdx === 0 ? (
+                <span
+                  className="absolute left-2 top-2 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px]"
+                  style={{ background: "rgba(59,182,233,0.15)", color: "#3BB6E9" }}
+                >
+                  <Star className="h-3 w-3" /> Primary
+                </span>
+              ) : null}
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* Thumbs */}
+            <div className="grid grid-cols-4 gap-2">
+              {images.map((src, i) => (
+                <div
+                  key={src + i}
+                  className="group relative aspect-square cursor-pointer overflow-hidden rounded-md border transition"
+                  style={{
+                    borderColor: i === activeIdx ? "#3BB6E9" : "rgba(255,255,255,0.10)",
+                    background: "#121212",
+                  }}
+                  onClick={() => setActiveIdx(i)}
+                >
+                  <img src={src} alt={`ref ${i + 1}`} className="h-full w-full object-cover" />
+                  {i === 0 ? (
+                    <span
+                      className="absolute left-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded"
+                      style={{ background: "rgba(59,182,233,0.85)", color: "#0b1418" }}
+                      title="Primary"
+                    >
+                      <Star className="h-2.5 w-2.5" />
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        makePrimary(i);
+                      }}
+                      className="absolute left-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded bg-black/60 text-white/70 opacity-0 transition group-hover:opacity-100 hover:text-white"
+                      title="Set as primary"
+                    >
+                      <Star className="h-2.5 w-2.5" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(i);
+                    }}
+                    className="absolute right-1 top-1 inline-flex h-4 w-4 items-center justify-center rounded bg-black/60 opacity-0 transition group-hover:opacity-100"
+                    style={{ color: "#d97a72" }}
+                    title="Remove"
+                  >
+                    <Trash2 className="h-2.5 w-2.5" />
+                  </button>
+                </div>
+              ))}
+              {canAdd ? (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex aspect-square items-center justify-center rounded-md border border-dashed text-white/50 transition hover:border-[#3BB6E9] hover:text-[#3BB6E9]"
+                  style={{ borderColor: "rgba(255,255,255,0.20)", background: "#121212" }}
+                  title="Add images"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              ) : null}
+            </div>
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleUpload}
+            />
+
+            <div className="flex items-center justify-between text-[11px] text-white/45">
+              <span>Click a thumb to preview · Star to set primary</span>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-md border px-3 text-sm transition hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
+                disabled={!canAdd}
+                className="inline-flex items-center gap-1 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ color: "#E0E0E0" }}
               >
-                <Upload className="h-4 w-4" />
-                Upload
+                <Upload className="h-3 w-3" />
+                Upload more
               </button>
-              <button
-                type="button"
-                onClick={handleRemove}
-                disabled={!image}
-                className="inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm transition hover:bg-[#d97a72]/10 disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ borderColor: "#d97a72", color: "#d97a72" }}
-              >
-                <Trash2 className="h-4 w-4" />
-                Remove
-              </button>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleUpload}
-              />
             </div>
           </div>
 
@@ -162,16 +258,16 @@ export function ReferenceImageDialog({
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder={image ? "Describe what's in the image…" : "Upload an image to generate a description"}
+                placeholder={images.length > 0 ? "Describe what's in the images…" : "Upload images to generate a description"}
                 className="min-h-[220px] flex-1 resize-none rounded-md border border-white/10 p-3 text-sm leading-relaxed outline-none transition focus:border-[#3BB6E9]"
                 style={{ background: "#121212", color: "rgba(255,255,255,0.87)" }}
               />
             )}
 
-            {!loading && image ? (
+            {!loading && images.length > 0 ? (
               <button
                 type="button"
-                onClick={() => generate(image)}
+                onClick={generate}
                 className="self-start text-xs underline-offset-2 hover:underline"
                 style={{ color: "#3BB6E9" }}
               >
@@ -193,7 +289,7 @@ export function ReferenceImageDialog({
           <button
             type="button"
             onClick={() => {
-              onConfirm(image, description);
+              onConfirm(images, description);
               onOpenChange(false);
             }}
             disabled={loading}
