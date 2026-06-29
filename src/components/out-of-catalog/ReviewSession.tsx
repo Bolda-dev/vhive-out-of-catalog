@@ -73,7 +73,7 @@ function ZoomPanImage({ src, resetKey, className, objectFit = "contain" }: {
     setZoom((z) => Math.max(1, Math.min(6, z + delta * z)));
   };
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 1) return;
+    if (e.button !== 0) return;
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
@@ -95,8 +95,8 @@ function ZoomPanImage({ src, resetKey, className, objectFit = "contain" }: {
       onPointerMove={onPointerMove}
       onPointerUp={endPan}
       onPointerLeave={endPan}
-      onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
-      style={{ cursor: panRef.current ? "grabbing" : "default" }}
+      style={{ cursor: panRef.current ? "grabbing" : zoom > 1 ? "grab" : "default" }}
+    
     >
       <img
         src={src}
@@ -1425,8 +1425,8 @@ function CaptureImagePanel({
   };
 
   const onPanPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Middle mouse button (button === 1) initiates pan
-    if (e.button !== 1) return;
+    // Left-click pan, but only when not editing the crop rectangle
+    if (e.button !== 0 || editing) return;
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
@@ -1444,10 +1444,15 @@ function CaptureImagePanel({
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (dragCorner === null) return;
     const bounds = e.currentTarget.getBoundingClientRect();
-    const px = Math.max(2, Math.min(98, ((e.clientX - bounds.left) / bounds.width) * 100));
-    const py = Math.max(2, Math.min(98, ((e.clientY - bounds.top) / bounds.height) * 100));
+    // Inverse-transform mouse position into the unscaled image coordinate space
+    // (image is transformed with translate(pan) scale(zoom), origin 50% 50%)
+    const cx = bounds.width / 2;
+    const cy = bounds.height / 2;
+    const localX = (e.clientX - bounds.left - cx - pan.x) / zoom + cx;
+    const localY = (e.clientY - bounds.top - cy - pan.y) / zoom + cy;
+    const px = Math.max(0, Math.min(100, (localX / bounds.width) * 100));
+    const py = Math.max(0, Math.min(100, (localY / bounds.height) * 100));
     setRect((prev) => {
-      // Opposite corner stays fixed. Corners: 0=TL, 1=TR, 2=BR, 3=BL
       const left = prev.x;
       const right = prev.x + prev.w;
       const top = prev.y;
@@ -1573,15 +1578,14 @@ function CaptureImagePanel({
             onPointerLeave={() => { setDragCorner(null); endPan(); }}
             onPointerDown={onPanPointerDown}
             onWheel={onWheelZoom}
-            onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
-            style={{ cursor: panRef.current ? "grabbing" : "default" }}
+            style={{ cursor: panRef.current ? "grabbing" : editing ? "default" : zoom > 1 ? "grab" : "default" }}
           >
             {src ? (
               <img
                 src={src}
                 alt=""
                 className="h-full w-full object-cover select-none"
-                style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "50% 48%" }}
+                style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "50% 50%" }}
                 draggable={false}
               />
 
@@ -1589,45 +1593,54 @@ function CaptureImagePanel({
               <div className="text-sm text-muted-foreground">No capture</div>
             )}
 
-            {/* Rectangle overlay */}
+            {/* Overlay layer — transforms with the image so the crop stays locked to pixels */}
             {src && (
-              <svg
-                className="pointer-events-none absolute inset-0 h-full w-full"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "50% 50%" }}
               >
-                <rect
-                  x={rect.x} y={rect.y} width={rect.w} height={rect.h}
-                  fill="none"
-                  stroke="rgba(0,0,0,0.85)"
-                  vectorEffect="non-scaling-stroke"
-                  style={{ strokeWidth: 4 } as React.CSSProperties}
-                />
-                <rect
-                  x={rect.x} y={rect.y} width={rect.w} height={rect.h}
-                  fill="rgba(59,182,233,0.08)"
-                  stroke="#3BB6E9"
-                  vectorEffect="non-scaling-stroke"
-                  style={{ strokeWidth: 2 } as React.CSSProperties}
-                />
-              </svg>
-            )}
-
-            {/* Corner handles (editable) */}
-            {src && editing && (
-              <div className="absolute inset-0">
-                {corners.map((c) => (
-                  <div
-                    key={c.id}
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-                      setDragCorner(c.id);
-                    }}
-                    className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-white bg-white shadow active:cursor-grabbing"
-                    style={{ left: `${c.x}%`, top: `${c.y}%` }}
+                <svg
+                  className="absolute inset-0 h-full w-full"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                >
+                  <rect
+                    x={rect.x} y={rect.y} width={rect.w} height={rect.h}
+                    fill="none"
+                    stroke="rgba(0,0,0,0.85)"
+                    vectorEffect="non-scaling-stroke"
+                    style={{ strokeWidth: 4 } as React.CSSProperties}
                   />
-                ))}
+                  <rect
+                    x={rect.x} y={rect.y} width={rect.w} height={rect.h}
+                    fill="rgba(59,182,233,0.08)"
+                    stroke="#3BB6E9"
+                    vectorEffect="non-scaling-stroke"
+                    style={{ strokeWidth: 2 } as React.CSSProperties}
+                  />
+                </svg>
+
+                {editing && (
+                  <div className="pointer-events-auto absolute inset-0">
+                    {corners.map((c) => (
+                      <div
+                        key={c.id}
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                          setDragCorner(c.id);
+                        }}
+                        className="absolute h-3.5 w-3.5 cursor-grab rounded-full border-2 border-white bg-white shadow active:cursor-grabbing"
+                        style={{
+                          left: `${c.x}%`,
+                          top: `${c.y}%`,
+                          transform: `translate(-50%, -50%) scale(${1 / zoom})`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
