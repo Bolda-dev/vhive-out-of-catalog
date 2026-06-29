@@ -1966,31 +1966,31 @@ function CatalogSearchPanel({
           </tr>
           <tr>
             <th
-              style={{ width: 72, minWidth: 72 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 88, minWidth: 88 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Image
             </th>
             <th
-              style={{ width: 96, minWidth: 96 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 120, minWidth: 120 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Type
             </th>
             <th
-              style={{ width: 110, minWidth: 110 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              style={{ width: 140, minWidth: 140 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Manufacturer
             </th>
             <th
-              className="border-b border-border bg-[#121212] px-2 py-3 text-left text-sm font-semibold text-white"
+              className="border-b border-border bg-[#121212] px-4 py-3 text-left text-sm font-semibold text-white"
             >
               Model
             </th>
             <th
-              style={{ width: 88, minWidth: 88 }}
-              className="border-b border-border bg-[#121212] px-2 py-3 text-right text-sm font-semibold text-white"
+              style={{ width: 110, minWidth: 110 }}
+              className="border-b border-border bg-[#121212] px-4 py-3 text-right text-sm font-semibold text-white"
             >
               Actions
             </th>
@@ -2016,7 +2016,7 @@ function CatalogSearchPanel({
                   lineHeight: "21px",
                 }}
               >
-                <td className="border-b border-border/60 px-2 py-2 align-middle">
+                <td className="border-b border-border/60 px-4 py-2 align-middle">
                   <button
                     type="button"
                     onClick={() => setPreview({ images: imagesFor(item), index: 0 })}
@@ -2033,21 +2033,16 @@ function CatalogSearchPanel({
                     </span>
                   </button>
                 </td>
-                <td className="truncate border-b border-border/60 px-2 py-3 align-middle text-[13px]">
+                <td className="truncate border-b border-border/60 px-4 py-3 align-middle text-[13px]">
                   {item.type}
                 </td>
-                <td className="truncate border-b border-border/60 px-2 py-3 align-middle">
+                <td className="truncate border-b border-border/60 px-4 py-3 align-middle">
                   {item.manufacturer}
                 </td>
-                <td className="border-b border-border/60 px-2 py-3 align-middle">
-                  <div className="min-w-0">
-                    <div className="truncate">{item.model}</div>
-                    <div className="truncate text-[12px] text-muted-foreground">
-                      {item.classification}
-                    </div>
-                  </div>
+                <td className="border-b border-border/60 px-4 py-3 align-middle">
+                  <div className="truncate">{item.model}</div>
                 </td>
-                <td className="border-b border-border/60 px-2 py-2 text-right align-middle">
+                <td className="border-b border-border/60 px-4 py-2 text-right align-middle">
                   <button
                     type="button"
                     onClick={() => onBind(item.id)}
