@@ -296,6 +296,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       }
       if (e.key === "Enter") {
         e.preventDefault();
+        (document.activeElement as HTMLElement | null)?.blur?.();
         if (phase === "reviewing") {
           if (selected) setPendingBindId(selected.item.id);
         } else {
@@ -305,9 +306,11 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       }
       if (e.key === "Backspace") {
         e.preventDefault();
+        (document.activeElement as HTMLElement | null)?.blur?.();
         if (phase === "approving") setStatus("rejected");
         return;
       }
+
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         if (captureCount > 0) setCaptureIndex((i) => (i - 1 + captureCount) % captureCount);
