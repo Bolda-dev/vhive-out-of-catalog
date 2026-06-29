@@ -1836,7 +1836,7 @@ function NoSuggestionsEmpty({
         <EmptyAction
           onClick={onUnrecognize}
           icon={<MarkUnrecognizedIcon className="h-6 w-6" />}
-          title="Mark as unrecognized"
+          title="Cannot Identify"
           subtitle="Send for human review"
           shortcut={<Kbd>U</Kbd>}
         />
