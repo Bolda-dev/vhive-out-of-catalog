@@ -413,7 +413,6 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     searchCatalog,
     selected,
     setStatus,
-    skipSession,
     suggestionCount,
   ]);
 
