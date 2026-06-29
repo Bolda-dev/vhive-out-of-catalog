@@ -234,9 +234,8 @@ export function CreateEquipmentSheet({
               <Pencil className="h-3.5 w-3.5" />
               Edit images &amp; description
             </button>
-
-            </button>
           </div>
+
 
           {/* Fields */}
           <Field label="Category *">
