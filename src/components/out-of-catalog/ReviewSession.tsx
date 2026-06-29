@@ -2382,7 +2382,30 @@ function GridReviewView({
         className="relative overflow-hidden rounded-lg border-2"
         style={{ borderColor }}
       >
-        <img src={cap.imageUrl} alt="" className="aspect-[4/3] w-full object-cover" />
+        <div className="relative">
+          <img src={cap.imageUrl} alt="" className="aspect-[4/3] w-full object-cover" />
+          {/* Read-only crop rectangle overlay */}
+          <svg
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <rect
+              x={DEFAULT_RECT.x} y={DEFAULT_RECT.y} width={DEFAULT_RECT.w} height={DEFAULT_RECT.h}
+              fill="none"
+              stroke="rgba(0,0,0,0.85)"
+              vectorEffect="non-scaling-stroke"
+              style={{ strokeWidth: 3 } as React.CSSProperties}
+            />
+            <rect
+              x={DEFAULT_RECT.x} y={DEFAULT_RECT.y} width={DEFAULT_RECT.w} height={DEFAULT_RECT.h}
+              fill="rgba(59,182,233,0.08)"
+              stroke="#3BB6E9"
+              vectorEffect="non-scaling-stroke"
+              style={{ strokeWidth: 1.5 } as React.CSSProperties}
+            />
+          </svg>
+        </div>
         <StatusToggle
           status={s}
           size="md"
