@@ -143,7 +143,7 @@ export function CreateEquipmentSheet({
       <SheetContent
         side="right"
         className="flex h-full w-full max-w-[440px] flex-col gap-0 border-l border-white/10 p-0 sm:max-w-[440px]"
-        style={{ background: "#1E1E1E", fontFamily: "Roboto, sans-serif" }}
+        style={{ background: "#0d0d0d", fontFamily: "Roboto, sans-serif" }}
       >
         {/* Header */}
         <SheetHeader className="border-b border-white/10 px-4 py-3">
