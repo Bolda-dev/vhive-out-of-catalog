@@ -2007,7 +2007,7 @@ function CatalogSearchPanel({
                 <td className="border-b border-border/60 px-2 py-2 align-middle">
                   <button
                     type="button"
-                    onClick={() => setPreview(item.referenceImageUrl)}
+                    onClick={() => setPreview({ images: imagesFor(item), index: 0 })}
                     className="group relative h-14 w-14 overflow-hidden rounded-md border border-border bg-background transition hover:border-[#3BB6E9]"
                     title="Click to enlarge"
                   >
