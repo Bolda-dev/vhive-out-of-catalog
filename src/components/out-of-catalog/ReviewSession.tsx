@@ -587,7 +587,8 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
           {/* Compare images + vertical suggestion rail */}
           <section
-            className="grid min-h-0 flex-1 gap-3 px-6 pt-1 pb-0"
+            key={`case-${currentIndex}`}
+            className="grid min-h-0 flex-1 gap-3 px-6 pt-1 pb-0 animate-slide-in-right"
             style={{
               gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
             }}
