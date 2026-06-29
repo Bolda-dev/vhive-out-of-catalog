@@ -807,16 +807,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            {(() => {
-              const rejectedCount = captures.filter((c) => statusFor(c.id) === "rejected").length;
-              return (
-                <AlertDialogTitle>
-                  {rejectedCount > 0
-                    ? "Some images aren't part of this group"
-                    : "Merge group into catalog"}
-                </AlertDialogTitle>
-              );
-            })()}
+            <AlertDialogTitle>Progress Summary</AlertDialogTitle>
             <AlertDialogDescription asChild>
               {(() => {
                 const it = mockCatalog.find((c) => c.id === pendingBindId);
@@ -824,23 +815,20 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                 const rejectedCount = captures.filter((c) => statusFor(c.id) === "rejected").length;
                 const target = it ? `${it.manufacturer} · ${it.model}` : "the selected catalog item";
                 return (
-                  <div className="space-y-3 text-sm text-muted-foreground">
-                    <p>
+                  <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5 marker:text-muted-foreground/60">
+                    <li>
                       <span className="font-medium text-foreground">{approvedCount}</span>{" "}
-                      approved image{approvedCount === 1 ? "" : "s"} will be merged into the
-                      catalog as{" "}
+                      approved image{approvedCount === 1 ? "" : "s"} will be bound to{" "}
                       <span className="font-medium text-foreground">{target}</span>.
-                    </p>
+                    </li>
                     {rejectedCount > 0 && (
-                      <div className="rounded-md border border-[#F2D066]/30 bg-[#F2D066]/10 px-3 py-2 text-foreground">
-                        <span className="font-medium" style={{ color: "#F2D066" }}>
-                          {rejectedCount} image{rejectedCount === 1 ? "" : "s"}
-                        </span>{" "}
-                        marked as <span className="font-medium">not part of the group</span> will
-                        return to the table as a separate group for later review.
-                      </div>
+                      <li>
+                        <span className="font-medium text-foreground">{rejectedCount}</span>{" "}
+                        image{rejectedCount === 1 ? "" : "s"} marked as not part of the group will
+                        go back to the table as a separate group for later review.
+                      </li>
                     )}
-                  </div>
+                  </ul>
                 );
               })()}
             </AlertDialogDescription>
