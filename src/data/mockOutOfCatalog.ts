@@ -74,7 +74,7 @@ const seeds: Seed[] = [
     rackUnits: "12",
     account: "Verizon",
     hasLink: false,
-    captureCount: 3,
+    captureCount: 1,
     location: "DC-East / Hall 2",
     surveyBase: "SVY-2026-06-A",
     confidence: 92,
