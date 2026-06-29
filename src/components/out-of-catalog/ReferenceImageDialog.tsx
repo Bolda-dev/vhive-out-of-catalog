@@ -87,12 +87,8 @@ export function ReferenceImageDialog({
     }
   };
 
-  const makePrimary = (idx: number) => {
-    if (idx === 0) return;
-    const next = [images[idx], ...images.filter((_, i) => i !== idx)];
-    setImages(next);
-    setActiveIdx(0);
-  };
+
+
 
   const canAdd = images.length < MAX_IMAGES;
   const activeImage = images[activeIdx] ?? null;
