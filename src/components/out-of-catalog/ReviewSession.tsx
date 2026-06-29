@@ -428,7 +428,18 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         <div className="flex min-h-0 flex-1 flex-col">
           {/* Exit session bar */}
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 pt-0 pb-1">
-            <h1 className="text-base font-medium text-foreground">Review Session</h1>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onExit}
+                aria-label="Exit session"
+                title="Exit session"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#E0E0E0] transition-colors hover:bg-white/[0.06]"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <h1 className="text-base font-medium text-foreground">Review Session</h1>
+            </div>
             <div className="flex items-center gap-2">
               <div
                 className={`flex h-9 items-center overflow-hidden rounded-md border transition-[width,border-color,background-color,opacity] duration-300 ease-out ${
@@ -557,17 +568,6 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
 
 
-              <span className="mx-1 h-6 w-px bg-white/10" />
-              <button
-                type="button"
-                onClick={onExit}
-                className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-normal transition-colors hover:bg-white/[0.04]"
-                style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
-                title="Exit session"
-              >
-                <X className="h-4 w-4" style={{ color: "#E0E0E0" }} />
-                Exit session
-              </button>
             </div>
           </div>
 
