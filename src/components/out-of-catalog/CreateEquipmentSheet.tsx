@@ -30,6 +30,8 @@ export interface CreateEquipmentPayload {
   powerW: string;
   thermalBtu: string;
   referenceImage: string | null;
+  referenceImages: string[];
+
   referenceDescription: string;
 }
 
@@ -88,13 +90,16 @@ export function CreateEquipmentSheet({
   const [depthM, setDepthM] = useState("");
   const [powerW, setPowerW] = useState("");
   const [thermalBtu, setThermalBtu] = useState("");
-  const [referenceImage, setReferenceImage] = useState<string | null>(defaultImage);
+  const [referenceImages, setReferenceImages] = useState<string[]>(
+    defaultImage ? [defaultImage] : [],
+  );
   const [referenceDescription, setReferenceDescription] = useState("");
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (open) setReferenceImage(defaultImage);
+    if (open) setReferenceImages(defaultImage ? [defaultImage] : []);
   }, [open, defaultImage]);
+
 
   const manufacturerNotFound =
     manufacturer.trim().length > 0 &&
@@ -126,7 +131,9 @@ export function CreateEquipmentSheet({
       depthM,
       powerW,
       thermalBtu,
-      referenceImage,
+      referenceImage: referenceImages[0] ?? null,
+      referenceImages,
+
       referenceDescription,
     });
   };
@@ -172,25 +179,38 @@ export function CreateEquipmentSheet({
             </div>
           ) : null}
 
-          {/* Reference image + description (read-only) */}
+          {/* Reference images + description (read-only) */}
           <div className="mb-4">
-            <div style={labelStyle} className="mb-1.5">
-              Reference image
+            <div style={labelStyle} className="mb-1.5 flex items-center justify-between">
+              <span>Reference images</span>
+              <span className="text-[11px] text-white/40">
+                {referenceImages.length} / 8
+              </span>
             </div>
             <div className="flex gap-3">
-              <div
-                className="relative flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10"
-                style={{ background: "#121212" }}
-              >
-                {referenceImage ? (
-                  <img
-                    src={referenceImage}
-                    alt="reference"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <ImageIcon className="h-6 w-6 text-white/30" />
-                )}
+              <div className="flex h-32 w-32 shrink-0 flex-col gap-1">
+                <div
+                  className="relative flex flex-1 items-center justify-center overflow-hidden rounded-md border border-white/10"
+                  style={{ background: "#121212" }}
+                >
+                  {referenceImages[0] ? (
+                    <img
+                      src={referenceImages[0]}
+                      alt="primary reference"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="h-6 w-6 text-white/30" />
+                  )}
+                  {referenceImages.length > 1 ? (
+                    <span
+                      className="absolute bottom-1 right-1 rounded px-1.5 py-0.5 text-[10px]"
+                      style={{ background: "rgba(0,0,0,0.65)", color: "#E0E0E0" }}
+                    >
+                      +{referenceImages.length - 1}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div
                 className="flex-1 overflow-y-auto rounded-md border border-white/10 p-2.5 text-xs leading-relaxed"
@@ -212,9 +232,10 @@ export function CreateEquipmentSheet({
               style={{ borderColor: "#E0E0E0", color: "#E0E0E0" }}
             >
               <Pencil className="h-3.5 w-3.5" />
-              Edit image &amp; description
+              Edit images &amp; description
             </button>
           </div>
+
 
           {/* Fields */}
           <Field label="Category *">
@@ -320,12 +341,13 @@ export function CreateEquipmentSheet({
         <ReferenceImageDialog
           open={imageDialogOpen}
           onOpenChange={setImageDialogOpen}
-          initialImage={referenceImage}
+          initialImages={referenceImages}
           initialDescription={referenceDescription}
-          onConfirm={(img, desc) => {
-            setReferenceImage(img);
+          onConfirm={(imgs, desc) => {
+            setReferenceImages(imgs);
             setReferenceDescription(desc);
           }}
+
         />
       </SheetContent>
     </Sheet>
