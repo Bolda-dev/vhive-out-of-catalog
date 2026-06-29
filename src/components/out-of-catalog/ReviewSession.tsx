@@ -736,10 +736,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                             <div className="flex flex-1 flex-col gap-1 px-2.5 py-2">
                               <div className="flex items-center justify-between gap-2">
                                 <span
-                                  className="font-mono text-[10px] text-muted-foreground"
-                                  title={s.item.id}
+                                  className="text-[10px] uppercase tracking-wide text-muted-foreground"
+                                  title={s.item.type}
                                 >
-                                  #{s.item.id}
+                                  {s.item.type}
                                 </span>
                                 <MatchScoreBadge score={s.score} />
                               </div>
