@@ -506,11 +506,17 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-auto min-w-[240px]">
-                    <DropdownMenuItem onClick={addAsNew} className="whitespace-nowrap">
+                    <DropdownMenuItem
+                      onClick={addAsNew}
+                      disabled={phase !== "reviewing"}
+                      className="whitespace-nowrap"
+                      title={phase !== "reviewing" ? "Approve or reject every captured image first" : undefined}
+                    >
                       <AddNewBindIcon className="mr-2 h-4 w-4 shrink-0" />
                       <span className="flex-1 whitespace-nowrap">New equipment</span>
                       <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">Ctrl+Enter</span>
                     </DropdownMenuItem>
+
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
