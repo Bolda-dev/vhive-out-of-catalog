@@ -161,7 +161,7 @@ export function CreateEquipmentSheet({
         </SheetHeader>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="custom-scrollbar flex-1 overflow-y-auto px-4 py-4">
           {hasRejected ? (
             <div
               className="mb-4 flex items-start gap-2 rounded-md border px-3 py-2 text-xs"
@@ -184,7 +184,7 @@ export function CreateEquipmentSheet({
             <div style={labelStyle} className="mb-1.5 flex items-center justify-between">
               <span>Reference images</span>
               <span className="text-[11px] text-white/40">
-                {referenceImages.length} / 8
+                {referenceImages.length}
               </span>
             </div>
             <div className="flex gap-3">
@@ -213,7 +213,7 @@ export function CreateEquipmentSheet({
                 </div>
               </div>
               <div
-                className="flex-1 overflow-y-auto rounded-md border border-white/10 p-2.5 text-xs leading-relaxed"
+                className="custom-scrollbar flex-1 overflow-y-auto rounded-md border border-white/10 p-2.5 text-xs leading-relaxed"
                 style={{
                   background: "#121212",
                   color: referenceDescription

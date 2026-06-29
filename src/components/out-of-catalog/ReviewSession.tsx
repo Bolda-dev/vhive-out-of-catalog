@@ -1773,7 +1773,7 @@ function NoSuggestionsEmpty({
   canRecreate: boolean;
 }) {
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-stretch justify-center overflow-y-auto p-4">
+    <div className="custom-scrollbar flex min-h-0 min-w-0 flex-1 flex-col items-stretch justify-center overflow-y-auto p-4">
       <div className="flex flex-col items-center">
         <div className="relative mb-3 flex h-14 w-14 items-center justify-center">
           <div
@@ -2264,7 +2264,7 @@ function GridReviewView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-background">
-      <div className="ooc-thumb-scroll min-h-0 flex-1 overflow-y-auto bg-background p-3">
+      <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-background p-3">
         <div className="grid grid-cols-2 gap-3">{inGroup.map(renderCard)}</div>
 
         {rejected.length > 0 && (

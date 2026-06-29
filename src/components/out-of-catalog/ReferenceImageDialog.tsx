@@ -131,7 +131,7 @@ export function ReferenceImageDialog({
             {/* Thumbs */}
             <div
               ref={thumbsWrapRef}
-              className="grid grid-cols-4 gap-2 ooc-thumbs-scroll"
+              className="custom-scrollbar grid grid-cols-4 gap-2"
               style={{
                 maxHeight: thumbsMaxH,
                 overflowY: scrollThumbs ? "auto" : undefined,
