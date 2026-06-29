@@ -184,7 +184,7 @@ export function CreateEquipmentSheet({
             <div style={labelStyle} className="mb-1.5 flex items-center justify-between">
               <span>Reference images</span>
               <span className="text-[11px] text-white/40">
-                {referenceImages.length} / 8
+                {referenceImages.length}
               </span>
             </div>
             <div className="flex gap-3">
