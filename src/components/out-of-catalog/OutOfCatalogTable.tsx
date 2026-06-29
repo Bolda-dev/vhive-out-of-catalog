@@ -371,7 +371,7 @@ export function OutOfCatalogTable({
                   onClick={() => onReviewRow?.(row)}
                   className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border-0 bg-white/[0.04] px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.08]"
                 >
-                  <Eye className="h-4 w-4 shrink-0" />
+                  <FileSearch className="h-4 w-4 shrink-0" />
                   Review this Case
                 </button>
               </td>
