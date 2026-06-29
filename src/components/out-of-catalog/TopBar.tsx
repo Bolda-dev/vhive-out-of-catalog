@@ -16,7 +16,6 @@ export function TopBar({ activeTab = "out-of-catalog" as TabId }: { activeTab?: 
     <header className="flex h-[68px] items-center justify-between border-b border-border bg-card px-8">
       <div className="flex h-full items-center gap-10">
         <div className="flex items-center gap-3">
-          <img src={faviconChevrons} alt="" className="h-7 w-auto" />
           <img src={logoAsset.url} alt="vHive" className="h-8 w-auto" />
         </div>
 
