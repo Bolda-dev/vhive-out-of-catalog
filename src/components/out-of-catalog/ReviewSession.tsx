@@ -2039,13 +2039,8 @@ function CatalogSearchPanel({
                 <td className="truncate border-b border-border/60 px-2 py-3 align-middle">
                   {item.manufacturer}
                 </td>
-                <td className="border-b border-border/60 px-2 py-3 align-middle">
-                  <div className="min-w-0">
-                    <div className="truncate">{item.model}</div>
-                    <div className="truncate text-[12px] text-muted-foreground">
-                      {item.classification}
-                    </div>
-                  </div>
+                <td className="border-b border-border/60 px-4 py-3 align-middle">
+                  <div className="truncate">{item.model}</div>
                 </td>
                 <td className="border-b border-border/60 px-2 py-2 text-right align-middle">
                   <button
