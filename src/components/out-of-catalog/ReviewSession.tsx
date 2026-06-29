@@ -113,6 +113,13 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     return captures.every((c) => statusFor(c.id) === "approved");
   }, [captures, captureCount, current, statusFor]);
 
+  const allRejected = useMemo(() => {
+    if (!current || captureCount === 0) return false;
+    return captures.every((c) => statusFor(c.id) === "rejected");
+  }, [captures, captureCount, current, statusFor]);
+
+  const [dissolveOpen, setDissolveOpen] = useState(false);
+
   const phase: "approving" | "reviewing" = allDecided ? "reviewing" : "approving";
 
   // Stagger the right-panel reveal: let the left side switch to grid first,
@@ -212,6 +219,10 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const requestBind = useCallback(
     (catalogId: string) => {
+      if (allRejected) {
+        setDissolveOpen(true);
+        return;
+      }
       const hasRejected = captures.some((c) => statusFor(c.id) === "rejected");
       if (hasRejected) {
         setPendingBindId(catalogId);
@@ -219,7 +230,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
         confirmBind(catalogId);
       }
     },
-    [captures, statusFor, confirmBind],
+    [captures, statusFor, confirmBind, allRejected],
   );
 
   const skipSession = useCallback(() => {
@@ -229,15 +240,23 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const markUnrecognized = useCallback(() => {
     if (!current || phase !== "reviewing") return;
+    if (allRejected) {
+      setDissolveOpen(true);
+      return;
+    }
     setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
     appToast({ title: "Marked as Unrecognized" });
     goNext();
-  }, [current, goNext, phase]);
+  }, [current, goNext, phase, allRejected]);
 
   const addAsNew = useCallback(() => {
     if (!current || phase !== "reviewing") return;
+    if (allRejected) {
+      setDissolveOpen(true);
+      return;
+    }
     setCreateOpen(true);
-  }, [current, phase]);
+  }, [current, phase, allRejected]);
 
   const submitNewEquipment = useCallback(() => {
     if (!current) return;
@@ -847,6 +866,48 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
               className="bg-brand text-background hover:bg-brand/90"
             >
               Confirm &amp; Bind
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={dissolveOpen} onOpenChange={setDissolveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Dissolve this group?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p>
+                  All{" "}
+                  <span className="font-medium text-foreground">{captureCount}</span> image
+                  {captureCount === 1 ? "" : "s"} in this group are marked as{" "}
+                  <span className="font-medium text-foreground">not part of the group</span>.
+                </p>
+                <div className="rounded-md border border-[#F2D066]/30 bg-[#F2D066]/10 px-3 py-2 text-foreground">
+                  The group will be dissolved and each image will return to the{" "}
+                  <span className="font-medium">Out of Catalog</span> table as an individual
+                  item for later review.
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (current) {
+                  setDecisions((prev) => ({ ...prev, [current.id]: "unrecognized" }));
+                }
+                appToast({
+                  title: "Group dissolved",
+                  description: "Images returned to Out of Catalog as individual items.",
+                });
+                setDissolveOpen(false);
+                goNext();
+              }}
+              className="bg-brand text-background hover:bg-brand/90"
+            >
+              Dissolve group
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
