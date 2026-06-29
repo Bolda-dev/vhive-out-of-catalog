@@ -1129,15 +1129,6 @@ function ShortcutBar({
               ),
               action: "New equipment",
             },
-            {
-              keys: (
-                <>
-                  <Kbd>S</Kbd>
-                  <SkipForward className="h-3 w-3 text-muted-foreground" />
-                </>
-              ),
-              action: "Skip session",
-            },
             { keys: <Kbd>U</Kbd>, action: "Cannot Identify" },
           ]}
         />
