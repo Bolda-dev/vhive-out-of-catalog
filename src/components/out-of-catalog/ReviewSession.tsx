@@ -803,6 +803,7 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
             onBind={() => selected && requestBind(selected.item.id)}
             onUnrecognize={markUnrecognized}
             onAddAsNew={addAsNew}
+            singleCapture={captureCount <= 1}
           />
 
         </div>
