@@ -492,6 +492,11 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
                       <span className="flex-1 whitespace-nowrap">Unrecognize</span>
                       <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">U</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={skipSession} className="whitespace-nowrap">
+                      <SkipForward className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span className="flex-1 whitespace-nowrap">Skip</span>
+                      <span className="ml-3 text-xs text-muted-foreground whitespace-nowrap">S</span>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
