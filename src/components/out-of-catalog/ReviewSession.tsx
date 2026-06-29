@@ -52,6 +52,63 @@ type ApprovalMap = Record<string, ImgStatus>;
 
 const pending = mockOutOfCatalog.filter((r) => r.status === "Pending");
 
+function ZoomPanImage({ src, resetKey, className, objectFit = "contain" }: {
+  src: string;
+  resetKey?: string;
+  className?: string;
+  objectFit?: "contain" | "cover";
+}) {
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const panRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
+
+  useEffect(() => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, [resetKey, src]);
+
+  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const delta = -e.deltaY * 0.0015;
+    setZoom((z) => Math.max(1, Math.min(6, z + delta * z)));
+  };
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 1) return;
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    panRef.current = { startX: e.clientX, startY: e.clientY, origX: pan.x, origY: pan.y };
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!panRef.current) return;
+    setPan({
+      x: panRef.current.origX + (e.clientX - panRef.current.startX),
+      y: panRef.current.origY + (e.clientY - panRef.current.startY),
+    });
+  };
+  const endPan = () => { panRef.current = null; };
+
+  return (
+    <div
+      className={`relative flex h-full w-full items-center justify-center overflow-hidden ${className ?? ""}`}
+      onWheel={onWheel}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endPan}
+      onPointerLeave={endPan}
+      onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
+      style={{ cursor: panRef.current ? "grabbing" : "default" }}
+    >
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        className={`h-full w-full select-none ${objectFit === "cover" ? "object-cover" : "object-contain"}`}
+        style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "50% 50%" }}
+      />
+    </div>
+  );
+}
+
 export function ReviewSession({ onExit }: { onExit: () => void }) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
