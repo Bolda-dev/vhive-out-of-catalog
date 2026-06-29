@@ -1061,12 +1061,14 @@ function ShortcutBar({
   onBind,
   onUnrecognize,
   onAddAsNew,
+  singleCapture,
 }: {
   allApproved: boolean;
   canBind: boolean;
   onBind: () => void;
   onUnrecognize: () => void;
   onAddAsNew: () => void;
+  singleCapture?: boolean;
 }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 flex shrink-0 flex-col gap-2 bg-surface px-6 py-2.5">
