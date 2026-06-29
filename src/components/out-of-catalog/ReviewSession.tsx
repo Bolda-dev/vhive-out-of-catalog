@@ -2016,7 +2016,7 @@ function CatalogSearchPanel({
                   lineHeight: "21px",
                 }}
               >
-                <td className="border-b border-border/60 px-2 py-2 align-middle">
+                <td className="border-b border-border/60 px-4 py-2 align-middle">
                   <button
                     type="button"
                     onClick={() => setPreview({ images: imagesFor(item), index: 0 })}
@@ -2033,16 +2033,16 @@ function CatalogSearchPanel({
                     </span>
                   </button>
                 </td>
-                <td className="truncate border-b border-border/60 px-2 py-3 align-middle text-[13px]">
+                <td className="truncate border-b border-border/60 px-4 py-3 align-middle text-[13px]">
                   {item.type}
                 </td>
-                <td className="truncate border-b border-border/60 px-2 py-3 align-middle">
+                <td className="truncate border-b border-border/60 px-4 py-3 align-middle">
                   {item.manufacturer}
                 </td>
                 <td className="border-b border-border/60 px-4 py-3 align-middle">
                   <div className="truncate">{item.model}</div>
                 </td>
-                <td className="border-b border-border/60 px-2 py-2 text-right align-middle">
+                <td className="border-b border-border/60 px-4 py-2 text-right align-middle">
                   <button
                     type="button"
                     onClick={() => onBind(item.id)}
