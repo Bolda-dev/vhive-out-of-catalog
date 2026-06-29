@@ -302,10 +302,11 @@ function buildSuggestions(s: Seed): AiSuggestion[] | undefined {
   const others = mockCatalog.filter(
     (c) => c.id !== primary.id && c.type !== primary.type,
   );
-  // First seed (ooc-001) is the prototype "single" case: 1 capture, 1 suggestion.
+  // First seed (ooc-001) is the prototype "single" case: 1 capture, with 3 suggestions.
   // Otherwise deterministic candidate count 3-5 based on id.
   const hash = s.id.split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) | 0, 0);
-  const count = s.id === "ooc-001" ? 1 : 3 + (Math.abs(hash) % 3); // 3,4,5
+  const count = s.id === "ooc-001" ? 3 : 3 + (Math.abs(hash) % 3); // 3,4,5
+
   const pool = [primary, ...sameType, ...others].slice(0, count);
   // Scores: start at row confidence, drop by 6-14 per step deterministically.
   let score = s.confidence;
