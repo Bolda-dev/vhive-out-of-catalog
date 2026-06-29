@@ -199,6 +199,12 @@ export function ReviewSession({ onExit }: { onExit: () => void }) {
     return () => window.clearTimeout(t);
   }, [phase]);
 
+  // When the user marks every capture as rejected, auto-prompt the dissolve dialog.
+  useEffect(() => {
+    if (allRejected && !dissolveOpen) setDissolveOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allRejected, current?.id]);
+
   const setStatusFor = useCallback(
     (s: ImgStatus, capId: string) => {
       if (!current) return;
