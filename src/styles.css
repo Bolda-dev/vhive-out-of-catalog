@@ -170,7 +170,7 @@
     rgba(59, 182, 233, 1)    355deg,
     rgba(59, 182, 233, 0.05) 360deg
   );
-  animation: outline-snake 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: outline-snake 2.6s linear infinite;
 }
 
 /* Localized glow — same conic, blurred; opacity pulses once per 3 laps. */
