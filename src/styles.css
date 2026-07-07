@@ -135,39 +135,87 @@
 }
 
 
-/* Animated gradient outline + periodic glow (used on the Total Capacity card) */
-@keyframes outline-spin {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
+/* Animated gradient outline + synchronized flash/glow
+   (used on the Total Capacity card) */
+@property --outline-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
-@keyframes outline-glow {
-  0%, 78%, 100% {
-    box-shadow: 0 0 0 rgba(59, 182, 233, 0);
-  }
-  85% {
+
+@keyframes outline-rotate {
+  to { --outline-angle: 360deg; }
+}
+
+/* One "beat" every 4s: quiet base, then a fast bright sweep + glow burst
+   that decays. Both layers share this timing so they read as one event. */
+@keyframes outline-flash {
+  0%   { opacity: 0.35; filter: saturate(0.9) brightness(0.9); }
+  70%  { opacity: 0.4;  filter: saturate(1)   brightness(1); }
+  78%  { opacity: 1;    filter: saturate(1.4) brightness(1.6); }
+  86%  { opacity: 0.85; filter: saturate(1.2) brightness(1.25); }
+  100% { opacity: 0.35; filter: saturate(0.9) brightness(0.9); }
+}
+
+@keyframes outline-glow-burst {
+  0%, 70%, 100% {
     box-shadow:
-      0 0 22px 2px rgba(59, 182, 233, 0.55),
-      0 0 44px 6px rgba(59, 182, 233, 0.25);
+      0 0 0 0 rgba(59, 182, 233, 0),
+      0 0 0 0 rgba(139, 92, 246, 0);
   }
-  92% {
+  78% {
+    box-shadow:
+      0 0 24px 2px rgba(59, 182, 233, 0.65),
+      0 0 52px 10px rgba(139, 92, 246, 0.28);
+  }
+  86% {
     box-shadow:
       0 0 14px 1px rgba(59, 182, 233, 0.35),
-      0 0 28px 4px rgba(59, 182, 233, 0.15);
+      0 0 30px 6px rgba(139, 92, 246, 0.14);
   }
 }
+
 .animated-outline-card {
-  background-image: linear-gradient(
-    120deg,
-    rgba(59, 182, 233, 0.15) 0%,
-    rgba(59, 182, 233, 0.95) 25%,
-    rgba(139, 92, 246, 0.85) 50%,
-    rgba(59, 182, 233, 0.95) 75%,
-    rgba(59, 182, 233, 0.15) 100%
-  );
-  background-size: 200% 200%;
-  animation:
-    outline-spin 6s linear infinite,
-    outline-glow 3.6s ease-in-out infinite;
+  position: relative;
   border-radius: 8px;
+  /* subtle base halo so the card never looks "dead" between beats */
+  box-shadow: 0 0 0 0 rgba(59, 182, 233, 0);
+  animation: outline-glow-burst 4s ease-out infinite;
 }
+
+/* The border itself: a conic gradient rotating continuously,
+   masked to a 1.5px ring. A bright arc + soft tail creates the "flash". */
+.animated-outline-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--outline-angle),
+    rgba(59, 182, 233, 0.08) 0deg,
+    rgba(59, 182, 233, 0.15) 200deg,
+    rgba(139, 92, 246, 0.9) 300deg,
+    rgba(180, 230, 255, 1) 340deg,
+    rgba(59, 182, 233, 0.95) 355deg,
+    rgba(59, 182, 233, 0.15) 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  animation:
+    outline-rotate 2.6s linear infinite,
+    outline-flash 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-outline-card,
+  .animated-outline-card::before {
+    animation: none;
+  }
+}
+
 
