@@ -133,3 +133,41 @@
 .animate-case-enter {
   animation: case-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+
+/* Animated gradient outline + periodic glow (used on the Total Capacity card) */
+@keyframes outline-spin {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes outline-glow {
+  0%, 78%, 100% {
+    box-shadow: 0 0 0 rgba(59, 182, 233, 0);
+  }
+  85% {
+    box-shadow:
+      0 0 22px 2px rgba(59, 182, 233, 0.55),
+      0 0 44px 6px rgba(59, 182, 233, 0.25);
+  }
+  92% {
+    box-shadow:
+      0 0 14px 1px rgba(59, 182, 233, 0.35),
+      0 0 28px 4px rgba(59, 182, 233, 0.15);
+  }
+}
+.animated-outline-card {
+  background-image: linear-gradient(
+    120deg,
+    rgba(59, 182, 233, 0.15) 0%,
+    rgba(59, 182, 233, 0.95) 25%,
+    rgba(139, 92, 246, 0.85) 50%,
+    rgba(59, 182, 233, 0.95) 75%,
+    rgba(59, 182, 233, 0.15) 100%
+  );
+  background-size: 200% 200%;
+  animation:
+    outline-spin 6s linear infinite,
+    outline-glow 3.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
