@@ -176,7 +176,7 @@
 }
 
 @keyframes outline-dash {
-  to { stroke-dashoffset: -1090; }
+  to { stroke-dashoffset: -1000; }
 }
 
 @keyframes outline-glow-pulse {
