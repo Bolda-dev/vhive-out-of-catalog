@@ -40,8 +40,29 @@ export function PortfolioSidebar() {
       className="flex w-[300px] shrink-0 flex-col rounded-md border border-white/[0.06] bg-[#1E1E1E] p-3"
       style={{ fontFamily: "Roboto, sans-serif" }}
     >
-      {/* Total Capacity — animated gradient outline card */}
-      <div className="animated-outline-card relative rounded-[8px]">
+      {/* Total Capacity — animated traveling stroke outline */}
+      <div className="animated-outline-card relative rounded-[8px] border border-white/[0.04]">
+        <svg className="outline-svg" preserveAspectRatio="none" aria-hidden>
+          <rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            rx="8"
+            ry="8"
+            pathLength={1000}
+          />
+          <rect
+            className="glow"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            rx="8"
+            ry="8"
+            pathLength={1000}
+          />
+        </svg>
         <div className="relative flex items-center gap-4 rounded-[8px] bg-[#1E1E1E] px-5 py-4">
 
           <div
