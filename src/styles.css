@@ -143,20 +143,23 @@
   inherits: false;
 }
 
-/* Variable-speed rotation: brisk baseline with fast bursts,
-   never dwelling too long on any one arc. */
-@keyframes outline-scratch {
+/* Smooth "snake" rotation — near-linear, with a subtle slow-down in one
+   corner (~25% of the loop) then eases back to speed. One lap = 2.6s. */
+@keyframes outline-snake {
   0%   { --outline-angle: 0deg;   }
-  20%  { --outline-angle: 110deg; }
-  35%  { --outline-angle: 140deg; }  /* brief hold */
-  55%  { --outline-angle: 320deg; }  /* fast burst */
-  70%  { --outline-angle: 340deg; }  /* short hold */
-  100% { --outline-angle: 720deg; }  /* full extra lap */
+  22%  { --outline-angle: 70deg;  }   /* soft slowdown into a corner */
+  32%  { --outline-angle: 105deg; }   /* gentle ease-out of the corner */
+  100% { --outline-angle: 360deg; }
 }
 
+/* Glow appears once every 3 laps (7.8s), quick fade in/out. */
+@keyframes outline-glow-pulse {
+  0%, 78%, 100% { opacity: 0; }
+  85%           { opacity: 1; }
+  92%           { opacity: 0.4; }
+}
 
-/* Outer wrapper: the conic gradient IS the border.
-   Give it padding so the inner card leaves a visible ring. */
+/* Outer wrapper: the conic gradient IS the border. */
 .animated-outline-card {
   position: relative;
   border-radius: 8px;
@@ -169,13 +172,10 @@
     rgba(59, 182, 233, 1)    355deg,
     rgba(59, 182, 233, 0.05) 360deg
   );
-  animation: outline-scratch 3.6s cubic-bezier(0.5, 0, 0.4, 1) infinite;
+  animation: outline-snake 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-/* Localized glow that travels with the bright arc.
-   A separate pseudo behind the card mirrors the same conic, blurred +
-   only the bright arc shows through (rest is nearly transparent), so
-   the glow appears only where the "head" of the light is. */
+/* Localized glow — same conic, blurred; opacity pulses once per 3 laps. */
 .animated-outline-card::before {
   content: "";
   position: absolute;
@@ -191,11 +191,15 @@
   filter: blur(8px);
   z-index: -1;
   pointer-events: none;
+  opacity: 0;
+  animation: outline-glow-pulse 7.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animated-outline-card { animation: none; }
+  .animated-outline-card,
+  .animated-outline-card::before { animation: none; }
 }
+
 
 
 
