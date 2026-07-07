@@ -169,7 +169,7 @@
     rgba(59, 182, 233, 1)    355deg,
     rgba(59, 182, 233, 0.05) 360deg
   );
-  animation: outline-scratch 5s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+  animation: outline-scratch 3.6s cubic-bezier(0.5, 0, 0.4, 1) infinite;
 }
 
 /* Localized glow that travels with the bright arc.
