@@ -159,7 +159,7 @@
   stroke: rgba(59, 182, 233, 0.55);
   stroke-width: 1.5;
   /* dash: short bright arc + long transparent gap = one arc traveling the perimeter */
-  stroke-dasharray: 90 1000;
+  stroke-dasharray: 90 910;
   stroke-linecap: round;
   animation: outline-dash 2.6s linear infinite;
   filter: drop-shadow(0 0 3px rgba(59, 182, 233, 0.35));
