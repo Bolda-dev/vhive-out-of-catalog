@@ -143,14 +143,12 @@
   inherits: false;
 }
 
-/* Smooth "snake" rotation — near-linear, with a subtle slow-down in one
-   corner (~25% of the loop) then eases back to speed. One lap = 2.6s. */
+/* Perfectly even rotation — one lap every 2.6s, no easing. */
 @keyframes outline-snake {
   0%   { --outline-angle: 0deg;   }
-  22%  { --outline-angle: 70deg;  }   /* soft slowdown into a corner */
-  32%  { --outline-angle: 105deg; }   /* gentle ease-out of the corner */
   100% { --outline-angle: 360deg; }
 }
+
 
 /* Glow appears once every 3 laps (7.8s), quick fade in/out. */
 @keyframes outline-glow-pulse {
