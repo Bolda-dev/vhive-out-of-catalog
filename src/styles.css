@@ -143,15 +143,17 @@
   inherits: false;
 }
 
-/* Variable-speed rotation ("scratch" rhythm) */
+/* Variable-speed rotation: brisk baseline with fast bursts,
+   never dwelling too long on any one arc. */
 @keyframes outline-scratch {
   0%   { --outline-angle: 0deg;   }
-  25%  { --outline-angle: 35deg;  }
-  45%  { --outline-angle: 300deg; }
-  60%  { --outline-angle: 315deg; }
-  80%  { --outline-angle: 335deg; }
-  100% { --outline-angle: 360deg; }
+  20%  { --outline-angle: 110deg; }
+  35%  { --outline-angle: 140deg; }  /* brief hold */
+  55%  { --outline-angle: 320deg; }  /* fast burst */
+  70%  { --outline-angle: 340deg; }  /* short hold */
+  100% { --outline-angle: 720deg; }  /* full extra lap */
 }
+
 
 /* Outer wrapper: the conic gradient IS the border.
    Give it padding so the inner card leaves a visible ring. */
