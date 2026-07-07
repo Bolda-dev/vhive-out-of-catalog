@@ -43,15 +43,19 @@ export function PortfolioSidebar() {
       {/* Total Capacity — animated traveling stroke outline */}
       <div className="animated-outline-card relative rounded-[8px] border border-white/[0.04]">
         <svg className="outline-svg" preserveAspectRatio="none" aria-hidden>
-          <rect
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            rx="8"
-            ry="8"
-            pathLength={1000}
-          />
+          {Array.from({ length: 12 }).map((_, i) => (
+            <rect
+              key={i}
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              rx="8"
+              ry="8"
+              pathLength={1000}
+              style={{ animationDelay: `${-i * 0.035}s` }}
+            />
+          ))}
           <rect
             className="glow"
             x="0"
