@@ -158,16 +158,30 @@
   fill: none;
   stroke: rgba(59, 182, 233, 0.55);
   stroke-width: 1.5;
-  /* dash: short bright arc + long transparent gap = one arc traveling the perimeter */
-  stroke-dasharray: 90 910;
+  /* short arc per segment; 12 staggered segments form a long gradient tail */
+  stroke-dasharray: 32 968;
   stroke-linecap: round;
   animation: outline-dash 2.6s linear infinite;
-  filter: drop-shadow(0 0 3px rgba(59, 182, 233, 0.35));
 }
+
+/* Comet trail: each successive rect is dimmer, creating a gradient fade */
+.animated-outline-card > .outline-svg rect:nth-child(1)  { opacity: 1;    }
+.animated-outline-card > .outline-svg rect:nth-child(2)  { opacity: 0.9;  }
+.animated-outline-card > .outline-svg rect:nth-child(3)  { opacity: 0.78; }
+.animated-outline-card > .outline-svg rect:nth-child(4)  { opacity: 0.66; }
+.animated-outline-card > .outline-svg rect:nth-child(5)  { opacity: 0.55; }
+.animated-outline-card > .outline-svg rect:nth-child(6)  { opacity: 0.45; }
+.animated-outline-card > .outline-svg rect:nth-child(7)  { opacity: 0.36; }
+.animated-outline-card > .outline-svg rect:nth-child(8)  { opacity: 0.28; }
+.animated-outline-card > .outline-svg rect:nth-child(9)  { opacity: 0.2;  }
+.animated-outline-card > .outline-svg rect:nth-child(10) { opacity: 0.14; }
+.animated-outline-card > .outline-svg rect:nth-child(11) { opacity: 0.08; }
+.animated-outline-card > .outline-svg rect:nth-child(12) { opacity: 0.04; }
 
 .animated-outline-card > .outline-svg rect.glow {
   stroke: rgba(59, 182, 233, 0.9);
   stroke-width: 2;
+  stroke-dasharray: 32 968;
   filter: blur(4px) drop-shadow(0 0 6px rgba(59, 182, 233, 0.8));
   opacity: 0;
   animation:
