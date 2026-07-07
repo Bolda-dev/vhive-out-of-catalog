@@ -41,8 +41,9 @@ export function PortfolioSidebar() {
       style={{ fontFamily: "Roboto, sans-serif" }}
     >
       {/* Total Capacity — animated gradient outline card */}
-      <div className="animated-outline-card relative rounded-[8px] p-[1.5px]">
-        <div className="relative flex items-center gap-4 rounded-[7px] bg-[#1E1E1E] px-5 py-4">
+      <div className="animated-outline-card relative rounded-[8px]">
+        <div className="relative flex items-center gap-4 rounded-[8px] bg-[#1E1E1E] px-5 py-4">
+
           <div
             className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full"
             style={{ border: "1.5px solid #34D399" }}
