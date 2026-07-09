@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PortfolioSidebar } from "@/components/sandbox/PortfolioSidebar";
+import { requireUnlocked } from "@/lib/gate.functions";
 
 export const Route = createFileRoute("/sandbox")({
+  beforeLoad: () => requireUnlocked(),
   head: () => ({
     meta: [
       { title: "Sandbox — vHive" },
