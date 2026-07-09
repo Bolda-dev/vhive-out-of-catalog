@@ -3,6 +3,9 @@ import { useState } from "react";
 import logoAsset from "@/assets/vhive-logo.png.asset.json";
 
 export const Route = createFileRoute("/unlock")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    error: search.error === "1",
+  }),
   head: () => ({
     meta: [
       { title: "Enter password — vHive" },
@@ -15,7 +18,8 @@ export const Route = createFileRoute("/unlock")({
 
 function UnlockPage() {
   const router = useRouter();
-  const [error, setError] = useState(false);
+  const search = Route.useSearch();
+  const [error, setError] = useState(search.error);
   const [submitting, setSubmitting] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
