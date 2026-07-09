@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
+const ERROR_LOCATION = "/unlock?loginError=invalid";
+
 export const Route = createFileRoute("/api/public/unlock")({
   server: {
     handlers: {
@@ -16,7 +18,7 @@ export const Route = createFileRoute("/api/public/unlock")({
           if (wantsFormRedirect) {
             return new Response(null, {
               status: 303,
-              headers: { Location: "/unlock?error=1" },
+              headers: { Location: ERROR_LOCATION },
             });
           }
           return Response.json({ ok: false, error: "not_configured" }, { status: 500 });
@@ -35,7 +37,7 @@ export const Route = createFileRoute("/api/public/unlock")({
           if (wantsFormRedirect) {
             return new Response(null, {
               status: 303,
-              headers: { Location: "/unlock?error=1" },
+              headers: { Location: ERROR_LOCATION },
             });
           }
           return Response.json({ ok: false }, { status: 400 });
@@ -45,7 +47,7 @@ export const Route = createFileRoute("/api/public/unlock")({
           if (wantsFormRedirect) {
             return new Response(null, {
               status: 303,
-              headers: { Location: "/unlock?error=1" },
+              headers: { Location: ERROR_LOCATION },
             });
           }
           return Response.json({ ok: false }, { status: 400 });
@@ -63,7 +65,7 @@ export const Route = createFileRoute("/api/public/unlock")({
           if (wantsFormRedirect) {
             return new Response(null, {
               status: 303,
-              headers: { Location: "/unlock?error=1" },
+              headers: { Location: ERROR_LOCATION },
             });
           }
           return Response.json({ ok: false });
