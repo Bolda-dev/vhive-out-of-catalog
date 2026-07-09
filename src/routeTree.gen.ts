@@ -13,6 +13,7 @@ import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SandboxRouteImport } from './routes/sandbox'
 import { Route as OutOfCatalogRouteImport } from './routes/out-of-catalog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicUnlockRouteImport } from './routes/api/public/unlock'
 
 const UnlockRoute = UnlockRouteImport.update({
   id: '/unlock',
@@ -34,18 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicUnlockRoute = ApiPublicUnlockRouteImport.update({
+  id: '/api/public/unlock',
+  path: '/api/public/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
   '/sandbox': typeof SandboxRoute
   '/unlock': typeof UnlockRoute
+  '/api/public/unlock': typeof ApiPublicUnlockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
   '/sandbox': typeof SandboxRoute
   '/unlock': typeof UnlockRoute
+  '/api/public/unlock': typeof ApiPublicUnlockRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,25 @@ export interface FileRoutesById {
   '/out-of-catalog': typeof OutOfCatalogRoute
   '/sandbox': typeof SandboxRoute
   '/unlock': typeof UnlockRoute
+  '/api/public/unlock': typeof ApiPublicUnlockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/out-of-catalog' | '/sandbox' | '/unlock'
+  fullPaths:
+    | '/'
+    | '/out-of-catalog'
+    | '/sandbox'
+    | '/unlock'
+    | '/api/public/unlock'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/out-of-catalog' | '/sandbox' | '/unlock'
-  id: '__root__' | '/' | '/out-of-catalog' | '/sandbox' | '/unlock'
+  to: '/' | '/out-of-catalog' | '/sandbox' | '/unlock' | '/api/public/unlock'
+  id:
+    | '__root__'
+    | '/'
+    | '/out-of-catalog'
+    | '/sandbox'
+    | '/unlock'
+    | '/api/public/unlock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +87,7 @@ export interface RootRouteChildren {
   OutOfCatalogRoute: typeof OutOfCatalogRoute
   SandboxRoute: typeof SandboxRoute
   UnlockRoute: typeof UnlockRoute
+  ApiPublicUnlockRoute: typeof ApiPublicUnlockRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/unlock': {
+      id: '/api/public/unlock'
+      path: '/api/public/unlock'
+      fullPath: '/api/public/unlock'
+      preLoaderRoute: typeof ApiPublicUnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +135,7 @@ const rootRouteChildren: RootRouteChildren = {
   OutOfCatalogRoute: OutOfCatalogRoute,
   SandboxRoute: SandboxRoute,
   UnlockRoute: UnlockRoute,
+  ApiPublicUnlockRoute: ApiPublicUnlockRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

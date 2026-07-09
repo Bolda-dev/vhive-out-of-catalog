@@ -1,7 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { unlockSite } from "@/lib/gate.functions";
 import logoAsset from "@/assets/vhive-logo.png.asset.json";
 
 export const Route = createFileRoute("/unlock")({
@@ -17,7 +15,6 @@ export const Route = createFileRoute("/unlock")({
 
 function UnlockPage() {
   const router = useRouter();
-  const unlock = useServerFn(unlockSite);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -28,13 +25,20 @@ function UnlockPage() {
     setSubmitting(true);
     setError(false);
     try {
-      const { ok } = await unlock({ data: { password } });
+      const response = await fetch("/api/public/unlock", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const { ok } = (await response.json()) as { ok?: boolean };
       if (ok) {
         await router.navigate({ to: "/out-of-catalog" });
       } else {
         setError(true);
         setPassword("");
       }
+    } catch {
+      setError(true);
     } finally {
       setSubmitting(false);
     }
