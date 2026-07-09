@@ -1,24 +1,41 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useSession } from "@tanstack/react-start/server";
+import { getCookie, setCookie, deleteCookie } from "@tanstack/react-start/server";
 import { redirect } from "@tanstack/react-router";
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
-type GateSession = { unlocked?: boolean };
+const COOKIE_NAME = "site-gate";
+const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-function getSessionConfig() {
-  const password = process.env.SESSION_SECRET;
-  if (!password) throw new Error("SESSION_SECRET is not set");
-  return {
-    password,
-    name: "site-gate",
-    maxAge: 60 * 60 * 24 * 7,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax" as const,
-      path: "/",
-    },
-  };
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) throw new Error("SESSION_SECRET is not set");
+  return secret;
+}
+
+function sign(payload: string): string {
+  return createHmac("sha256", getSessionSecret())
+    .update(payload, "utf8")
+    .digest("hex");
+}
+
+function makeToken(): string {
+  const payload = String(Date.now());
+  return `${payload}.${sign(payload)}`;
+}
+
+function isValidToken(token: string | undefined): boolean {
+  if (!token) return false;
+  const [payload, sig] = token.split(".");
+  if (!payload || !sig) return false;
+  const expected = sign(payload);
+  const a = Buffer.from(sig, "hex");
+  const b = Buffer.from(expected, "hex");
+  if (a.length !== b.length) return false;
+  if (!timingSafeEqual(a, b)) return false;
+  const ts = Number(payload);
+  if (!Number.isFinite(ts)) return false;
+  if (Date.now() - ts > MAX_AGE * 1000) return false;
+  return true;
 }
 
 function passwordMatches(input: string, expected: string): boolean {
@@ -29,8 +46,8 @@ function passwordMatches(input: string, expected: string): boolean {
 
 export const requireUnlocked = createServerFn({ method: "GET" }).handler(
   async () => {
-    const session = await useSession<GateSession>(getSessionConfig());
-    if (!session.data.unlocked) {
+    const token = getCookie(COOKIE_NAME);
+    if (!isValidToken(token)) {
       throw redirect({ to: "/unlock" });
     }
     return { ok: true as const };
@@ -50,13 +67,17 @@ export const unlockSite = createServerFn({ method: "POST" })
     if (!passwordMatches(data.password, expected)) {
       return { ok: false as const };
     }
-    const session = await useSession<GateSession>(getSessionConfig());
-    await session.update({ unlocked: true });
+    setCookie(COOKIE_NAME, makeToken(), {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: MAX_AGE,
+      path: "/",
+    });
     return { ok: true as const };
   });
 
 export const lockSite = createServerFn({ method: "POST" }).handler(async () => {
-  const session = await useSession<GateSession>(getSessionConfig());
-  await session.clear();
+  deleteCookie(COOKIE_NAME, { path: "/" });
   return { ok: true as const };
 });
