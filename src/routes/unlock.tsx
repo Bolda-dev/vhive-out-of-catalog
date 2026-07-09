@@ -4,7 +4,7 @@ import logoAsset from "@/assets/vhive-logo.png.asset.json";
 
 export const Route = createFileRoute("/unlock")({
   validateSearch: (search: Record<string, unknown>) => ({
-    loginError: search.loginError === "invalid",
+    loginError: search.loginError === "invalid" ? "invalid" : undefined,
   }),
   head: () => ({
     meta: [
@@ -21,7 +21,7 @@ function UnlockPage() {
   const search = Route.useSearch();
   const [submitError, setSubmitError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const showError = search.loginError || submitError;
+  const showError = search.loginError === "invalid" || submitError;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
