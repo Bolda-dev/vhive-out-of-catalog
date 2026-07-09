@@ -15,12 +15,12 @@ export const Route = createFileRoute("/unlock")({
 
 function UnlockPage() {
   const router = useRouter();
-  const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const password = String(new FormData(e.currentTarget).get("password") ?? "");
     if (!password || submitting) return;
     setSubmitting(true);
     setError(false);
@@ -35,7 +35,7 @@ function UnlockPage() {
         await router.navigate({ to: "/out-of-catalog" });
       } else {
         setError(true);
-        setPassword("");
+        e.currentTarget.reset();
       }
     } catch {
       setError(true);
@@ -63,8 +63,6 @@ function UnlockPage() {
               type="password"
               autoComplete="current-password"
               autoFocus
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand"
             />
@@ -73,7 +71,7 @@ function UnlockPage() {
             )}
             <button
               type="submit"
-              disabled={submitting || !password}
+              disabled={submitting}
               className="h-10 w-full rounded-md bg-brand text-sm font-medium text-background transition-colors hover:bg-brand/90 disabled:opacity-50"
             >
               {submitting ? "Checking…" : "Enter"}
