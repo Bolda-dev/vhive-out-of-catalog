@@ -1,7 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { unlockSite } from "@/lib/gate.functions";
 import logoAsset from "@/assets/vhive-logo.png.asset.json";
 
 export const Route = createFileRoute("/unlock")({
@@ -17,24 +15,32 @@ export const Route = createFileRoute("/unlock")({
 
 function UnlockPage() {
   const router = useRouter();
-  const unlock = useServerFn(unlockSite);
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const search = Route.useSearch() as Record<string, unknown>;
+  const [submitError, setSubmitError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const showError = search.loginError === "invalid" || submitError;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const password = String(new FormData(e.currentTarget).get("password") ?? "");
     if (!password || submitting) return;
     setSubmitting(true);
-    setError(false);
+    setSubmitError(false);
     try {
-      const { ok } = await unlock({ data: { password } });
+      const response = await fetch("/api/public/unlock", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const { ok } = (await response.json()) as { ok?: boolean };
       if (ok) {
         await router.navigate({ to: "/out-of-catalog" });
       } else {
-        setError(true);
-        setPassword("");
+        setSubmitError(true);
+        e.currentTarget.reset();
       }
+    } catch {
+      setSubmitError(true);
     } finally {
       setSubmitting(false);
     }
@@ -53,23 +59,26 @@ function UnlockPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Enter the password to view this preview.
           </p>
-          <form onSubmit={onSubmit} className="mt-5 space-y-3">
+          <form
+            method="post"
+            action="/api/public/unlock"
+            onSubmit={onSubmit}
+            className="mt-5 space-y-3"
+          >
             <input
               name="password"
               type="password"
               autoComplete="current-password"
               autoFocus
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand"
             />
-            {error && (
+            {showError && (
               <p className="text-sm text-red-400">Incorrect password</p>
             )}
             <button
               type="submit"
-              disabled={submitting || !password}
+              disabled={submitting}
               className="h-10 w-full rounded-md bg-brand text-sm font-medium text-background transition-colors hover:bg-brand/90 disabled:opacity-50"
             >
               {submitting ? "Checking…" : "Enter"}
