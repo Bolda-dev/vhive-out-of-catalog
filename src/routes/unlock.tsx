@@ -3,9 +3,6 @@ import { useState } from "react";
 import logoAsset from "@/assets/vhive-logo.png.asset.json";
 
 export const Route = createFileRoute("/unlock")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    loginError: search.loginError === "invalid" ? "invalid" : undefined,
-  }),
   head: () => ({
     meta: [
       { title: "Enter password — vHive" },
@@ -18,7 +15,7 @@ export const Route = createFileRoute("/unlock")({
 
 function UnlockPage() {
   const router = useRouter();
-  const search = Route.useSearch();
+  const search = Route.useSearch() as Record<string, unknown>;
   const [submitError, setSubmitError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const showError = search.loginError === "invalid" || submitError;
