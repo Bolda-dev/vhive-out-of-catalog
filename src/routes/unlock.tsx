@@ -19,15 +19,16 @@ export const Route = createFileRoute("/unlock")({
 function UnlockPage() {
   const router = useRouter();
   const search = Route.useSearch();
-  const [error, setError] = useState(search.error);
+  const [submitError, setSubmitError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const showError = search.error || submitError;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const password = String(new FormData(e.currentTarget).get("password") ?? "");
     if (!password || submitting) return;
     setSubmitting(true);
-    setError(false);
+    setSubmitError(false);
     try {
       const response = await fetch("/api/public/unlock", {
         method: "POST",
@@ -38,11 +39,11 @@ function UnlockPage() {
       if (ok) {
         await router.navigate({ to: "/out-of-catalog" });
       } else {
-        setError(true);
+        setSubmitError(true);
         e.currentTarget.reset();
       }
     } catch {
-      setError(true);
+      setSubmitError(true);
     } finally {
       setSubmitting(false);
     }
@@ -75,7 +76,7 @@ function UnlockPage() {
               placeholder="Password"
               className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-brand"
             />
-            {error && (
+            {showError && (
               <p className="text-sm text-red-400">Incorrect password</p>
             )}
             <button
