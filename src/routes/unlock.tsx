@@ -57,7 +57,12 @@ function UnlockPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Enter the password to view this preview.
           </p>
-          <form onSubmit={onSubmit} className="mt-5 space-y-3">
+          <form
+            method="post"
+            action="/api/public/unlock"
+            onSubmit={onSubmit}
+            className="mt-5 space-y-3"
+          >
             <input
               name="password"
               type="password"

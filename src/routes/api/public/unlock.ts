@@ -9,20 +9,45 @@ export const Route = createFileRoute("/api/public/unlock")({
         const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
         const expected = process.env.SITE_PASSWORD;
         const sessionSecret = process.env.SESSION_SECRET;
+        const contentType = request.headers.get("content-type") ?? "";
+        const wantsFormRedirect = !contentType.includes("application/json");
 
         if (!expected || !sessionSecret) {
+          if (wantsFormRedirect) {
+            return new Response(null, {
+              status: 303,
+              headers: { Location: "/unlock?error=1" },
+            });
+          }
           return Response.json({ ok: false, error: "not_configured" }, { status: 500 });
         }
 
         let password = "";
         try {
-          const body = (await request.json()) as { password?: unknown };
-          password = typeof body.password === "string" ? body.password : "";
+          if (contentType.includes("application/json")) {
+            const body = (await request.json()) as { password?: unknown };
+            password = typeof body.password === "string" ? body.password : "";
+          } else {
+            const formData = await request.formData();
+            password = String(formData.get("password") ?? "");
+          }
         } catch {
+          if (wantsFormRedirect) {
+            return new Response(null, {
+              status: 303,
+              headers: { Location: "/unlock?error=1" },
+            });
+          }
           return Response.json({ ok: false }, { status: 400 });
         }
 
         if (!password || password.length > 512) {
+          if (wantsFormRedirect) {
+            return new Response(null, {
+              status: 303,
+              headers: { Location: "/unlock?error=1" },
+            });
+          }
           return Response.json({ ok: false }, { status: 400 });
         }
 
@@ -35,6 +60,12 @@ export const Route = createFileRoute("/api/public/unlock")({
           .digest();
 
         if (!timingSafeEqual(inputDigest, expectedDigest)) {
+          if (wantsFormRedirect) {
+            return new Response(null, {
+              status: 303,
+              headers: { Location: "/unlock?error=1" },
+            });
+          }
           return Response.json({ ok: false });
         }
 
@@ -43,12 +74,23 @@ export const Route = createFileRoute("/api/public/unlock")({
           .update(payload, "utf8")
           .digest("hex");
         const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+        const cookie = `${COOKIE_NAME}=${payload}.${signature}; Max-Age=${MAX_AGE}; Path=/; HttpOnly; SameSite=Lax${secure}`;
+
+        if (wantsFormRedirect) {
+          return new Response(null, {
+            status: 303,
+            headers: {
+              Location: "/out-of-catalog",
+              "Set-Cookie": cookie,
+            },
+          });
+        }
 
         return Response.json(
           { ok: true },
           {
             headers: {
-              "Set-Cookie": `${COOKIE_NAME}=${payload}.${signature}; Max-Age=${MAX_AGE}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+              "Set-Cookie": cookie,
             },
           },
         );
