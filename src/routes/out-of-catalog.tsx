@@ -19,7 +19,10 @@ import type { OocRow, OocStatus } from "@/data/outOfCatalogTypes";
 import { Toaster } from "@/components/ui/sonner";
 
 
+import { requireUnlocked } from "@/lib/gate.functions";
+
 export const Route = createFileRoute("/out-of-catalog")({
+  beforeLoad: () => requireUnlocked(),
   head: () => ({
     meta: [
       { title: "Out-of-Catalog Management — vHive" },

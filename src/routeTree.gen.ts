@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SandboxRouteImport } from './routes/sandbox'
 import { Route as OutOfCatalogRouteImport } from './routes/out-of-catalog'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UnlockRoute = UnlockRouteImport.update({
+  id: '/unlock',
+  path: '/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SandboxRoute = SandboxRouteImport.update({
   id: '/sandbox',
   path: '/sandbox',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
   '/sandbox': typeof SandboxRoute
+  '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
   '/sandbox': typeof SandboxRoute
+  '/unlock': typeof UnlockRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/out-of-catalog': typeof OutOfCatalogRoute
   '/sandbox': typeof SandboxRoute
+  '/unlock': typeof UnlockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/out-of-catalog' | '/sandbox'
+  fullPaths: '/' | '/out-of-catalog' | '/sandbox' | '/unlock'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/out-of-catalog' | '/sandbox'
-  id: '__root__' | '/' | '/out-of-catalog' | '/sandbox'
+  to: '/' | '/out-of-catalog' | '/sandbox' | '/unlock'
+  id: '__root__' | '/' | '/out-of-catalog' | '/sandbox' | '/unlock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OutOfCatalogRoute: typeof OutOfCatalogRoute
   SandboxRoute: typeof SandboxRoute
+  UnlockRoute: typeof UnlockRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unlock': {
+      id: '/unlock'
+      path: '/unlock'
+      fullPath: '/unlock'
+      preLoaderRoute: typeof UnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sandbox': {
       id: '/sandbox'
       path: '/sandbox'
@@ -89,17 +106,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OutOfCatalogRoute: OutOfCatalogRoute,
   SandboxRoute: SandboxRoute,
+  UnlockRoute: UnlockRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
